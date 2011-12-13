@@ -1,11 +1,7 @@
-# Rake file to make the OS X release
-#
-# APP, RELEASE_VERSION and RELEASE_FOLDER_BASE must be defined elsewhere.
+raise "OSX_GEMS must be defined for release" unless defined? OSX_GEMS
 
 GAME_URL = "com.github.spooner.#{APP}"
 OSX_APP = "#{APP.split("_").map(&:capitalize).join(" ")}.app"
-
-OSX_GEMS = %w[chingu]
 
 RELEASE_FOLDER_OSX = "#{RELEASE_FOLDER_BASE}_OSX"
 
