@@ -5,7 +5,8 @@ WIN32_INSTALLER = "#{RELEASE_FOLDER}/#{WIN32_INSTALLER_NAME}.exe"
 RELEASE_FOLDER_WIN32_EXE = "#{RELEASE_FOLDER_BASE}_WIN32_EXE"
 RELEASE_FOLDER_WIN32_INSTALLER = "#{RELEASE_FOLDER_BASE}_WIN32_INSTALLER"
 
-OCRA_COMMAND = "ocra bin/#{APP}.rbw --windows --no-dep-run --gemfile Gemfile --icon media/icon.ico --no-enc lib/**/*.* media/**/*.* bin/**/*.*"
+#--no-dep-run --gemfile Gemfile
+OCRA_COMMAND = "ocra bin/#{APP}.rbw --windows  --icon media/icon.ico --no-enc #{SOURCE_FOLDERS.map {|s| "#{s}/**/*.* "}.join}"
 
 INSTALLER_BUILD_SCRIPT = File.expand_path("installer.iss", RELEASE_FOLDER)
 
@@ -35,7 +36,7 @@ OutputBaseFilename=#{WIN32_INSTALLER_NAME}
 [Files]
 Source: "#{CHANGELOG_FILE}"; DestDir: "{app}"
 #{defined?(LICENSE_FILE) ? %[Source: "#{LICENSE_FILE}"; DestDir: "{app}"] : ""}
-Source: "#{README_FILE}"; DestDir: "{app}"; Flags: isreadme
+Source: "#{README_HTML}"; DestDir: "{app}"; Flags: isreadme
 
 [Run]
 Filename: "{app}\\#{APP}.exe"; Description: "Launch game"; Flags: postinstall nowait skipifsilent unchecked

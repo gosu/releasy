@@ -1,16 +1,37 @@
+require 'redcloth'
+
 raise "APP must be defined for release" unless defined? APP
-raise "SOURCE_FOLDERS must be defined for release" unless defined? SOURCE_FOLDERS
 raise "RELEASE_VERSION must be defined for release" unless defined? RELEASE_VERSION
-raise "RELEASE_FOLDER_BASE must be defined for release" unless defined? RELEASE_FOLDER_BASE
 
+RELEASE_FOLDER = 'pkg'
+RELEASE_FOLDER_BASE = File.join(RELEASE_FOLDER, "#{APP}_v#{RELEASE_VERSION.gsub(/\./, '_')}")
 
-SOURCE_FOLDER_FILES = FileList[SOURCE_FOLDERS.map {|f| "#{f}/**/*"}]
+README_TEXTILE = "README.textile"
+README_HTML = "README.html"
+CHANGELOG_FILE = "CHANGELOG.txt"
+
+# Grab all files to include, ignoring raw_media (which just stores work, not finished media).
+SOURCE_FOLDER_FILES = `git ls-files`.split("\n").select {|f| f =~ %r[/] and not f =~ /^raw_/ }
+SOURCE_FOLDERS = SOURCE_FOLDER_FILES.map {|f| f =~ %r[([^/]+)]; $1 }.uniq
+
+# Files in the base directory that would be nice to include :)
+EXTRA_SOURCE_FILES = `git ls-files`.split("\n").grep %r[^[^/]+$]
 
 require_relative "release_packager/win32"
 require_relative "release_packager/osx"
 require_relative "release_packager/source"
 
-CLOBBER.include(RELEASE_FOLDER)
+CLOBBER.include(RELEASE_FOLDER, README_HTML)
+
+# Generate a friendly readme
+file README_HTML => :readme
+desc "Convert readme to HTML"
+task readme: README_TEXTILE do
+  puts "Converting readme to HTML"
+  File.open(README_HTML, "w") do |file|
+    file.write RedCloth.new(File.read(README_TEXTILE)).to_html
+  end
+end
 
 def compress(package, folder, option = '')
   puts "Compressing #{package}"
