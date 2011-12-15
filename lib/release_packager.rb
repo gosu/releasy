@@ -45,42 +45,8 @@ end
 desc "Create release packages v#{RELEASE_VERSION} (Not OSX)"
 task release: ["release:source", "release:win32:exe", "release:win32:installer"]
 
-desc "Create source releases v#{RELEASE_VERSION}"
-task "release:source" => ["release:source_zip"]
 
-desc "Create win32 releases v#{RELEASE_VERSION}"
-task "release:win32" => ["release:win32:exe_zip", "release:win32:installer_zip"] # No point making a 7z, since it is same size.
-
-#desc "Create win32 exe releases v#{RELEASE_VERSION}"
-task "release:win32:exe" => ["release:win32:exe_zip"] # No point making a 7z, since it is same size.
-
-#desc "Create win32 installer releases v#{RELEASE_VERSION}"
-task "release:win32:installer" => ["release:win32:installer_zip"] # No point making a 7z, since it is same size.
-
-
-# Create folders for release.
-file RELEASE_FOLDER_WIN32_EXE => [WIN32_EXECUTABLE, README_HTML] do
-  mkdir_p RELEASE_FOLDER_WIN32_EXE
-  cp WIN32_EXECUTABLE, RELEASE_FOLDER_WIN32_EXE
-  cp CHANGELOG_FILE, RELEASE_FOLDER_WIN32_EXE
-  cp README_HTML, RELEASE_FOLDER_WIN32_EXE
-end
-
-file RELEASE_FOLDER_WIN32_INSTALLER => [WIN32_INSTALLER, README_HTML] do
-  mkdir_p RELEASE_FOLDER_WIN32_INSTALLER
-  cp WIN32_INSTALLER, RELEASE_FOLDER_WIN32_INSTALLER
-  cp CHANGELOG_FILE, RELEASE_FOLDER_WIN32_INSTALLER
-  cp README_HTML, RELEASE_FOLDER_WIN32_INSTALLER
-end
-
-file RELEASE_FOLDER_SOURCE => README_HTML do
-  mkdir_p RELEASE_FOLDER_SOURCE
-  SOURCE_FOLDERS.each {|f| cp_r f, RELEASE_FOLDER_SOURCE }
-  cp EXTRA_SOURCE_FILES, RELEASE_FOLDER_SOURCE
-  cp CHANGELOG_FILE, RELEASE_FOLDER_SOURCE
-  cp README_HTML, RELEASE_FOLDER_SOURCE
-end
-
+# Create archives for release.
 { "7z" => '', :zip => '-tzip' }.each_pair do |compression, option|
   { "source" => RELEASE_FOLDER_SOURCE,
     "win32:exe" => RELEASE_FOLDER_WIN32_EXE,
