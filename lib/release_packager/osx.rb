@@ -1,4 +1,7 @@
-raise "OSX_GEMS must be defined for release" unless defined? OSX_GEMS
+require 'bundler'
+
+# Get a list of gems to include, ignoring those binaries in the .app already and bundler, which is not necessary.
+OSX_GEMS = (Bundler.setup(:release).gems.map(&:name) - %w[bundler gosu texplay chipmunk]).sort
 
 GAME_URL = "com.github.spooner.#{APP}"
 OSX_APP = "#{APP.split("_").map(&:capitalize).join(" ")}.app"
@@ -49,25 +52,26 @@ task "build:osx:app" => :readme do
 
 
   # Copy my gems.
-  puts "--- Copying gems"
+  puts "--- Copying gems @ #{TMP_OSX_GEM_DIR}"
   OSX_GEMS.each do |gem|
-    gem_path = File.join(%x[bundle show #{gem}].chomp, 'lib', '.')
-    cp_r gem_path, TMP_OSX_GEM_DIR
+    gem_path = Bundler.setup(:release).gems.find {|g| g.name == gem }.full_gem_path
+    puts "Copying gem: #{File.basename gem_path}"
+    cp_r File.join(gem_path, 'lib'), File.dirname(TMP_OSX_GEM_DIR)
 
     # Some gems use files outside of /lib, which is not supported by the .app!
+    # NOTE: This will fail if multiple gems require the same extra files/folders to included!
     extra_folders = case gem
-                      when 'fidgit'
-                        %w[config media]
-                      when 'r18n-core'
-                        %w[base locales]
-                      when 'clipboard'
-                        %w[VERSION]
+                      when 'nokogiri'   then %w[ext]
+                      when 'fidgit'     then %w[config media]
+                      when 'r18n-core'  then %w[base locales]
+                      when 'clipboard'  then %w[VERSION]
                       else
                         []
                     end
 
-    extra_folders.each do |folder|
-      cp_r File.expand_path(File.join(gem_path, '..', folder)), File.dirname(TMP_OSX_GEM_DIR)
+    extra_folders.each do |extra|
+      puts "  - copying extra #{File.directory?(extra) ? "folder" : "file"}: #{extra}"
+      cp_r File.expand_path(extra, gem_path), File.dirname(TMP_OSX_GEM_DIR)
     end
   end
 
@@ -77,6 +81,12 @@ task "build:osx:app" => :readme do
   File.open(TMP_OSX_MAIN_FILE, "w") do |file|
     file.puts <<END_TEXT
 OSX_EXECUTABLE_FOLDER = File.dirname(File.dirname(File.dirname(__FILE__)))
+
+# Really hacky fudge-fix for something oddly missing in the .app.
+class Encoding
+  UTF_7 = UTF_16BE = UTF_16LE = UTF_32BE = UTF_32LE = Encoding.list.first
+end
+
 require_relative File.join('#{APP}', 'bin', '#{File.basename(RUN_FILE_NEW)}')
 END_TEXT
   end
