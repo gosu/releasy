@@ -1,3 +1,10 @@
+module ReleasePackager
+  module Osx
+
+  end
+end
+
+=begin
 require 'bundler'
 
 # Get a list of gems to include, ignoring those binaries in the .app already and bundler, which is not necessary.
@@ -123,3 +130,4 @@ END_TEXT
   #mv File.join(OSX_BUILD_DIR, seven_z_package), RELEASE_FOLDER
   mv File.join(OSX_BUILD_DIR, zip_package), RELEASE_FOLDER
 end
+=end

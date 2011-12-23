@@ -1,3 +1,10 @@
+module ReleasePackager
+  module Win32
+
+  end
+end
+
+=begin
 WIN32_EXECUTABLE = "#{APP}.exe"
 APP_WITH_VERSION = "#{APP}_v#{RELEASE_VERSION.tr(".", "-")}_WIN32"
 WIN32_INSTALLER_NAME = "#{APP_WITH_VERSION}_setup"
@@ -105,3 +112,5 @@ task "build:win32:exe" => WIN32_INSTALLER do
   rm File.join(RELEASE_FOLDER_WIN32_EXE, "unins000.dat")
   rm File.join(RELEASE_FOLDER_WIN32_EXE, "unins000.exe")
 end
+
+=end
