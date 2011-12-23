@@ -1,13 +1,13 @@
-require_relative "osx"
-require_relative "source"
-require_relative "win32"
+require "release_packager/osx"
+require "release_packager/source"
+require "release_packager/win32"
 
 
 module ReleasePackager
   COMPRESSIONS = {
       :"7z" => "7z a",
-      zip: "7z a -tzip",
-      tar_bz: "tar -jcvf"
+      :zip => "7z a -tzip",
+      :tar_bz => "tar -jcvf"
   }
 
   OUTPUTS = [:osx_app, :source, :win32_exe, :win32_installer, :win32_standalone]
@@ -79,10 +79,10 @@ module ReleasePackager
     protected
     def generate_compression_tasks
       {
-          source: SOURCE_SUFFIX,
-          win32_standalone: "WIN32_EXE",
-          win32_exe: "WIN32",
-          win32_installer: "WIN32_INSTALLER",
+          :source => SOURCE_SUFFIX,
+          :win32_standalone => "WIN32_EXE",
+          :win32_exe => "WIN32",
+          :win32_installer => "WIN32_INSTALLER",
       }.each_pair do |name, output_suffix|
         next unless @outputs.include? name
 

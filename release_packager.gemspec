@@ -14,7 +14,6 @@ Gem::Specification.new do |s|
 
   s.rubyforge_project = "release_packager"
   s.has_rdoc = true
-  s.required_ruby_version = "~> 1.9.2"
   
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

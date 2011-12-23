@@ -1,4 +1,4 @@
 require "fileutils"
 
-require_relative "release_packager/version"
-require_relative "release_packager/project"
+require "release_packager/version"
+require "release_packager/project"
