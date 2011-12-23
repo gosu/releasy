@@ -12,6 +12,7 @@ GEM
     riot (0.12.5)
       rr
     rr (1.0.4)
+    yard (0.7.3)
 
 PLATFORMS
   x86-mingw32
@@ -20,3 +21,4 @@ DEPENDENCIES
   rake
   release_packager!
   riot (~> 0.12.5)
+  yard

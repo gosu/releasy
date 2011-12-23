@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
-require_relative "release_packager/version"
+$LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
+require "release_packager/version"
 
 Gem::Specification.new do |s|
   s.name        = "release_packager"
@@ -23,4 +24,5 @@ Gem::Specification.new do |s|
   s.add_dependency('ocra', '~> 1.3.0')
   s.add_development_dependency('riot', '~> 0.12.5')
   s.add_development_dependency('rake')
+  s.add_development_dependency('yard')
 end

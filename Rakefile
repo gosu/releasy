@@ -1,4 +1,8 @@
+require 'bundler'
 require 'rake/testtask'
+require 'yard'
+
+Bundler::GemHelper.install_tasks
 
 desc "Run all tests"
 task :test do
@@ -9,8 +13,6 @@ task :test do
   end
 end
 
-task :yard do
-  system "yard doc"
-end
+YARD::Rake::YardocTask.new
 
 task :default => :test
