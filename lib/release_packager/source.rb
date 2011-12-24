@@ -10,8 +10,9 @@ module ReleasePackager
       task "release:source" => folder
 
       file folder => files do
-        mkdir_p RELEASE_FOLDER_SOURCE
-        cp_r files
+        folder = "#{folder_base}_SOURCE"
+        mkdir_p folder
+        cp_r files, folder
       end
     end
   end

@@ -15,6 +15,8 @@ module ReleasePackager
   DEFAULT_PACKAGE_FOLDER = "pkg"
 
   class Project
+    include Rake::DSL
+
     include Osx
     include Source
     include Win32
