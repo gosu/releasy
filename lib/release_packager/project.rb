@@ -19,11 +19,16 @@ module ReleasePackager
     include Source
     include Win32
 
-    attr_accessor :name, :underscored_name, :files, :version, :ocra_parameters, :execute, :license, :icon, :output_path, :installer_group
+    attr_reader :underscored_name
 
-    def name=(name)
-      @underscored_name = name.strip.downcase.gsub(/[^a-z0-9_\- ]/i, '').split(/[\-_ ]+/).join("_") unless @underscored_name
-      @name = name
+    attr_accessor :name, :files, :version, :ocra_parameters, :execute, :license, :icon, :output_path, :installer_group
+
+    def underscored_name
+      if @underscored_name or @name.nil?
+        @underscored_name
+      else
+        @name.strip.downcase.gsub(/[^a-z0-9_\- ]/i, '').split(/[\-_ ]+/).join("_")
+      end
     end
 
     def initialize
