@@ -13,7 +13,6 @@ Gem::Specification.new do |s|
   s.description = %q{ReleasePackager helps to make application releases simpler, by outputting source folders, win32 folders, win32 standalone executables, win32 installers}
 
   s.rubyforge_project = "release_packager"
-  s.has_rdoc = true
   
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

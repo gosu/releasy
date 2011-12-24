@@ -1,116 +1,112 @@
 module ReleasePackager
   module Win32
+    OCRA_COMMAND = "ocra"
+    INSTALLER_SCRIPT = "installer.iss"
 
-  end
-end
+    def build_win32_installer
+      file INSTALLER_SCRIPT do
+        generate_installer_script
+      end
 
-=begin
-WIN32_EXECUTABLE = "#{APP}.exe"
-APP_WITH_VERSION = "#{APP}_v#{RELEASE_VERSION.tr(".", "-")}_WIN32"
-WIN32_INSTALLER_NAME = "#{APP_WITH_VERSION}_setup"
-WIN32_INSTALLER = "#{RELEASE_FOLDER}/#{WIN32_INSTALLER_NAME}.exe"
+      file installer_folder => installer_name do
+        mkdir_p installer_folder
+        mv installer_name, installer_folder
+      end
 
-WIN32_FOLDER = "#{RELEASE_FOLDER_BASE}/#{APP_WITH_VERSION}"
+      file installer_name => "build:win32:installer"
+      desc "Ocra/Innosetup => #{installer_name}"
+      task "build:win32:installer" => @files do
+        system "#{ocra_command} --chdir-first --no-lzma --innosetup #{INSTALLER_SCRIPT}"
+      end
+    end
 
-RELEASE_FOLDER_WIN32_EXE = "#{RELEASE_FOLDER_BASE}_WIN32"
-RELEASE_FOLDER_WIN32_INSTALLER = "#{RELEASE_FOLDER_BASE}_WIN32_INSTALLER"
+    # FOLDER containing EXE, Ruby + source.
+    def build_win32_folder
+      file executable_folder_path => "build:win32:exe"
+      task "build:win32:exe" => installer_name do
+        system %[#{installer_name} /SILENT /DIR=#{executable_folder_path}]
+        rm File.join(executable_folder_path, "unins000.dat")
+        rm File.join(executable_folder_path, "unins000.exe")
+      end
+    end
 
-WEBSITE_FILE = "website.url"
+    # Self-extracting standalone executable.
+    def build_win32_standalone
+      file executable_name => "build:win32:standalone"
+      desc "Create #{executable_name} #{version} with Ocra"
+      task "build:win32:standalone" => @files do
+        system ocra_command
+      end
+    end
 
-#--no-dep-run --gemfile Gemfile
-OCRA_COMMAND = "ocra bin/#{APP}.rbw --windows  --icon media/icon.ico --no-enc #{SOURCE_FOLDERS.map {|s| "#{s}/**/*.* "}.join}"
+    protected
+    def installer_folder; "#{underscored_name}_#{version}_WIN32_INSTALLER"; end
+    def installer_name; "#{underscored_name}_#{version}_setup.exe"; end
+    def executable_name; "#{underscored_name}.exe"; end
+    def executable_folder_path; "#{underscored_name}_#{version}_EXE"; end
 
-INSTALLER_BUILD_SCRIPT = File.expand_path("installer.iss", RELEASE_FOLDER)
+    protected
+    def ocra_command
+      command = "#{OCRA_COMMAND} #{@execute} #{@ocra_parameters} "
+      command += "--icon #{icon} " if @icon
+      command += @files.map {|f| %["#{f}"]}.join(" ")
+      command
+    end
 
-CLOBBER.include WIN32_EXECUTABLE, WIN32_INSTALLER
-
-# RELEASES
-desc "Create win32 releases v#{RELEASE_VERSION}"
-task "release:win32" => ["release:win32:exe_zip", "release:win32:installer_zip"] # No point making a 7z, since it is same size.
-
-#desc "Create win32 exe releases v#{RELEASE_VERSION}"
-task "release:win32:exe" => ["release:win32:exe_zip"] # No point making a 7z, since it is same size.
-
-#desc "Create win32 installer releases v#{RELEASE_VERSION}"
-task "release:win32:installer" => ["release:win32:installer_zip"] # No point making a 7z, since it is same size.
-
-# EXECUTABLE
-file WIN32_EXECUTABLE => "build:win32:standalone"
-desc "Ocra => #{WIN32_EXECUTABLE} v#{RELEASE_VERSION}"
-task "build:win32:standalone" => SOURCE_FOLDER_FILES do
-  system OCRA_COMMAND
-end
-
-# INSTALLER
-file RELEASE_FOLDER_WIN32_INSTALLER => [WIN32_INSTALLER, README_HTML] do
-  mkdir_p RELEASE_FOLDER_WIN32_INSTALLER
-  mv WIN32_INSTALLER, RELEASE_FOLDER_WIN32_INSTALLER
-  cp CHANGELOG_FILE, RELEASE_FOLDER_WIN32_INSTALLER
-  cp README_HTML, RELEASE_FOLDER_WIN32_INSTALLER
-end
-
-file WIN32_INSTALLER => "build:win32:installer"
-desc "Ocra/Innosetup => #{WIN32_INSTALLER}"
-task "build:win32:installer" => SOURCE_FOLDER_FILES do
-  # Link to website.
-  File.open(WEBSITE_FILE, "w") do |file|
-    file.puts <<END
+    protected
+    def create_link_file(url, title)
+      File.open("#{title}.url", "w") do |file|
+        file.puts <<END
 [InternetShortcut]
-URL=http://spooner.github.com/games/#{APP}
+URL=#{url}
 END
-  end
+      end
+    end
 
-  # Script to build installer.
-  File.open(INSTALLER_BUILD_SCRIPT, "w") do |file|
-    file.write <<END
+    # Generate innosetup script to build installer.
+    protected
+    def generate_installer_script
+      File.open(INSTALLER_SCRIPT, "w") do |file|
+        file.write <<END
 [Setup]
-AppName=#{APP_READABLE}
-AppVersion=#{RELEASE_VERSION}
-DefaultDirName={pf}\\#{APP_READABLE.gsub(/[^\w\s]/, '')}
-DefaultGroupName=Spooner Games\\#{APP_READABLE}
-OutputDir=#{RELEASE_FOLDER}
-OutputBaseFilename=#{WIN32_INSTALLER_NAME}
+AppName=#{underscored_name}
+AppVersion=#{@version}
+DefaultDirName={pf}\\#{@name.gsub(/[^\w\s]/, '')}
+DefaultGroupName=#{@installer_group ? "#{@installer_group}\\" : ""}#{@name}
+OutputDir=#{@output_dir}
+OutputBaseFilename=#{installer_name}
 SetupIconFile=media/icon.ico
-UninstallDisplayIcon={app}\\#{APP}.exe
+UninstallDisplayIcon={app}\\#{underscored_name}.exe
 
 [Files]
-Source: "#{CHANGELOG_FILE}"; DestDir: "{app}"
-#{defined?(LICENSE_FILE) ? %[Source: "#{LICENSE_FILE}"; DestDir: "{app}"] : ""}
-Source: "#{README_HTML}"; DestDir: "{app}"; Flags: isreadme
-Source: "website.url"; DestDir: "{app}"
+END
 
+          file.puts %[Source: "#{@license}"; DestDir: "{app}"] if @license
+          file.puts %[Source: "#{@readme}";  DestDir: "{app}"; Flags: isreadme] if @readme
+
+          @links.each_pair do |url, title|
+            file.puts %[Source: "#{title}.url"; DestDir: "{app}"]
+          end
+
+          # TODO: add other extra files including the changelog.
+
+          file.write <<END
 [Run]
-Filename: "{app}\\#{APP}.exe"; Description: "Launch game"; Flags: postinstall nowait skipifsilent unchecked
+Filename: "{app}\\#{@id}.exe"; Description: "Launch"; Flags: postinstall nowait skipifsilent unchecked
 
 [Icons]
-Name: "{group}\\#{APP_READABLE}"; Filename: "{app}\\#{APP}.exe"
-Name: "{group}\\#{APP_READABLE} Web Site"; Filename: "{app}\\website.url"
-Name: "{group}\\Uninstall #{APP_READABLE}"; Filename: "{uninstallexe}"
-Name: "{commondesktop}\\#{APP_READABLE}"; Filename: "{app}\\#{APP}.exe"; Tasks: desktopicon
+Name: "{group}\\#{name}"; Filename: "{app}\\#{underscored_name}.exe"
+Name: "{group}\\Uninstall #{name}"; Filename: "{uninstallexe}"
+Name: "{commondesktop}\\#{name}"; Filename: "{app}\\#{underscored_name}.exe"; Tasks: desktopicon
 
 [Tasks]
 Name: desktopicon; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:";
 Name: desktopicon\\common; Description: "For all users"; GroupDescription: "Additional icons:"; Flags: exclusive
 Name: desktopicon\\user; Description: "For the current user only"; GroupDescription: "Additional icons:"; Flags: exclusive unchecked
 Name: quicklaunchicon; Description: "Create a &Quick Launch icon"; GroupDescription: "Additional icons:"; Flags: unchecked
-
 END
+      end
+    end
 
-#LicenseFile=COPYING.txt
   end
-
-  system OCRA_COMMAND + " --chdir-first --no-lzma --innosetup #{INSTALLER_BUILD_SCRIPT}"
-  
-  rm INSTALLER_BUILD_SCRIPT
-  rm WEBSITE_FILE
 end
-
-# FOLDER containing EXE.
-file RELEASE_FOLDER_WIN32_EXE => "build:win32:exe"
-task "build:win32:exe" => WIN32_INSTALLER do
-  system %[#{WIN32_INSTALLER} /SILENT /DIR=#{RELEASE_FOLDER_WIN32_EXE}]
-  rm File.join(RELEASE_FOLDER_WIN32_EXE, "unins000.dat")
-  rm File.join(RELEASE_FOLDER_WIN32_EXE, "unins000.exe")
-end
-
-=end

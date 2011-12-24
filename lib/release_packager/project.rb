@@ -19,19 +19,21 @@ module ReleasePackager
     include Source
     include Win32
 
-    attr_reader :id
-    attr_accessor :name, :files, :name, :version, :ocra_parameters, :execute, :license, :icon, :output_path
+    attr_accessor :name, :underscored_name, :files, :version, :ocra_parameters, :execute, :license, :icon, :output_path, :installer_group
 
-    def initialize(id)
-      @id = id
-      @name = id.to_s.split(/-|_/).map(&:capitalize).join(" ")
+    def name=(name)
+      @underscored_name = name.strip.downcase.gsub(/[^a-z0-9_\- ]/i, '').split(/[\-_ ]+/).join("_") unless @underscored_name
+      @name = name
+    end
+
+    def initialize
       @compressions = []
       @outputs = []
       @links= {}
       @files = []
       @output_path = DEFAULT_PACKAGE_FOLDER
 
-      @ocra_parameters = @version = @execute = @license = @icon = nil
+      @name = @underscored_name = @ocra_parameters = @version = @execute = @license = @icon = @installer_group = nil
 
       if block_given?
         yield self
@@ -63,7 +65,7 @@ module ReleasePackager
 
     # The path to the folder to create. All variations will be based on extending this path.
     def folder_base
-      File.join(@output_path, "#{id}#{version ? "_#{version.tr(".", "_")}" : ""}")
+      File.join(@output_path, "#{underscored_name}#{version ? "_#{version.tr(".", "_")}" : ""}")
     end
 
     # Generates all tasks required by the user. Automatically called at the end of the block, if #new is given a block.

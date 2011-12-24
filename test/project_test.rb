@@ -4,16 +4,20 @@ module ReleasePackager
   context Project do
 
     context "Default" do
-      setup { Project.new(:test_project) }
-
-      asserts(:id).equals :test_project
+      setup { Project.new }
 
       # Defaults.
-      asserts(:output_path).equals "pkg"
+      asserts(:name).nil
+      asserts(:underscored_name).nil
+      asserts(:ocra_parameters).nil
+      asserts(:version).nil
+      asserts(:execute).nil
+      asserts(:license).nil
+      asserts(:icon).nil
+      asserts(:installer_group).nil
 
-      # Derived values.
-      asserts(:name).equals "Test Project"
-      asserts(:folder_base).equals "pkg/test_project"
+      asserts(:output_path).equals "pkg"
+      asserts(:folder_base).equals "pkg/"
 
       asserts("Attempting to generate tasks without any outputs") { topic.generate_tasks }.raises(RuntimeError)
 
@@ -24,10 +28,10 @@ module ReleasePackager
       asserts(:add_output, :unknown).raises(ArgumentError, /unsupported output/i)
     end
 
-    context "Described" do
+    context "Defined" do
       setup do
-        Project.new(:test_project) do |p|
-          p.name = "Test"
+        Project.new do |p|
+          p.name = "Test Project - (2a)"
           p.version = "v0.1.5"
           p.output_path = "test/pkg"
 
@@ -41,8 +45,9 @@ module ReleasePackager
         end
       end
 
-      asserts(:name).equals "Test"
-      asserts(:folder_base).equals "test/pkg/test_project_v0_1_5"
+      asserts(:name).equals "Test Project - (2a)"
+      asserts(:underscored_name).equals "test_project_2a"
+      asserts(:folder_base).equals "test/pkg/test_project_2a_v0_1_5"
     end
   end
 end
