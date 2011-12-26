@@ -15,6 +15,7 @@ GEM
     yard (0.7.3)
 
 PLATFORMS
+  ruby
   x86-mingw32
 
 DEPENDENCIES
