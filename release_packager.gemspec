@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Bil Bas (Spooner)"]
   s.email       = ["bil.bagpuss@gmail.com"]
-  s.homepage    = "http://github.com/Spooner/release_packager/"
+  s.homepage    = "http://spooner.github.com/libraries/release_packager/"
   s.summary     = %q{ReleasePackager helps to make application releases simpler}
   s.description = %q{ReleasePackager helps to make application releases simpler, by outputting source folders, win32 folders, win32 standalone executables, win32 installers}
 
@@ -20,7 +20,8 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency('ocra', '~> 1.3.0')
+  s.add_dependency('rake')
+
   s.add_development_dependency('riot', '~> 0.12.5')
-  s.add_development_dependency('rake')
   s.add_development_dependency('yard')
 end
