@@ -15,6 +15,7 @@ module ReleasePackager
       asserts(:license).nil
       asserts(:icon).nil
       asserts(:installer_group).nil
+      asserts(:files).equals []
 
       asserts(:output_path).equals "pkg"
       asserts(:folder_base).equals "pkg/"
