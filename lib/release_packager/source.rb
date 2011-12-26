@@ -10,9 +10,17 @@ module ReleasePackager
       task "release:source" => folder
 
       file folder => files do
-        folder = "#{folder_base}_SOURCE"
-        mkdir_p folder
-        cp_r files, folder
+       copy_files_relative files, folder
+      end
+    end
+
+    # Copy a number of files into a folder, maintaining relative paths.
+    protected
+    def copy_files_relative(files, folder)
+      files.each do |file|
+        destination = File.join(folder, File.dirname(file))
+        mkdir_p destination unless File.exists? destination
+        cp file, destination
       end
     end
   end
