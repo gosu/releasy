@@ -5,9 +5,9 @@ require "release_packager/win32"
 
 module ReleasePackager
   COMPRESSIONS = {
-      :"7z" => "7z a",
-      :zip => "7z a -tzip",
-      :tar_bz => "tar -jcvf"
+      :"7z" => "7z a -mmt -t7z", # -mmt -> multithreaded compression. -mx0 -> don't compress
+      :zip => "7z a -mmt -tzip",
+      :tar_bz => "tar -jcvf" # 7z -tgzip (gzip), -ttar (tar), tbzip2 (bzip2)
   }
 
   OUTPUTS = [:osx_app, :source, :win32_exe, :win32_installer, :win32_standalone]
@@ -25,6 +25,7 @@ module ReleasePackager
 
     attr_accessor :name, :files, :version, :ocra_parameters, :execute, :license, :icon, :output_path, :installer_group
 
+    # The name of the project used for creating file-names. It will either be generated from #name automatically, or can be set directly.
     def underscored_name
       if @underscored_name or @name.nil?
         @underscored_name
@@ -82,6 +83,10 @@ module ReleasePackager
       create_source_folder if @outputs.include? :source
 
       generate_compression_tasks
+
+      build_win32_installer if @outputs.include? :win32_installer
+      build_win32_standalone if @outputs.include? :win32_standalone
+      build_win32_folder if @outputs.include? :win32_exe
     end
 
     # Generates the general tasks for compressing folders.
@@ -117,8 +122,7 @@ module ReleasePackager
     def compress(package, folder, command)
       puts "Compressing #{package}"
       rm package if File.exist? package
-      cd @output do
-        puts File.basename(package)
+      cd @output_path do
         puts %x[#{command} "#{File.basename(package)}" "#{File.basename(folder)}"]
       end
     end

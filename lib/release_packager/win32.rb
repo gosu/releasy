@@ -13,17 +13,17 @@ module ReleasePackager
         mv installer_name, installer_folder
       end
 
-      file installer_name => "build:win32:installer"
+      file installer_name => "build:win32_installer"
       desc "Ocra/Innosetup => #{installer_name}"
-      task "build:win32:installer" => @files do
+      task "build:win32_installer" => @files do
         system "#{ocra_command} --chdir-first --no-lzma --innosetup #{INSTALLER_SCRIPT}"
       end
     end
 
     # FOLDER containing EXE, Ruby + source.
     def build_win32_folder
-      file executable_folder_path => "build:win32:exe"
-      task "build:win32:exe" => installer_name do
+      file executable_folder_path => "build:win32_exe"
+      task "build:win32_exe" => installer_name do
         system %[#{installer_name} /SILENT /DIR=#{executable_folder_path}]
         rm File.join(executable_folder_path, "unins000.dat")
         rm File.join(executable_folder_path, "unins000.exe")
@@ -32,9 +32,9 @@ module ReleasePackager
 
     # Self-extracting standalone executable.
     def build_win32_standalone
-      file executable_name => "build:win32:standalone"
+      file executable_name => "build:win32_standalone"
       desc "Create #{executable_name} #{version} with Ocra"
-      task "build:win32:standalone" => @files do
+      task "build:win32_standalone" => @files do
         system ocra_command
       end
     end
