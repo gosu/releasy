@@ -1,1 +1,11 @@
-.idea/
+pkg
+*.swp
+*.swo
+*.log
+.DS_Store
+.yardoc
+tmp
+tags
+ctags
+.bundle
+*.lock
