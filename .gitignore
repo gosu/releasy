@@ -9,3 +9,4 @@ tags
 ctags
 .bundle
 *.lock
+.idea/
