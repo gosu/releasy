@@ -10,7 +10,15 @@ module ReleasePackager
       :tar_bz => "tar -jcvf" # 7z -tgzip (gzip), -ttar (tar), tbzip2 (bzip2)
   }
 
-  OUTPUTS = [:osx_app, :source, :win32_exe, :win32_installer, :win32_standalone]
+  OUTPUTS = [:osx_app, :source, :win32_folder, :win32_installer, :win32_standalone]
+
+  FOLDER_SUFFIXES = {
+    :osx_app => "OSX",
+    :source => SOURCE_SUFFIX,
+    :win32_folder => "WIN32",
+    :win32_installer => "WIN32_INSTALLER",
+    :win32_standalone => "WIN32_EXE",
+  }
 
   DEFAULT_PACKAGE_FOLDER = "pkg"
 
@@ -80,25 +88,24 @@ module ReleasePackager
     def generate_tasks
       raise "Must specify at least one output with #add_output before tasks can be generated" if @outputs.empty?
 
-      create_source_folder if @outputs.include? :source
+      build_source_folder if @outputs.include? :source
 
-      generate_compression_tasks
+      #build_osx_app if @outputs.include? :osx_app
 
       build_win32_installer if @outputs.include? :win32_installer
       build_win32_standalone if @outputs.include? :win32_standalone
-      build_win32_folder if @outputs.include? :win32_exe
+      build_win32_folder if @outputs.include? :win32_folder
+
+      generate_compression_tasks
     end
 
     # Generates the general tasks for compressing folders.
     protected
     def generate_compression_tasks
-      {
-          :source => SOURCE_SUFFIX,
-          :win32_standalone => "WIN32_EXE",
-          :win32_exe => "WIN32",
-          :win32_installer => "WIN32_INSTALLER",
-      }.each_pair do |name, output_suffix|
+      FOLDER_SUFFIXES.each_pair do |name, output_suffix|
         next unless @outputs.include? name
+
+        task = name.to_s.sub '_', ':'
 
         COMPRESSIONS.each_pair do |compression, command|
           next unless @compressions.include? compression
@@ -106,15 +113,16 @@ module ReleasePackager
           folder = "#{folder_base}_#{output_suffix}"
           package = "#{folder}.#{compression}"
 
+
           desc "Create #{package}"
-          task "release:#{name}:#{compression}" => package
+          task "release:#{task}:#{compression}" => package
           file package => folder do
             compress(package, folder, command)
           end
         end
 
         desc "Release #{name} in all compressions"
-        task "release:#{name}" => @compressions.map {|c| "release:#{name}:#{c}" }
+        task "release:#{task}" => @compressions.map {|c| "release:#{task}:#{c}" }
       end
     end
 

@@ -2,7 +2,9 @@ module ReleasePackager
   module Win32
     OCRA_COMMAND = "ocra"
     INSTALLER_SCRIPT = "installer.iss"
+    UNINSTALLER_FILES = %w[unins000.dat unins000.exe]
 
+    # Regular windows installer, but some users consider them evil.
     def build_win32_installer
       file INSTALLER_SCRIPT do
         generate_installer_script
@@ -13,28 +15,29 @@ module ReleasePackager
         mv installer_name, installer_folder
       end
 
-      file installer_name => "build:win32_installer"
-      desc "Ocra/Innosetup => #{installer_name}"
-      task "build:win32_installer" => @files do
+      file installer_name => "build:win32:installer"
+      desc "Build installer #{version} [Ocra/Innosetup]"
+      task "build:win32:installer" => @files + [INSTALLER_SCRIPT] do
         system "#{ocra_command} --chdir-first --no-lzma --innosetup #{INSTALLER_SCRIPT}"
       end
     end
 
     # FOLDER containing EXE, Ruby + source.
     def build_win32_folder
-      file executable_folder_path => "build:win32_exe"
-      task "build:win32_exe" => installer_name do
+      file executable_folder_path => installer_name
+      desc "Build source/exe folder #{version} [Ocra/Innosetup]"
+      task "build:win32:folder" => executable_folder_path do
+        # Extract the installer and remove the uninstall files.
         system %[#{installer_name} /SILENT /DIR=#{executable_folder_path}]
-        rm File.join(executable_folder_path, "unins000.dat")
-        rm File.join(executable_folder_path, "unins000.exe")
+        UNINSTALLER_FILES.each {|f| rm File.join(executable_folder_path, f) }
       end
     end
 
     # Self-extracting standalone executable.
     def build_win32_standalone
-      file executable_name => "build:win32_standalone"
-      desc "Create #{executable_name} #{version} with Ocra"
-      task "build:win32_standalone" => @files do
+      file executable_name => "build:win32:standalone"
+      desc "Build standalone exe #{version} [Ocra]"
+      task "build:win32:standalone" => @files do
         system ocra_command
       end
     end
@@ -75,7 +78,7 @@ DefaultDirName={pf}\\#{@name.gsub(/[^\w\s]/, '')}
 DefaultGroupName=#{@installer_group ? "#{@installer_group}\\" : ""}#{@name}
 OutputDir=#{@output_path}
 OutputBaseFilename=#{installer_name}
-SetupIconFile=media/icon.ico
+#{icon ? "SetupIconFile=#{icon}" : "" }
 UninstallDisplayIcon={app}\\#{underscored_name}.exe
 
 [Files]

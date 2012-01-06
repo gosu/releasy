@@ -10,3 +10,4 @@ ctags
 .bundle
 *.lock
 .idea/
+doc/

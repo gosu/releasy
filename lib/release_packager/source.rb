@@ -1,9 +1,9 @@
 module ReleasePackager
-  module Source
-    SOURCE_SUFFIX = "SOURCE"
+  SOURCE_SUFFIX = "SOURCE"
 
+  module Source
     protected
-    def create_source_folder
+    def build_source_folder
       folder = "#{folder_base}_#{SOURCE_SUFFIX}"
 
       desc "Create source folder"
