@@ -11,7 +11,7 @@ module ReleasePackager
       asserts(:underscored_name).nil
       asserts(:ocra_parameters).nil
       asserts(:version).nil
-      asserts(:execute).nil
+      asserts(:executable).nil
       asserts(:license).nil
       asserts(:icon).nil
       asserts(:installer_group).nil
@@ -48,6 +48,7 @@ module ReleasePackager
 
       asserts(:name).equals "Test Project - (2a)"
       asserts(:underscored_name).equals "test_project_2a"
+      asserts(:executable).equals "bin/test_project_2a"
       asserts(:folder_base).equals "test/pkg/test_project_2a_v0_1_5"
     end
   end

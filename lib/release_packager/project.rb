@@ -31,7 +31,7 @@ module ReleasePackager
 
     attr_reader :underscored_name
 
-    attr_accessor :name, :files, :version, :ocra_parameters, :execute, :license, :icon, :output_path, :installer_group
+    attr_accessor :name, :files, :version, :ocra_parameters, :executable, :license, :icon, :output_path, :installer_group
 
     # The name of the project used for creating file-names. It will either be generated from #name automatically, or can be set directly.
     def underscored_name
@@ -42,6 +42,15 @@ module ReleasePackager
       end
     end
 
+    # The name of the executable defaults to "bin/<underscored_name>", but can be set manually.
+    def executable
+      if @executable or underscored_name.nil?
+        @executable
+      else
+        "bin/#{underscored_name}"
+      end
+    end
+
     def initialize
       @compressions = []
       @outputs = []
@@ -49,7 +58,7 @@ module ReleasePackager
       @files = []
       @output_path = DEFAULT_PACKAGE_FOLDER
 
-      @name = @underscored_name = @ocra_parameters = @version = @execute = @license = @icon = @installer_group = nil
+      @name = @underscored_name = @ocra_parameters = @version = @executable = @license = @icon = @installer_group = nil
 
       if block_given?
         yield self
