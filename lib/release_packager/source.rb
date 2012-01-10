@@ -6,21 +6,13 @@ module ReleasePackager
     def build_source_folder
       folder = "#{folder_base}_#{SOURCE_SUFFIX}"
 
-      desc "Create source folder"
-      task "release:source" => folder
+      desc "Build source folder"
+      task "build:source" => folder
+
+      directory folder
 
       file folder => files do
-       copy_files_relative files, folder
-      end
-    end
-
-    # Copy a number of files into a folder, maintaining relative paths.
-    protected
-    def copy_files_relative(files, folder)
-      files.each do |file|
-        destination = File.join(folder, File.dirname(file))
-        mkdir_p destination unless File.exists? destination
-        cp file, destination
+        copy_files_relative files, folder
       end
     end
   end

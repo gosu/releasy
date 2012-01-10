@@ -29,7 +29,7 @@ module ReleasePackager
     include Source
     include Win32
 
-    attr_reader :underscored_name
+    attr_reader :underscored_name, :underscored_version
 
     attr_accessor :name, :files, :version, :ocra_parameters, :executable, :license, :icon, :output_path, :installer_group
 
@@ -39,6 +39,14 @@ module ReleasePackager
         @underscored_name
       else
         @name.strip.downcase.gsub(/[^a-z0-9_\- ]/i, '').split(/[\-_ ]+/).join("_")
+      end
+    end
+
+    def underscored_version
+      if @underscored_version or @version.nil?
+        @underscored_version
+      else
+        @version.gsub(".", "_")
       end
     end
 
@@ -58,7 +66,7 @@ module ReleasePackager
       @files = []
       @output_path = DEFAULT_PACKAGE_FOLDER
 
-      @name = @underscored_name = @ocra_parameters = @version = @executable = @license = @icon = @installer_group = nil
+      @name = @underscored_name = @underscored_version = @ocra_parameters = @version = @executable = @license = @icon = @installer_group = nil
 
       if block_given?
         yield self
@@ -90,27 +98,47 @@ module ReleasePackager
 
     # The path to the folder to create. All variations will be based on extending this path.
     def folder_base
-      File.join(@output_path, "#{underscored_name}#{version ? "_#{version.tr(".", "_")}" : ""}")
+      File.join(@output_path, "#{underscored_name}#{version ? "_#{underscored_version}" : ""}")
     end
 
     # Generates all tasks required by the user. Automatically called at the end of the block, if #new is given a block.
     def generate_tasks
       raise "Must specify at least one output with #add_output before tasks can be generated" if @outputs.empty?
 
-      build_source_folder if @outputs.include? :source
+      build_groups = []
 
-      #build_osx_app if @outputs.include? :osx_app
+      if @outputs.include? :source
+        build_source_folder
+        build_groups << "source"
+      end
+
+      if @outputs.include? :osx_app
+        build_osx_app
+        build_groups << "osx"
+      end
 
       build_win32_installer if @outputs.include? :win32_installer
       build_win32_standalone if @outputs.include? :win32_standalone
       build_win32_folder if @outputs.include? :win32_folder
+      win32_outputs = @outputs.select {|o| o.to_s[0..4] == "win32" }
+
+      if win32_outputs.any?
+        build_groups << "win32"
+        task "build:win32" => win32_outputs.map {|t| "build:#{t.to_s.split("_").join(":")}" }
+      end
+
+      task "build" => build_groups.map {|t| "build:#{t}" }
 
       generate_compression_tasks
+
+      self
     end
 
     # Generates the general tasks for compressing folders.
     protected
     def generate_compression_tasks
+      win32_tasks = []
+      top_level_tasks = []
       FOLDER_SUFFIXES.each_pair do |name, output_suffix|
         next unless @outputs.include? name
 
@@ -124,15 +152,30 @@ module ReleasePackager
 
 
           desc "Create #{package}"
-          task "release:#{task}:#{compression}" => package
+          task "package:#{task}:#{compression}" => package
           file package => folder do
             compress(package, folder, command)
           end
         end
 
-        desc "Release #{name} in all compressions"
-        task "release:#{task}" => @compressions.map {|c| "release:#{task}:#{c}" }
+        desc "Package #{name} in all compressions"
+        task "package:#{task}" => @compressions.map {|c| "package:#{task}:#{c}" }
+
+        if task.to_s =~ /win32/
+          win32_tasks << "package:#{task}"
+          top_level_tasks << "package:win32" unless top_level_tasks.include? "package:win32"
+        else
+          top_level_tasks << "package:#{task}"
+        end
       end
+
+      unless win32_tasks.empty?
+        desc "Package all win32"
+        task "package:win32" => win32_tasks
+      end
+
+      desc "Package all"
+      task "package" => top_level_tasks
     end
 
     protected
@@ -141,6 +184,16 @@ module ReleasePackager
       rm package if File.exist? package
       cd @output_path do
         puts %x[#{command} "#{File.basename(package)}" "#{File.basename(folder)}"]
+      end
+    end
+
+    # Copy a number of files into a folder, maintaining relative paths.
+    protected
+    def copy_files_relative(files, folder)
+      files.each do |file|
+        destination = File.join(folder, File.dirname(file))
+        mkdir_p destination unless File.exists? destination
+        cp file, destination
       end
     end
   end

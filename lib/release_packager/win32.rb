@@ -10,49 +10,68 @@ module ReleasePackager
         generate_installer_script
       end
 
-      file installer_folder => installer_name do
-        mkdir_p installer_folder
-        mv installer_name, installer_folder
+      directory installer_folder
+      file installer_folder => installer_name
+
+      file installer_name => files + [INSTALLER_SCRIPT] do
+        system "#{ocra_command} --chdir-first --no-lzma --innosetup #{INSTALLER_SCRIPT}"
+        rm INSTALLER_SCRIPT
+        mv installer_name.pathmap('%2d%f'), installer_folder
       end
 
-      file installer_name => "build:win32:installer"
       desc "Build installer #{version} [Ocra/Innosetup]"
-      task "build:win32:installer" => @files + [INSTALLER_SCRIPT] do
-        system "#{ocra_command} --chdir-first --no-lzma --innosetup #{INSTALLER_SCRIPT}"
-      end
+      task "build:win32:installer" => installer_folder
     end
 
     # FOLDER containing EXE, Ruby + source.
     def build_win32_folder
-      file executable_folder_path => installer_name
+      file INSTALLER_SCRIPT do
+        generate_installer_script
+      end
+
+      directory executable_folder_path
+      file executable_folder_path => folder_installer_name
+
+      file folder_installer_name => files + [INSTALLER_SCRIPT]
+
       desc "Build source/exe folder #{version} [Ocra/Innosetup]"
       task "build:win32:folder" => executable_folder_path do
         # Extract the installer and remove the uninstall files.
-        system %[#{installer_name} /SILENT /DIR=#{executable_folder_path}]
+        system %[#{folder_installer_name} /SILENT /DIR=#{executable_folder_path}]
         UNINSTALLER_FILES.each {|f| rm File.join(executable_folder_path, f) }
       end
     end
 
     # Self-extracting standalone executable.
     def build_win32_standalone
-      file executable_name => "build:win32:standalone"
-      desc "Build standalone exe #{version} [Ocra]"
-      task "build:win32:standalone" => @files do
+      executable_path = "#{standalone_folder_path}/#{executable_name}"
+
+      file executable_path => files do
         system ocra_command
+        mv executable_name, standalone_folder_path
       end
+
+      file standalone_folder_path => executable_path
+
+      directory standalone_folder_path
+
+      desc "Build standalone exe #{version} [Ocra]"
+      task "build:win32:standalone" => standalone_folder_path
     end
 
     protected
-    def installer_folder; "#{underscored_name}_#{version}_WIN32_INSTALLER"; end
-    def installer_name; "#{underscored_name}_#{version}_setup.exe"; end
+    def installer_folder; "#{folder_base}_WIN32_INSTALLER"; end
+    def installer_name; "#{installer_folder}/#{underscored_name}_setup.exe"; end
+    def folder_installer_name; "#{folder_base}_setup_to_folder.exe"; end
     def executable_name; "#{underscored_name}.exe"; end
-    def executable_folder_path; "#{underscored_name}_#{version}_EXE"; end
+    def executable_folder_path; "#{folder_base}_WIN32"; end
+    def standalone_folder_path; "#{folder_base}_WIN32_EXE"; end
 
     protected
     def ocra_command
-      command = "#{OCRA_COMMAND} #{@execute} #{@ocra_parameters} "
-      command += "--icon #{icon} " if @icon
-      command += @files.map {|f| %["#{f}"]}.join(" ")
+      command = "#{OCRA_COMMAND} #{executable} #{ocra_parameters} "
+      command += "--icon #{icon} " if icon
+      command += files.map {|f| %["#{f}"]}.join(" ")
       command
     end
 
@@ -73,10 +92,10 @@ END
         file.write <<END
 [Setup]
 AppName=#{underscored_name}
-AppVersion=#{@version}
-DefaultDirName={pf}\\#{@name.gsub(/[^\w\s]/, '')}
-DefaultGroupName=#{@installer_group ? "#{@installer_group}\\" : ""}#{@name}
-OutputDir=#{@output_path}
+AppVersion=#{version}
+DefaultDirName={pf}\\#{name.gsub(/[^\w\s]/, '')}
+DefaultGroupName=#{installer_group ? "#{installer_group}\\" : ""}#{name}
+OutputDir=#{output_path}
 OutputBaseFilename=#{installer_name}
 #{icon ? "SetupIconFile=#{icon}" : "" }
 UninstallDisplayIcon={app}\\#{underscored_name}.exe
@@ -84,10 +103,10 @@ UninstallDisplayIcon={app}\\#{underscored_name}.exe
 [Files]
 END
 
-          file.puts %[Source: "#{@license}"; DestDir: "{app}"] if @license
-          file.puts %[Source: "#{@readme}";  DestDir: "{app}"; Flags: isreadme] if @readme
+          file.puts %[Source: "#{license}"; DestDir: "{app}"] if license
+          file.puts %[Source: "#{readme}";  DestDir: "{app}"; Flags: isreadme] if readme
 
-          @links.each_pair do |url, title|
+          links.each_pair do |url, title|
             file.puts %[Source: "#{title}.url"; DestDir: "{app}"]
           end
 
@@ -95,7 +114,7 @@ END
 
           file.write <<END
 [Run]
-Filename: "{app}\\#{@id}.exe"; Description: "Launch"; Flags: postinstall nowait skipifsilent unchecked
+Filename: "{app}\\#{underscored_name}.exe"; Description: "Launch"; Flags: postinstall nowait skipifsilent unchecked
 
 [Icons]
 Name: "{group}\\#{name}"; Filename: "{app}\\#{underscored_name}.exe"
