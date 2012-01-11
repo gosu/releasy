@@ -28,7 +28,7 @@ context ReleasePackager::Win32 do
     end
 
     context "tasks" do
-      [
+      tasks = [
           [ "package", %w[package:win32] ],
           [ "package:win32", %w[package:win32:folder] ],
           [ "package:win32:folder", %w[package:win32:folder:zip] ],
@@ -40,13 +40,17 @@ context ReleasePackager::Win32 do
 
           [ "pkg/test_0_1_WIN32.zip", %w[pkg/test_0_1_WIN32] ],
           [ "pkg/test_0_1_WIN32", source_files ],
-      ].each do |name, prerequisites|
+      ]
+
+      tasks.each do |name, prerequisites|
         asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.equals prerequisites
       end
+
+      asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[0]] }).size == 1 }
     end
 
     context "generate folder + zip" do
-      hookup { Rake::Task["package:win32:folder:zip"].invoke }
+      hookup { begin; Rake::Task["package:win32:folder:zip"].invoke; rescue; end }
 
       asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_0_1_WIN32/#{f}") == File.read(f) } }
       asserts("folder includes links") { File.read("pkg/test_0_1_WIN32/Website.url") == link_file }
@@ -65,7 +69,7 @@ context ReleasePackager::Win32 do
     end
 
     context "tasks" do
-      [
+      tasks = [
           [ "package", %w[package:win32] ],
           [ "package:win32", %w[package:win32:installer] ],
           [ "package:win32:installer", %w[package:win32:installer:zip] ],
@@ -77,9 +81,13 @@ context ReleasePackager::Win32 do
 
           [ "pkg/test_0_1_WIN32_INSTALLER.zip", %w[pkg/test_0_1_WIN32_INSTALLER] ],
           [ "pkg/test_0_1_WIN32_INSTALLER", source_files ],
-      ].each do |name, prerequisites|
+      ]
+
+      tasks.each do |name, prerequisites|
         asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.equals prerequisites
       end
+
+      asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[0]] }).size == 1 }
     end
 
     context "generate folder + zip" do
@@ -101,7 +109,7 @@ context ReleasePackager::Win32 do
     end
 
     context "tasks" do
-      [
+      tasks = [
           [ "package", %w[package:win32] ],
           [ "package:win32", %w[package:win32:standalone] ],
           [ "package:win32:standalone", %w[package:win32:standalone:7z] ],
@@ -113,9 +121,13 @@ context ReleasePackager::Win32 do
 
           [ "pkg/test_0_1_WIN32_EXE.7z", %w[pkg/test_0_1_WIN32_EXE] ],
           [ "pkg/test_0_1_WIN32_EXE", source_files ],
-      ].each do |name, prerequisites|
+      ]
+
+      tasks.each do |name, prerequisites|
         asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.equals prerequisites
       end
+
+      asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[0]] }).size == 1 }
     end
 
     context "generate folder + 7z" do
