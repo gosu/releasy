@@ -11,16 +11,16 @@ module ReleasePackager
       file installer_folder => files do
         generate_installer_script
 
-        cp readme, installer_folder if readme
-
         command = "#{ocra_command} --output '#{installer_name}' --chdir-first --no-lzma --innosetup #{temp_installer_script}"
         puts command if verbose?
         system command
 
+        cp readme, installer_folder if readme
+
         rm temp_installer_script
       end
 
-      desc "Build installer #{version} [Ocra/Innosetup]"
+      desc "Build installer #{version} [Innosetup]"
       task "build:win32:installer" => installer_folder
     end
 
@@ -29,18 +29,24 @@ module ReleasePackager
       directory executable_folder_path
 
       file executable_folder_path => files do
+        # Create a regular installer.
         generate_installer_script
+        command = "#{ocra_command} --output '#{folder_installer_name}' --chdir-first --no-lzma --innosetup #{temp_installer_script}"
+        puts command if verbose?
+        system command
 
-        # Extract the installer and remove the uninstall files.
+        # Extract the installer to the directory.
         command = %[#{folder_installer_name} /SILENT /DIR=#{executable_folder_path}]
         puts command if verbose?
         system command
 
+        # Remove files that would be used to uninstall.
         UNINSTALLER_FILES.each {|f| rm File.join(executable_folder_path, f) }
         rm temp_installer_script
+        rm folder_installer_name
       end
 
-      desc "Build source/exe folder #{version} [Ocra/Innosetup]"
+      desc "Build source/exe folder #{version} [Innosetup]"
       task "build:win32:folder" => executable_folder_path
     end
 
