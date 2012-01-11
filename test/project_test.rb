@@ -1,7 +1,15 @@
 require File.expand_path("helper", File.dirname(__FILE__))
 
+require 'fileutils'
+
+# Change directory into the project, since that is where we work from normally.
+Dir.chdir File.expand_path("../test_project", __FILE__)
+
 module ReleasePackager
   context Project do
+    helper(:source_files) { %w[bin/test lib/test.rb lib/test/stuff.rb README.txt] }
+
+    teardown { Rake::Task.clear }
 
     context "default" do
       setup { Project.new }
@@ -34,7 +42,6 @@ module ReleasePackager
         Project.new do |p|
           p.name = "Test Project - (2a)"
           p.version = "v0.1.5"
-          p.output_path = "test/pkg"
 
           p.add_compression :"7z"
           p.add_compression :zip
@@ -42,20 +49,19 @@ module ReleasePackager
           p.add_output :source
           p.add_output :win32_standalone
 
-          p.files = %w[frog.rb, fish/frog.rb]
+          p.files = source_files
         end
       end
 
       asserts(:name).equals "Test Project - (2a)"
       asserts(:underscored_name).equals "test_project_2a"
       asserts(:executable).equals "bin/test_project_2a"
-      asserts(:folder_base).equals "test/pkg/test_project_2a_v0_1_5"
+      asserts(:folder_base).equals "pkg/test_project_2a_v0_1_5"
     end
 
     context "generating" do
-      helper(:source_files) { %w[frog.rb fish/frog.rb fish/fish.rb] }
-
       setup { Project.new }
+
       hookup do
         topic.name = "Test"
         topic.version = "0.1"
@@ -84,6 +90,18 @@ module ReleasePackager
           end
 
           topic.generate_tasks
+        end
+
+        context "generate folder + zip" do
+          hookup do
+            topic.generate_tasks
+            FileUtils.rm_r "pkg" if File.exists? "pkg"
+            Rake::Task["package:source:zip"].invoke
+          end
+
+          asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_0_1_SOURCE/#{f}") == File.read(f) } }
+          asserts("archive created") { File.size("pkg/test_0_1_SOURCE.zip") > 0}
+          asserts("archive contains expected files") { `7z l pkg/test_0_1_SOURCE.zip` =~ /4 files, 4 folders/m }
         end
       end
 

@@ -11,3 +11,4 @@ ctags
 *.lock
 .idea/
 doc/
+test/test_project/pkg

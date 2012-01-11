@@ -1,6 +1,9 @@
 require 'bundler'
 require 'rake/testtask'
+require 'rake/clean'
 require 'yard'
+
+CLEAN << "test/test_project/pkg" # Created by running tests.
 
 Bundler::GemHelper.install_tasks
 
