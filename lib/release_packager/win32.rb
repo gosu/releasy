@@ -51,7 +51,7 @@ module ReleasePackager
         cp readme, standalone_folder_path if readme
         create_link_files standalone_folder_path
 
-        command = "#{ocra_command} --output '#{standalone_folder_path}/#{executable_name}'"
+        command = %[#{ocra_command} --output "#{standalone_folder_path}/#{executable_name}"]
         puts command if verbose?
         system command
       end
@@ -72,7 +72,7 @@ module ReleasePackager
     protected
     def ocra_command
       command = %[#{OCRA_COMMAND} "#{executable}" #{ocra_parameters} ]
-      command += "--icon #{icon} " if icon
+      command += %[--icon "#{icon}" ] if icon
       command += (files - [executable]).map {|f| %["#{f}"]}.join(" ")
       command
     end
@@ -80,7 +80,7 @@ module ReleasePackager
     protected
     def create_installer(file)
       generate_installer_script
-      command = "#{ocra_command} --output '#{file}' --chdir-first --no-lzma --innosetup #{temp_installer_script}"
+      command = %[#{ocra_command} --output "#{file}" --chdir-first --no-lzma --innosetup "#{temp_installer_script}"]
       puts command if verbose?
       system command
     end
