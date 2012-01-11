@@ -1,7 +1,20 @@
 require File.expand_path("teststrap", File.dirname(__FILE__))
 
 context ReleasePackager::Osx do
-  setup { ReleasePackager::Project.new }
+  setup do
+=begin
+    ReleasePackager::Project.new do |p|
+      p.name = "Test"
+      p.version = "0.1"
+      p.files = source_files
+      p.readme = "README.txt"
+
+      p.add_output :osx_app
+      p.add_compression :zip
+    end
+=end
+  end
+
   teardown do
     Rake::Task.clear
     Dir.chdir $original_path
@@ -9,13 +22,5 @@ context ReleasePackager::Osx do
 
   hookup do
     Dir.chdir project_path
-
-    topic.name = "Test"
-    topic.version = "0.1"
-    topic.files = source_files
-    topic.readme = "README.txt"
-
-    topic.add_output :osx_app
-    topic.add_compression :zip
   end
 end

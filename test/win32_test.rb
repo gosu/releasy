@@ -24,37 +24,29 @@ context ReleasePackager::Win32 do
     hookup do
       topic.add_output :win32_folder
       topic.add_compression :zip
-    end
-
-    should("create all necessary tasks") do
-      [
-          [ :task,      { "package" => %w[package:win32]} ],
-          [ :task,      { "package:win32" => %w[package:win32:folder] } ],
-          [ :task,      { "package:win32:folder" => %w[package:win32:folder:zip] } ],
-          [ :task,      { "package:win32:folder:zip" => "pkg/test_0_1_WIN32.zip" } ],
-
-          [ :task,      { "build" => %w[build:win32] } ],
-          [ :task,      { "build:win32" => %w[build:win32:folder] } ],
-          [ :task,      { "build:win32:folder" => "pkg/test_0_1_WIN32" } ],
-
-          [ :file,      { "pkg/test_0_1_WIN32.zip" => "pkg/test_0_1_WIN32" } ],
-          [ :file,      { "pkg/test_0_1_WIN32" => source_files } ],
-      ].each do |method, result|
-        mock(topic, method).with(result)
-      end
-
       topic.generate_tasks
     end
 
-    context "generate folder + zip" do
-      hookup do
-        topic.generate_tasks
-        begin
-          Rake::Task["package:win32:folder:zip"].invoke
-        rescue
-          # TODO: This prevents the whole test suite from breaking, but should be removed eventually.
-        end
+    context "tasks" do
+      [
+          [ "package", %w[package:win32] ],
+          [ "package:win32", %w[package:win32:folder] ],
+          [ "package:win32:folder", %w[package:win32:folder:zip] ],
+          [ "package:win32:folder:zip", %w[pkg/test_0_1_WIN32.zip] ],
+
+          [ "build", %w[build:win32] ],
+          [ "build:win32", %w[build:win32:folder] ],
+          [ "build:win32:folder", %w[pkg/test_0_1_WIN32] ],
+
+          [ "pkg/test_0_1_WIN32.zip", %w[pkg/test_0_1_WIN32] ],
+          [ "pkg/test_0_1_WIN32", source_files ],
+      ].each do |name, prerequisites|
+        asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.equals prerequisites
       end
+    end
+
+    context "generate folder + zip" do
+      hookup { Rake::Task["package:win32:folder:zip"].invoke }
 
       asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_0_1_WIN32/#{f}") == File.read(f) } }
       asserts("folder includes links") { File.read("pkg/test_0_1_WIN32/Website.url") == link_file }
@@ -69,33 +61,29 @@ context ReleasePackager::Win32 do
     hookup do
       topic.add_output :win32_installer
       topic.add_compression :zip
-    end
-
-    should("create all necessary tasks") do
-      [
-          [ :task,      { "package" => %w[package:win32]} ],
-          [ :task,      { "package:win32" => %w[package:win32:installer] } ],
-          [ :task,      { "package:win32:installer" => %w[package:win32:installer:zip] } ],
-          [ :task,      { "package:win32:installer:zip" => "pkg/test_0_1_WIN32_INSTALLER.zip" } ],
-
-          [ :task,      { "build" => %w[build:win32] } ],
-          [ :task,      { "build:win32" => %w[build:win32:installer] } ],
-          [ :task,      { "build:win32:installer" => "pkg/test_0_1_WIN32_INSTALLER" } ],
-
-          [ :file,      { "pkg/test_0_1_WIN32_INSTALLER.zip" => "pkg/test_0_1_WIN32_INSTALLER" } ],
-          [ :file,      { "pkg/test_0_1_WIN32_INSTALLER" => source_files } ],
-      ].each do |method, result|
-        mock(topic, method).with(result)
-      end
-
       topic.generate_tasks
     end
 
-    context "generate folder + zip" do
-      hookup do
-        topic.generate_tasks
-        Rake::Task["package:win32:installer:zip"].invoke
+    context "tasks" do
+      [
+          [ "package", %w[package:win32] ],
+          [ "package:win32", %w[package:win32:installer] ],
+          [ "package:win32:installer", %w[package:win32:installer:zip] ],
+          [ "package:win32:installer:zip", %w[pkg/test_0_1_WIN32_INSTALLER.zip] ],
+
+          [ "build", %w[build:win32] ],
+          [ "build:win32", %w[build:win32:installer] ],
+          [ "build:win32:installer", %w[pkg/test_0_1_WIN32_INSTALLER] ],
+
+          [ "pkg/test_0_1_WIN32_INSTALLER.zip", %w[pkg/test_0_1_WIN32_INSTALLER] ],
+          [ "pkg/test_0_1_WIN32_INSTALLER", source_files ],
+      ].each do |name, prerequisites|
+        asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.equals prerequisites
       end
+    end
+
+    context "generate folder + zip" do
+      hookup { Rake::Task["package:win32:installer:zip"].invoke }
 
       asserts("readme copied to folder") { File.read("pkg/test_0_1_WIN32_INSTALLER/README.txt") == File.read("README.txt") }
       asserts("folder includes links") { File.read("pkg/test_0_1_WIN32_INSTALLER/Website.url") == link_file }
@@ -109,33 +97,29 @@ context ReleasePackager::Win32 do
     hookup do
       topic.add_output :win32_standalone
       topic.add_compression :"7z"
-    end
-
-    should("create all necessary tasks") do
-      [
-          [ :task,      { "package" => %w[package:win32]} ],
-          [ :task,      { "package:win32" => %w[package:win32:standalone] } ],
-          [ :task,      { "package:win32:standalone" => %w[package:win32:standalone:7z] } ],
-          [ :task,      { "package:win32:standalone:7z" => "pkg/test_0_1_WIN32_EXE.7z" } ],
-
-          [ :task,      { "build" => %w[build:win32] } ],
-          [ :task,      { "build:win32" => %w[build:win32:standalone] } ],
-          [ :task,      { "build:win32:standalone" => "pkg/test_0_1_WIN32_EXE" } ],
-
-          [ :file,      { "pkg/test_0_1_WIN32_EXE.7z" => "pkg/test_0_1_WIN32_EXE" } ],
-          [ :file,      { "pkg/test_0_1_WIN32_EXE" => source_files } ],
-      ].each do |method, result|
-        mock(topic, method).with(result)
-      end
-
       topic.generate_tasks
     end
 
-    context "generate folder + 7z" do
-      hookup do
-        topic.generate_tasks
-        Rake::Task["package:win32:standalone:7z"].invoke
+    context "tasks" do
+      [
+          [ "package", %w[package:win32] ],
+          [ "package:win32", %w[package:win32:standalone] ],
+          [ "package:win32:standalone", %w[package:win32:standalone:7z] ],
+          [ "package:win32:standalone:7z", %w[pkg/test_0_1_WIN32_EXE.7z] ],
+
+          [ "build", %w[build:win32] ],
+          [ "build:win32", %w[build:win32:standalone] ],
+          [ "build:win32:standalone", %w[pkg/test_0_1_WIN32_EXE] ],
+
+          [ "pkg/test_0_1_WIN32_EXE.7z", %w[pkg/test_0_1_WIN32_EXE] ],
+          [ "pkg/test_0_1_WIN32_EXE", source_files ],
+      ].each do |name, prerequisites|
+        asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.equals prerequisites
       end
+    end
+
+    context "generate folder + 7z" do
+      hookup { Rake::Task["package:win32:standalone:7z"].invoke }
 
       asserts("readme copied to folder") { File.read("pkg/test_0_1_WIN32_EXE/README.txt") == File.read("README.txt") }
       asserts("folder includes links") { File.read("pkg/test_0_1_WIN32_EXE/Website.url") == link_file }
