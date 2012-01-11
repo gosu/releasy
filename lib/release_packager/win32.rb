@@ -9,10 +9,10 @@ module ReleasePackager
       directory installer_folder
 
       file installer_folder => files do
-        create_installer installer_name
-
-        cp readme, installer_folder if readme
         create_link_files installer_folder
+        cp readme, installer_folder if readme
+
+        create_installer installer_name, :links => true
 
         rm temp_installer_script
       end
@@ -26,7 +26,9 @@ module ReleasePackager
       directory executable_folder_path
 
       file executable_folder_path => files do
-        create_installer folder_installer_name
+        create_link_files executable_folder_path
+
+        create_installer folder_installer_name, :links => false
 
         # Extract the installer to the directory.
         command = %[#{folder_installer_name} /SILENT /DIR=#{executable_folder_path}]
@@ -78,9 +80,9 @@ module ReleasePackager
     end
 
     protected
-    def create_installer(file)
-      generate_installer_script
-      command = %[#{ocra_command} --output "#{file}" --chdir-first --no-lzma --innosetup "#{temp_installer_script}"]
+    def create_installer(file, options = {})
+      generate_installer_script file, options
+      command = %[#{ocra_command} --chdir-first --no-lzma --innosetup "#{temp_installer_script}"]
       puts command if verbose?
       system command
     end
@@ -104,7 +106,9 @@ END
 
     # Generate innosetup script to build installer.
     protected
-    def generate_installer_script
+    def generate_installer_script(output_file, options = {})
+      installer_links = options[:links]
+
       File.open(temp_installer_script, "w") do |file|
         file.write <<END
 [Setup]
@@ -112,22 +116,26 @@ AppName=#{underscored_name}
 AppVersion=#{version}
 DefaultDirName={pf}\\#{name.gsub(/[^\w\s]/, '')}
 DefaultGroupName=#{installer_group ? "#{installer_group}\\" : ""}#{name}
-OutputDir=#{output_path}
-OutputBaseFilename=#{installer_name}
+OutputDir=#{File.dirname output_file}
+OutputBaseFilename=#{File.basename(output_file).chomp(File.extname(output_file))}
 #{icon ? "SetupIconFile=#{icon}" : "" }
 UninstallDisplayIcon={app}\\#{underscored_name}.exe
 
-[Files]
 END
 
-          file.puts %[Source: "#{license}"; DestDir: "{app}"] if license
-          file.puts %[Source: "#{readme}";  DestDir: "{app}"; Flags: isreadme] if readme
+          if installer_links
+            file.puts "[Files]"
 
-          @links.each_pair do |url, title|
-            file.puts %[Source: "#{title}.url"; DestDir: "{app}"]
+            file.puts %[Source: "#{license}"; DestDir: "{app}"] if license
+            file.puts %[Source: "#{readme}";  DestDir: "{app}"; Flags: isreadme] if readme
+
+            dir = File.dirname(output_file).tr("/", "\\")
+            @links.each_value do |title|
+              file.puts %[Source: "#{dir}\\#{title}.url"; DestDir: "{app}"]
+            end
+
+            puts
           end
-
-          # TODO: add other extra files including the changelog.
 
           file.write <<END
 [Run]

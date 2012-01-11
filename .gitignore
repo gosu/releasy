@@ -12,3 +12,5 @@ ctags
 .idea/
 doc/
 test/test_project/pkg
+
+/test/test_project/test.exe
