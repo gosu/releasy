@@ -9,11 +9,7 @@ module ReleasePackager
       directory installer_folder
 
       file installer_folder => files do
-        generate_installer_script
-
-        command = "#{ocra_command} --output '#{installer_name}' --chdir-first --no-lzma --innosetup #{temp_installer_script}"
-        puts command if verbose?
-        system command
+        create_installer installer_name
 
         cp readme, installer_folder if readme
 
@@ -29,11 +25,7 @@ module ReleasePackager
       directory executable_folder_path
 
       file executable_folder_path => files do
-        # Create a regular installer.
-        generate_installer_script
-        command = "#{ocra_command} --output '#{folder_installer_name}' --chdir-first --no-lzma --innosetup #{temp_installer_script}"
-        puts command if verbose?
-        system command
+        create_installer folder_installer_name
 
         # Extract the installer to the directory.
         command = %[#{folder_installer_name} /SILENT /DIR=#{executable_folder_path}]
@@ -81,6 +73,14 @@ module ReleasePackager
       command += "--icon #{icon} " if icon
       command += (files - [executable]).map {|f| %["#{f}"]}.join(" ")
       command
+    end
+
+    protected
+    def create_installer(file)
+      generate_installer_script
+      command = "#{ocra_command} --output '#{file}' --chdir-first --no-lzma --innosetup #{temp_installer_script}"
+      puts command if verbose?
+      system command
     end
 
     protected
