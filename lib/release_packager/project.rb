@@ -94,8 +94,8 @@ module ReleasePackager
     end
 
     # Add a link file to be included in the win32 releases.
-    def add_link(url, description)
-      @links[url] = description
+    def add_link(url, title)
+      @links[url] = title
 
       url
     end

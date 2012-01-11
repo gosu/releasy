@@ -12,6 +12,7 @@ module ReleasePackager
         create_installer installer_name
 
         cp readme, installer_folder if readme
+        create_link_files installer_folder
 
         rm temp_installer_script
       end
@@ -48,6 +49,7 @@ module ReleasePackager
 
       file standalone_folder_path => files do
         cp readme, standalone_folder_path if readme
+        create_link_files standalone_folder_path
 
         command = "#{ocra_command} --output '#{standalone_folder_path}/#{executable_name}'"
         puts command if verbose?
@@ -81,6 +83,13 @@ module ReleasePackager
       command = "#{ocra_command} --output '#{file}' --chdir-first --no-lzma --innosetup #{temp_installer_script}"
       puts command if verbose?
       system command
+    end
+
+    protected
+    def create_link_files(dir)
+      @links.each_pair do |url, title|
+        create_link_file url, File.join(dir, title)
+      end
     end
 
     protected

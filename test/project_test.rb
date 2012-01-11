@@ -65,12 +65,15 @@ module ReleasePackager
     context "generating" do
       setup { Project.new }
 
+      helper(:link_file) { "[InternetShortcut]\nURL=http://www.website.com\n" }
+
       hookup do
         topic.name = "Test"
         topic.version = "0.1"
         topic.files = source_files
         topic.ocra_parameters = "--no-enc"
         topic.readme = "README.txt"
+        topic.add_link "http://www.website.com", "Website"
       end
 
       context "source as zip" do
@@ -146,6 +149,7 @@ module ReleasePackager
           end
 
           asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_0_1_WIN32/#{f}") == File.read(f) } }
+          asserts("folder includes links") { File.read("pkg/test_0_1_WIN32/Website.url") == link_file }
           asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_0_1_WIN32/test.exe") > 0 }
           asserts("archive created and of reasonable size") { File.size("pkg/test_0_1_WIN32.zip") > 2**20 }
           asserts("uninstaller files have been removed") { FileList["pkg/test_0_1_WIN32/unins000.*"].empty? }
@@ -186,9 +190,10 @@ module ReleasePackager
           end
 
           asserts("readme copied to folder") { File.read("pkg/test_0_1_WIN32_INSTALLER/README.txt") == File.read("README.txt") }
+          asserts("folder includes links") { File.read("pkg/test_0_1_WIN32_INSTALLER/Website.url") == link_file }
           asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_0_1_WIN32_INSTALLER/test_setup.exe") > 2**20 }
           asserts("archive created") { File.exists? "pkg/test_0_1_WIN32_INSTALLER.zip" }
-          asserts("archive contains expected files") { `7z l pkg/test_0_1_WIN32_INSTALLER.zip` =~ /2 files, 1 folders/m }
+          asserts("archive contains expected files") { `7z l pkg/test_0_1_WIN32_INSTALLER.zip` =~ /3 files, 1 folders/m }
         end
       end
 
@@ -225,9 +230,10 @@ module ReleasePackager
           end
 
           asserts("readme copied to folder") { File.read("pkg/test_0_1_WIN32_EXE/README.txt") == File.read("README.txt") }
+          asserts("folder includes links") { File.read("pkg/test_0_1_WIN32_EXE/Website.url") == link_file }
           asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_0_1_WIN32_EXE/test.exe") > 2**20 }
           asserts("archive created") { File.exists? "pkg/test_0_1_WIN32_EXE.7z" }
-          asserts("archive contains expected files") { `7z l pkg/test_0_1_WIN32_EXE.7z` =~ /2 files, 1 folders/m }
+          asserts("archive contains expected files") { `7z l pkg/test_0_1_WIN32_EXE.7z` =~ /3 files, 1 folders/m }
         end
       end
     end
