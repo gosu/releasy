@@ -128,9 +128,11 @@ module ReleasePackager
 
       if win32_outputs.any?
         build_groups << "win32"
+        desc "Build all win32 outputs"
         task "build:win32" => win32_outputs.map {|t| "build:#{t.to_s.split("_").join(":")}" }
       end
 
+      desc "Build all outputs"
       task "build" => build_groups.map {|t| "build:#{t}" }
 
       generate_compression_tasks
