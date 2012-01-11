@@ -30,8 +30,10 @@ module ReleasePackager
     include Win32
 
     attr_reader :underscored_name, :underscored_version
+    attr_accessor :name, :files, :version, :ocra_parameters, :executable, :license, :icon, :output_path, :installer_group, :readme
+    attr_writer :verbose
 
-    attr_accessor :name, :files, :version, :ocra_parameters, :executable, :license, :icon, :output_path, :installer_group
+    def verbose?; @verbose; end
 
     # The name of the project used for creating file-names. It will either be generated from #name automatically, or can be set directly.
     def underscored_name
@@ -65,6 +67,8 @@ module ReleasePackager
       @links= {}
       @files = []
       @output_path = DEFAULT_PACKAGE_FOLDER
+      @verbose = true
+      @readme = nil
 
       @name = @underscored_name = @underscored_version = @ocra_parameters = @version = @executable = @license = @icon = @installer_group = nil
 

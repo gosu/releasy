@@ -6,17 +6,18 @@ module ReleasePackager
 
     # Regular windows installer, but some users consider them evil.
     def build_win32_installer
-      file INSTALLER_SCRIPT do
-        generate_installer_script
-      end
-
       directory installer_folder
-      file installer_folder => installer_name
 
-      file installer_name => files + [INSTALLER_SCRIPT] do
-        system "#{ocra_command} --chdir-first --no-lzma --innosetup #{INSTALLER_SCRIPT}"
-        rm INSTALLER_SCRIPT
-        mv installer_name.pathmap('%2d%f'), installer_folder
+      file installer_folder => files do
+        generate_installer_script
+
+        cp readme, installer_folder if readme
+
+        command = "#{ocra_command} --output '#{installer_name}' --chdir-first --no-lzma --innosetup #{temp_installer_script}"
+        puts command if verbose?
+        system command
+
+        rm temp_installer_script
       end
 
       desc "Build installer #{version} [Ocra/Innosetup]"
@@ -25,41 +26,42 @@ module ReleasePackager
 
     # FOLDER containing EXE, Ruby + source.
     def build_win32_folder
-      file INSTALLER_SCRIPT do
-        generate_installer_script
-      end
-
       directory executable_folder_path
-      file executable_folder_path => folder_installer_name
 
-      file folder_installer_name => files + [INSTALLER_SCRIPT]
+      file executable_folder_path => files do
+        generate_installer_script
+
+        # Extract the installer and remove the uninstall files.
+        command = %[#{folder_installer_name} /SILENT /DIR=#{executable_folder_path}]
+        puts command if verbose?
+        system command
+
+        UNINSTALLER_FILES.each {|f| rm File.join(executable_folder_path, f) }
+        rm temp_installer_script
+      end
 
       desc "Build source/exe folder #{version} [Ocra/Innosetup]"
-      task "build:win32:folder" => executable_folder_path do
-        # Extract the installer and remove the uninstall files.
-        system %[#{folder_installer_name} /SILENT /DIR=#{executable_folder_path}]
-        UNINSTALLER_FILES.each {|f| rm File.join(executable_folder_path, f) }
-      end
+      task "build:win32:folder" => executable_folder_path
     end
 
     # Self-extracting standalone executable.
     def build_win32_standalone
-      executable_path = "#{standalone_folder_path}/#{executable_name}"
-
-      file executable_path => files do
-        system ocra_command
-        mv executable_name, standalone_folder_path
-      end
-
-      file standalone_folder_path => executable_path
-
       directory standalone_folder_path
+
+      file standalone_folder_path => files do
+        cp readme, standalone_folder_path if readme
+
+        command = "#{ocra_command} --output '#{standalone_folder_path}/#{executable_name}'"
+        puts command if verbose?
+        system command
+      end
 
       desc "Build standalone exe #{version} [Ocra]"
       task "build:win32:standalone" => standalone_folder_path
     end
 
     protected
+    def temp_installer_script; "#{@output_path}/#{INSTALLER_SCRIPT}"; end
     def installer_folder; "#{folder_base}_WIN32_INSTALLER"; end
     def installer_name; "#{installer_folder}/#{underscored_name}_setup.exe"; end
     def folder_installer_name; "#{folder_base}_setup_to_folder.exe"; end
@@ -69,9 +71,9 @@ module ReleasePackager
 
     protected
     def ocra_command
-      command = "#{OCRA_COMMAND} #{executable} #{ocra_parameters} "
+      command = %[#{OCRA_COMMAND} "#{executable}" #{ocra_parameters} ]
       command += "--icon #{icon} " if icon
-      command += files.map {|f| %["#{f}"]}.join(" ")
+      command += (files - [executable]).map {|f| %["#{f}"]}.join(" ")
       command
     end
 
@@ -88,7 +90,7 @@ END
     # Generate innosetup script to build installer.
     protected
     def generate_installer_script
-      File.open(INSTALLER_SCRIPT, "w") do |file|
+      File.open(temp_installer_script, "w") do |file|
         file.write <<END
 [Setup]
 AppName=#{underscored_name}
@@ -106,7 +108,7 @@ END
           file.puts %[Source: "#{license}"; DestDir: "{app}"] if license
           file.puts %[Source: "#{readme}";  DestDir: "{app}"; Flags: isreadme] if readme
 
-          links.each_pair do |url, title|
+          @links.each_pair do |url, title|
             file.puts %[Source: "#{title}.url"; DestDir: "{app}"]
           end
 

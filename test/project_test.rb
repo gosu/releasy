@@ -9,6 +9,7 @@ module ReleasePackager
   context Project do
     helper(:source_files) { %w[bin/test lib/test.rb lib/test/stuff.rb README.txt] }
 
+    #setup { FileUtils.rm_r "pkg" if File.exists? "pkg" }
     teardown { Rake::Task.clear }
 
     context "default" do
@@ -24,6 +25,8 @@ module ReleasePackager
       asserts(:icon).nil
       asserts(:installer_group).nil
       asserts(:files).equals []
+      asserts(:verbose?).equals true
+      asserts(:readme).nil
 
       asserts(:output_path).equals "pkg"
       asserts(:folder_base).equals "pkg/" # Would be more, but dependent on name.
@@ -66,6 +69,8 @@ module ReleasePackager
         topic.name = "Test"
         topic.version = "0.1"
         topic.files = source_files
+        topic.ocra_parameters = "--no-enc"
+        topic.readme = "README.txt"
       end
 
       context "source as zip" do
@@ -95,7 +100,6 @@ module ReleasePackager
         context "generate folder + zip" do
           hookup do
             topic.generate_tasks
-            FileUtils.rm_r "pkg" if File.exists? "pkg"
             Rake::Task["package:source:zip"].invoke
           end
 
@@ -122,10 +126,8 @@ module ReleasePackager
               [ :task,      { "build:win32" => %w[build:win32:folder] } ],
               [ :task,      { "build:win32:folder" => "pkg/test_0_1_WIN32" } ],
 
-              [ :file,      "installer.iss" ],
               [ :file,      { "pkg/test_0_1_WIN32.zip" => "pkg/test_0_1_WIN32" } ],
-              [ :file,      { "pkg/test_0_1_WIN32" => "pkg/test_0_1_setup_to_folder.exe" } ],
-              [ :file,      { "pkg/test_0_1_setup_to_folder.exe" => source_files + %w[installer.iss] } ],
+              [ :file,      { "pkg/test_0_1_WIN32" => source_files } ],
           ].each do |method, result|
             mock(topic, method).with(result)
           end
@@ -152,15 +154,25 @@ module ReleasePackager
               [ :task,      { "build:win32" => %w[build:win32:installer] } ],
               [ :task,      { "build:win32:installer" => "pkg/test_0_1_WIN32_INSTALLER" } ],
 
-              [ :file,      "installer.iss" ],
               [ :file,      { "pkg/test_0_1_WIN32_INSTALLER.zip" => "pkg/test_0_1_WIN32_INSTALLER" } ],
-              [ :file,      { "pkg/test_0_1_WIN32_INSTALLER" => "pkg/test_0_1_WIN32_INSTALLER/test_setup.exe" } ],
-              [ :file,      { "pkg/test_0_1_WIN32_INSTALLER/test_setup.exe" => source_files + %w[installer.iss] } ],
+              [ :file,      { "pkg/test_0_1_WIN32_INSTALLER" => source_files } ],
           ].each do |method, result|
             mock(topic, method).with(result)
           end
 
           topic.generate_tasks
+        end
+
+        context "generate folder + zip" do
+          hookup do
+            topic.generate_tasks
+            Rake::Task["package:win32:installer:zip"].invoke
+          end
+
+          asserts("readme copied to folder") { File.read("pkg/test_0_1_WIN32_INSTALLER/README.txt") == File.read("README.txt") }
+          asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_0_1_WIN32_INSTALLER/test_setup.exe") > 2**20 }
+          asserts("archive created") { File.exists? "pkg/test_0_1_WIN32_INSTALLER.zip" }
+          asserts("archive contains expected files") { `7z l pkg/test_0_1_WIN32_INSTALLER.zip` =~ /2 files, 1 folders/m }
         end
       end
 
@@ -182,13 +194,24 @@ module ReleasePackager
               [ :task,      { "build:win32:standalone" => "pkg/test_0_1_WIN32_EXE" } ],
 
               [ :file,      { "pkg/test_0_1_WIN32_EXE.7z" => "pkg/test_0_1_WIN32_EXE" } ],
-              [ :file,      { "pkg/test_0_1_WIN32_EXE" => "pkg/test_0_1_WIN32_EXE/test.exe" } ],
-              [ :file,      { "pkg/test_0_1_WIN32_EXE/test.exe" => source_files} ],
+              [ :file,      { "pkg/test_0_1_WIN32_EXE" => source_files } ],
           ].each do |method, result|
             mock(topic, method).with(result)
           end
 
           topic.generate_tasks
+        end
+
+        context "generate folder + 7z" do
+          hookup do
+            topic.generate_tasks
+            Rake::Task["package:win32:standalone:7z"].invoke
+          end
+
+          asserts("readme copied to folder") { File.read("pkg/test_0_1_WIN32_EXE/README.txt") == File.read("README.txt") }
+          asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_0_1_WIN32_EXE/test.exe") > 2**20 }
+          asserts("archive created") { File.exists? "pkg/test_0_1_WIN32_EXE.7z" }
+          asserts("archive contains expected files") { `7z l pkg/test_0_1_WIN32_EXE.7z` =~ /2 files, 1 folders/m }
         end
       end
     end
