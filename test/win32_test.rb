@@ -29,25 +29,26 @@ context ReleasePackager::Win32 do
 
     context "tasks" do
       tasks = [
-          [ "package", %w[package:win32] ],
-          [ "package:win32", %w[package:win32:folder] ],
-          [ "package:win32:folder", %w[package:win32:folder:zip] ],
-          [ "package:win32:folder:zip", %w[pkg/test_0_1_WIN32.zip] ],
+          [ :Task, "package", %w[package:win32] ],
+          [ :Task, "package:win32", %w[package:win32:folder] ],
+          [ :Task, "package:win32:folder", %w[package:win32:folder:zip] ],
+          [ :Task, "package:win32:folder:zip", %w[pkg/test_0_1_WIN32.zip] ],
 
-          [ "build", %w[build:win32] ],
-          [ "build:win32", %w[build:win32:folder] ],
-          [ "build:win32:folder", %w[pkg/test_0_1_WIN32] ],
+          [ :Task, "build", %w[build:win32] ],
+          [ :Task, "build:win32", %w[build:win32:folder] ],
+          [ :Task, "build:win32:folder", %w[pkg/test_0_1_WIN32] ],
 
-          [ "pkg", [] ], # byproduct of using #directory
-          [ "pkg/test_0_1_WIN32.zip", %w[pkg/test_0_1_WIN32] ],
-          [ "pkg/test_0_1_WIN32", source_files ],
+          [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
+          [ :FileCreationTask, "pkg/test_0_1_WIN32", source_files ],
+          [ :FileTask, "pkg/test_0_1_WIN32.zip", %w[pkg/test_0_1_WIN32] ],
       ]
 
-      tasks.each do |name, prerequisites|
+      tasks.each do |type, name, prerequisites|
+        asserts("task #{name}") { Rake::Task[name] }.kind_of Rake.const_get(type)
         asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.equals prerequisites
       end
 
-      asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[0]] }).empty? }
+      asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[1]] }).empty? }
     end
 
     context "generate folder + zip" do
@@ -71,25 +72,26 @@ context ReleasePackager::Win32 do
 
     context "tasks" do
       tasks = [
-          [ "package", %w[package:win32] ],
-          [ "package:win32", %w[package:win32:installer] ],
-          [ "package:win32:installer", %w[package:win32:installer:zip] ],
-          [ "package:win32:installer:zip", %w[pkg/test_0_1_WIN32_INSTALLER.zip] ],
+          [ :Task, "package", %w[package:win32] ],
+          [ :Task, "package:win32", %w[package:win32:installer] ],
+          [ :Task, "package:win32:installer", %w[package:win32:installer:zip] ],
+          [ :Task, "package:win32:installer:zip", %w[pkg/test_0_1_WIN32_INSTALLER.zip] ],
 
-          [ "build", %w[build:win32] ],
-          [ "build:win32", %w[build:win32:installer] ],
-          [ "build:win32:installer", %w[pkg/test_0_1_WIN32_INSTALLER] ],
+          [ :Task, "build", %w[build:win32] ],
+          [ :Task, "build:win32", %w[build:win32:installer] ],
+          [ :Task, "build:win32:installer", %w[pkg/test_0_1_WIN32_INSTALLER] ],
 
-          [ "pkg", [] ], # byproduct of using #directory
-          [ "pkg/test_0_1_WIN32_INSTALLER.zip", %w[pkg/test_0_1_WIN32_INSTALLER] ],
-          [ "pkg/test_0_1_WIN32_INSTALLER", source_files ],
+          [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
+          [ :FileCreationTask, "pkg/test_0_1_WIN32_INSTALLER", source_files ],
+          [ :FileTask, "pkg/test_0_1_WIN32_INSTALLER.zip", %w[pkg/test_0_1_WIN32_INSTALLER] ],
       ]
 
-      tasks.each do |name, prerequisites|
+      tasks.each do |type, name, prerequisites|
+        asserts("task #{name}") { Rake::Task[name] }.kind_of Rake.const_get(type)
         asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.equals prerequisites
       end
 
-      asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[0]] }).empty? }
+      asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[1]] }).empty? }
     end
 
     context "generate folder + zip" do
@@ -112,25 +114,26 @@ context ReleasePackager::Win32 do
 
     context "tasks" do
       tasks = [
-          [ "package", %w[package:win32] ],
-          [ "package:win32", %w[package:win32:standalone] ],
-          [ "package:win32:standalone", %w[package:win32:standalone:7z] ],
-          [ "package:win32:standalone:7z", %w[pkg/test_0_1_WIN32_EXE.7z] ],
+          [ :Task, "package", %w[package:win32] ],
+          [ :Task, "package:win32", %w[package:win32:standalone] ],
+          [ :Task, "package:win32:standalone", %w[package:win32:standalone:7z] ],
+          [ :Task, "package:win32:standalone:7z", %w[pkg/test_0_1_WIN32_EXE.7z] ],
 
-          [ "build", %w[build:win32] ],
-          [ "build:win32", %w[build:win32:standalone] ],
-          [ "build:win32:standalone", %w[pkg/test_0_1_WIN32_EXE] ],
+          [ :Task, "build", %w[build:win32] ],
+          [ :Task, "build:win32", %w[build:win32:standalone] ],
+          [ :Task, "build:win32:standalone", %w[pkg/test_0_1_WIN32_EXE] ],
 
-          [ "pkg", [] ], # byproduct of using #directory
-          [ "pkg/test_0_1_WIN32_EXE.7z", %w[pkg/test_0_1_WIN32_EXE] ],
-          [ "pkg/test_0_1_WIN32_EXE", source_files ],
+          [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
+          [ :FileCreationTask, "pkg/test_0_1_WIN32_EXE", source_files ],
+          [ :FileTask, "pkg/test_0_1_WIN32_EXE.7z", %w[pkg/test_0_1_WIN32_EXE] ],
       ]
 
-      tasks.each do |name, prerequisites|
+      tasks.each do |type, name, prerequisites|
+        asserts("task #{name}") { Rake::Task[name] }.kind_of Rake.const_get(type)
         asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.equals prerequisites
       end
 
-      asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[0]] }).empty? }
+      asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[1]] }).empty? }
     end
 
     context "generate folder + 7z" do

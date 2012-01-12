@@ -24,23 +24,24 @@ context ReleasePackager::Source do
 
   context "tasks" do
     tasks = [
-        [ "package", %w[package:source] ],
-        [ "package:source", %w[package:source:zip] ],
-        [ "package:source:zip", %w[pkg/test_0_1_SOURCE.zip] ],
+        [ :Task, "package", %w[package:source] ],
+        [ :Task, "package:source", %w[package:source:zip] ],
+        [ :Task, "package:source:zip", %w[pkg/test_0_1_SOURCE.zip] ],
 
-        [ "build", %w[build:source] ],
-        [ "build:source", %w[pkg/test_0_1_SOURCE] ],
+        [ :Task, "build", %w[build:source] ],
+        [ :Task, "build:source", %w[pkg/test_0_1_SOURCE] ],
 
-        [ "pkg", [] ], # byproduct of using #directory
-        [ "pkg/test_0_1_SOURCE", source_files ],
-        [ "pkg/test_0_1_SOURCE.zip", %w[pkg/test_0_1_SOURCE] ],
+        [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
+        [ :FileCreationTask, "pkg/test_0_1_SOURCE", source_files ],
+        [ :FileTask, "pkg/test_0_1_SOURCE.zip", %w[pkg/test_0_1_SOURCE] ],
     ]
 
-    tasks.each do |name, prerequisites|
+    tasks.each do |type, name, prerequisites|
+      asserts("task #{name}") { Rake::Task[name] }.kind_of Rake.const_get(type)
       asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.equals prerequisites
     end
 
-    asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[0]] }).empty? }
+    asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[1]] }).empty? }
   end
 
   context "generate folder + zip" do
