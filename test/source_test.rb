@@ -31,6 +31,7 @@ context ReleasePackager::Source do
         [ "build", %w[build:source] ],
         [ "build:source", %w[pkg/test_0_1_SOURCE] ],
 
+        [ "pkg", [] ], # byproduct of using #directory
         [ "pkg/test_0_1_SOURCE", source_files ],
         [ "pkg/test_0_1_SOURCE.zip", %w[pkg/test_0_1_SOURCE] ],
     ]
@@ -39,7 +40,7 @@ context ReleasePackager::Source do
       asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.equals prerequisites
     end
 
-    asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[0]] }).size == 1 }
+    asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[0]] }).empty? }
   end
 
   context "generate folder + zip" do

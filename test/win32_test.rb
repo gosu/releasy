@@ -38,6 +38,7 @@ context ReleasePackager::Win32 do
           [ "build:win32", %w[build:win32:folder] ],
           [ "build:win32:folder", %w[pkg/test_0_1_WIN32] ],
 
+          [ "pkg", [] ], # byproduct of using #directory
           [ "pkg/test_0_1_WIN32.zip", %w[pkg/test_0_1_WIN32] ],
           [ "pkg/test_0_1_WIN32", source_files ],
       ]
@@ -46,7 +47,7 @@ context ReleasePackager::Win32 do
         asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.equals prerequisites
       end
 
-      asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[0]] }).size == 1 }
+      asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[0]] }).empty? }
     end
 
     context "generate folder + zip" do
@@ -79,6 +80,7 @@ context ReleasePackager::Win32 do
           [ "build:win32", %w[build:win32:installer] ],
           [ "build:win32:installer", %w[pkg/test_0_1_WIN32_INSTALLER] ],
 
+          [ "pkg", [] ], # byproduct of using #directory
           [ "pkg/test_0_1_WIN32_INSTALLER.zip", %w[pkg/test_0_1_WIN32_INSTALLER] ],
           [ "pkg/test_0_1_WIN32_INSTALLER", source_files ],
       ]
@@ -87,7 +89,7 @@ context ReleasePackager::Win32 do
         asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.equals prerequisites
       end
 
-      asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[0]] }).size == 1 }
+      asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[0]] }).empty? }
     end
 
     context "generate folder + zip" do
@@ -119,6 +121,7 @@ context ReleasePackager::Win32 do
           [ "build:win32", %w[build:win32:standalone] ],
           [ "build:win32:standalone", %w[pkg/test_0_1_WIN32_EXE] ],
 
+          [ "pkg", [] ], # byproduct of using #directory
           [ "pkg/test_0_1_WIN32_EXE.7z", %w[pkg/test_0_1_WIN32_EXE] ],
           [ "pkg/test_0_1_WIN32_EXE", source_files ],
       ]
@@ -127,7 +130,7 @@ context ReleasePackager::Win32 do
         asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.equals prerequisites
       end
 
-      asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[0]] }).size == 1 }
+      asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[0]] }).empty? }
     end
 
     context "generate folder + 7z" do
