@@ -118,26 +118,27 @@ DefaultDirName={pf}\\#{name.gsub(/[^\w\s]/, '')}
 DefaultGroupName=#{installer_group ? "#{installer_group}\\" : ""}#{name}
 OutputDir=#{File.dirname output_file}
 OutputBaseFilename=#{File.basename(output_file).chomp(File.extname(output_file))}
-#{icon ? "SetupIconFile=#{icon}" : "" }
 UninstallDisplayIcon={app}\\#{underscored_name}.exe
-
 END
 
-          if installer_links
-            file.puts "[Files]"
+        if installer_links
+          file.puts "LicenseFile=#{license}" if license # User must accept license.
+          file.puts "SetupIconFile=#{icon}" if icon
+          file.puts
 
-            file.puts %[Source: "#{license}"; DestDir: "{app}"] if license
-            file.puts %[Source: "#{readme}";  DestDir: "{app}"; Flags: isreadme] if readme
+          file.puts "[Files]"
 
-            dir = File.dirname(output_file).tr("/", "\\")
-            @links.each_value do |title|
-              file.puts %[Source: "#{dir}\\#{title}.url"; DestDir: "{app}"]
-            end
+          file.puts %[Source: "#{license}"; DestDir: "{app}"] if license
+          file.puts %[Source: "#{readme}";  DestDir: "{app}"; Flags: isreadme] if readme
 
-            puts
+          dir = File.dirname(output_file).tr("/", "\\")
+          @links.each_value do |title|
+            file.puts %[Source: "#{dir}\\#{title}.url"; DestDir: "{app}"]
           end
+        end
 
-          file.write <<END
+        file.write <<END
+
 [Run]
 Filename: "{app}\\#{underscored_name}.exe"; Description: "Launch"; Flags: postinstall nowait skipifsilent unchecked
 
@@ -154,6 +155,5 @@ Name: quicklaunchicon; Description: "Create a &Quick Launch icon"; GroupDescript
 END
       end
     end
-
   end
 end

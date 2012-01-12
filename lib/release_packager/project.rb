@@ -29,11 +29,14 @@ module ReleasePackager
     include Source
     include Win32
 
-    attr_reader :underscored_name, :underscored_version
-    attr_accessor :name, :files, :version, :ocra_parameters, :executable, :license, :icon, :output_path, :installer_group, :readme
+    attr_reader :underscored_name, :underscored_version, :license
+    attr_accessor :name, :files, :version, :ocra_parameters, :executable, :icon, :output_path, :installer_group, :readme
     attr_writer :verbose
 
     def verbose?; @verbose; end
+
+    # Must be text or rtf file, which will be shown to user who will be requested to accept it (win32 installer only).
+    attr_writer :license
 
     # The name of the project used for creating file-names. It will either be generated from #name automatically, or can be set directly.
     def underscored_name
