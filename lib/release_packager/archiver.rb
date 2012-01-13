@@ -1,4 +1,5 @@
 module ReleasePackager
+  # @abstract
   class Archiver
     include Rake::DSL
 

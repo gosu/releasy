@@ -2,6 +2,7 @@ require File.expand_path("../teststrap", File.dirname(__FILE__))
 
 # Change directory into the project, since that is where we work from normally.
 
+# @author Bil Bas (Spooner)
 context ReleasePackager::Project do
   teardown do
     Rake::Task.clear
@@ -35,12 +36,12 @@ context ReleasePackager::Project do
     asserts("attempting to generate tasks without any outputs") { topic.generate_tasks }.raises(RuntimeError)
 
     asserts(:active_archivers).empty
-    asserts(:add_archive_format, :zip).equals :zip
+    asserts(:add_archive_format, :zip).equals { topic }
     asserts(:active_archivers).equals [ReleasePackager::Archivers::Zip]
     asserts(:add_archive_format, :unknown).raises(ArgumentError, /unsupported archive/i)
 
     asserts(:active_builders).empty
-    asserts(:add_output, :source).equals :source
+    asserts(:add_output, :source).equals { topic }
     asserts(:active_builders).equals [ReleasePackager::Builders::Source]
     asserts(:add_output, :unknown).raises(ArgumentError, /unsupported output/i)
   end

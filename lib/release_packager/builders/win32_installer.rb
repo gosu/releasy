@@ -2,6 +2,7 @@ require "release_packager/builders/win32_builder"
 
 module ReleasePackager
   module Builders
+    # Builds a win32 installer for the application.
     class Win32Installer < Win32Builder
       INSTALLER_SCRIPT = "win32_installer.iss"
 

@@ -1,7 +1,8 @@
 require "release_packager/builder"
 
 module ReleasePackager
-  # General functionality for win32 builders, so abstract.
+  # General functionality for win32 builders.
+  # @abstract
   class Win32Builder < Builder
     OCRA_COMMAND = "ocra"
 

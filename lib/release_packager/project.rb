@@ -23,19 +23,40 @@ module ReleasePackager
     ARCHIVERS[archiver.identifier] = archiver if archiver.ancestors.include? Archiver
   end
 
+  # @attr underscored_name [String] Project name underscored (as used in file names), which will be derived from {#name}, but can be manually set.
+  # @attr underscored_version [String] Version number, underscored so it can be used in file names, which will be derived from {#version}, but can be manually set.
+  # @attr executable [String] Name of executable to run (defaults to 'bin/<underscored_name>')
+  # @attr_reader folder_base [String] The path to the folder to create - All variations of output will be based on extending this path.
   class Project
     include Rake::DSL
 
-    attr_reader :underscored_name, :underscored_version, :license
-    attr_accessor :name, :files, :version, :ocra_parameters, :executable, :icon, :output_path, :installer_group, :readme
-    attr_writer :verbose
+    attr_writer :underscored_name, :underscored_version, :executable
 
+    # @return [Boolean] Make the tasks give more detailed output.
+    attr_writer :verbose
+    # @return [String] Name of the application, such as "My Application".
+    attr_accessor :name
+    # @return [Array<String>] List of files to include in package.
+    attr_accessor :files
+    # @return [String] Version number as a string (for example, "1.2.0").
+    attr_accessor :version
+    # @return [String] Optional filename of icon to show on executable/installer (.ico).
+    attr_accessor :icon
+    # @return [String] Folder to output to (defaults to 'pkg/')
+    attr_accessor :output_path
+    # @return [String] Extra options to send to Ocra (win32 outputs only).
+    attr_accessor :ocra_parameters
+    # @return [String] Optional start-menu grouping of the application when installed (if name == "app" and installer_group == "frog", then it will get put into 'frog/app' in the start menu).
+    attr_accessor :installer_group
+    # @return [String] File name of readme file - End user will have the option to view this after the win32 installer has installed, but must be .txt/.rtf.
+    attr_accessor :readme
+    # @return [String] Filename of license file - Must be text or rtf file, which will be shown to user who will be requested to accept it (win32 installer only).
+    attr_accessor :license
+
+    # Verbosity of the console output.
+    # @return [Boolean] True to make the tasks output more information.
     def verbose?; @verbose; end
 
-    # Must be text or rtf file, which will be shown to user who will be requested to accept it (win32 installer only).
-    attr_writer :license
-
-    # The name of the project used for creating file-names. It will either be generated from #name automatically, or can be set directly.
     def underscored_name
       if @underscored_name or @name.nil?
         @underscored_name
@@ -52,7 +73,6 @@ module ReleasePackager
       end
     end
 
-    # The name of the executable defaults to "bin/<underscored_name>", but can be set manually.
     def executable
       if @executable or underscored_name.nil?
         @executable
@@ -61,6 +81,21 @@ module ReleasePackager
       end
     end
 
+    # Can be used with or without a block to generate building and packaging tasks.
+    #
+    # @example
+    #     # Using a block, the tasks are automatically generated when the block is closed.
+    #     Project.new do |p|
+    #       p.name = "My Application"
+    #       p.add_output :source
+    #     end
+    #
+    # @example
+    #     # Without using a block.
+    #     project = Project.new
+    #     project.name = "My Application"
+    #     project.add_output :source
+    #     project.generate_tasks
     def initialize
       @archive_formats = []
       @outputs = []
@@ -78,26 +113,37 @@ module ReleasePackager
       end
     end
 
+    # Add an archive type to be generated for each of your outputs.
+    #
+    # @param type [:7z, :tar_bz2, :tar_gz, :zip]
+    # @return [Project] self
     def add_archive_format(type)
       raise ArgumentError, "Unsupported archive format #{type}" unless ARCHIVERS.has_key? type
       @archive_formats << type unless @archive_formats.include? type
 
-      type
+      self
     end
 
     # Add a type of output to produce. Must define at least one of these.
+    #
+    # @param [Symbol]
+    # @return [Project] self
     def add_output(type)
       raise ArgumentError, "Unsupported output type #{type}" unless BUILDERS.has_key? type
       @outputs << type unless @outputs.include? type
 
-      type
+      self
     end
 
-    # Add a link file to be included in the win32 releases.
+    # Add a link file to be included in the win32 releases. Will create the file _title.url_ for you.
+    #
+    # @param url [String] Url to link to.
+    # @param title [String] Name of file to create.
+    # @return [Project] self
     def add_link(url, title)
       @links[url] = title
 
-      url
+      self
     end
 
     # Generates all tasks required by the user. Automatically called at the end of the block, if #new is given a block.
@@ -132,27 +178,30 @@ module ReleasePackager
       self
     end
 
-    # The path to the folder to create. All variations will be based on extending this path.
+
     def folder_base
       File.join(@output_path, "#{underscored_name}#{version ? "_#{underscored_version}" : ""}")
     end
 
     protected
     # Only allow access to this from Builder
+    # @return [Hash]
     def links; @links; end
 
     protected
+    # @return [Array<Builder>]
     def active_builders
       BUILDERS.values.find_all {|b| @outputs.include? b.identifier }
     end
 
     protected
+    # @return [Array<Archiver>]
     def active_archivers
       ARCHIVERS.values.find_all {|a| @archive_formats.include? a.identifier }
     end
 
-    # Generates the general tasks for compressing folders.
     protected
+    # Generates the general tasks for compressing folders.
     def generate_archive_tasks
       win32_tasks = []
       top_level_tasks = []

@@ -2,6 +2,7 @@ require "release_packager/builder"
 
 module ReleasePackager
   module Builders
+    # Creates a folder containing the application source.
     class Source < Builder
       def self.folder_suffix; "SOURCE"; end
 

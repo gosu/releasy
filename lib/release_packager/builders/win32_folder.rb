@@ -2,6 +2,7 @@ require "release_packager/builders/win32_builder"
 
 module ReleasePackager
   module Builders
+    # Builds a folder containing Ruby + your source + a small win32 executable to run your executable script.
     class Win32Folder < Win32Builder
       INSTALLER_SCRIPT = "win32_folder.iss"
       UNINSTALLER_FILES = %w[unins000.dat unins000.exe]
