@@ -2,13 +2,11 @@
   require "release_packager/builders/#{builder}"
 end
 
-module ReleasePackager
-  ARCHIVE_FORMATS = {
-      :"7z" => "7z a -mmt -t7z", # -mmt -> multithreaded compression. -mx0 -> don't compress
-      :zip => "7z a -mmt -tzip",
-      :tar_bz => "tar -jcvf" # 7z -tgzip (gzip), -ttar (tar), tbzip2 (bzip2)
-  }
+%w[seven_zip tar_bzip2 tar_gzip zip].each do |archiver|
+  require "release_packager/archivers/#{archiver}"
+end
 
+module ReleasePackager
   DEFAULT_PACKAGE_FOLDER = "pkg"
 
   # Builder identifier => Builder class
@@ -16,6 +14,13 @@ module ReleasePackager
   Builders.constants.each do |constant|
     builder = Builders.const_get constant
     BUILDERS[builder.identifier] = builder if builder.ancestors.include? Builder
+  end
+
+  # Archiver identifier => Archiver class
+  ARCHIVERS = {}
+  Archivers.constants.each do |constant|
+    archiver = Archivers.const_get constant
+    ARCHIVERS[archiver.identifier] = archiver if archiver.ancestors.include? Archiver
   end
 
   class Project
@@ -57,7 +62,7 @@ module ReleasePackager
     end
 
     def initialize
-      @archives = []
+      @archive_formats = []
       @outputs = []
       @links = {}
       @files = []
@@ -73,9 +78,9 @@ module ReleasePackager
       end
     end
 
-    def add_archive(type)
-      raise ArgumentError, "Unsupported archive format #{type}" unless ARCHIVE_FORMATS.has_key? type
-      @archives << type unless @archives.include? type
+    def add_archive_format(type)
+      raise ArgumentError, "Unsupported archive format #{type}" unless ARCHIVERS.has_key? type
+      @archive_formats << type unless @archive_formats.include? type
 
       type
     end
@@ -138,7 +143,12 @@ module ReleasePackager
 
     protected
     def active_builders
-      BUILDERS.values.select {|b| @outputs.include? b.identifier }
+      BUILDERS.values.find_all {|b| @outputs.include? b.identifier }
+    end
+
+    protected
+    def active_archivers
+      ARCHIVERS.values.find_all {|a| @archive_formats.include? a.identifier }
     end
 
     # Generates the general tasks for compressing folders.
@@ -147,30 +157,22 @@ module ReleasePackager
       win32_tasks = []
       top_level_tasks = []
       active_builders.each do |builder|
-        task = builder.identifier.to_s.sub '_', ':'
+        output_task = builder.identifier.to_s.sub '_', ':'
+        folder = "#{folder_base}_#{builder.folder_suffix}"
 
-        ARCHIVE_FORMATS.each_pair do |archive, command|
-          next unless @archives.include? archive
-
-          folder = "#{folder_base}_#{builder.folder_suffix}"
-          package = "#{folder}.#{archive}"
-
-
-          desc "Create #{package}"
-          task "package:#{task}:#{archive}" => package
-          file package => folder do
-            archive(package, folder, command)
-          end
+        active_archivers.each do |archiver_klass|
+          archiver = archiver_klass.new self
+          archiver.create_tasks output_task, folder
         end
 
         desc "Package #{name} in all archive formats"
-        task "package:#{task}" => @archives.map {|c| "package:#{task}:#{c}" }
+        task "package:#{output_task}" => @archive_formats.map {|c| "package:#{output_task}:#{c}" }
 
-        if task.to_s =~ /win32/
-          win32_tasks << "package:#{task}"
+        if output_task.to_s =~ /win32/
+          win32_tasks << "package:#{output_task}"
           top_level_tasks << "package:win32" unless top_level_tasks.include? "package:win32"
         else
-          top_level_tasks << "package:#{task}"
+          top_level_tasks << "package:#{output_task}"
         end
       end
 
@@ -181,15 +183,6 @@ module ReleasePackager
 
       desc "Package all"
       task "package" => top_level_tasks
-    end
-
-    protected
-    def archive(package, folder, command)
-      puts "Compressing #{package}"
-      rm package if File.exist? package
-      cd @output_path do
-        puts %x[#{command} "#{File.basename(package)}" "#{File.basename(folder)}"]
-      end
     end
   end
 end

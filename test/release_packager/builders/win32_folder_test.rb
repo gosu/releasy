@@ -14,7 +14,7 @@ context ReleasePackager::Builders::Win32Folder do
   context "win32 folder as zip" do
     hookup do
       topic.add_output :win32_folder
-      topic.add_archive :zip
+      topic.add_archive_format :zip
       topic.generate_tasks
     end
 
@@ -34,12 +34,7 @@ context ReleasePackager::Builders::Win32Folder do
           [ :FileTask, "pkg/test_0_1_WIN32.zip", %w[pkg/test_0_1_WIN32] ],
       ]
 
-      tasks.each do |type, name, prerequisites|
-        asserts("task #{name}") { Rake::Task[name] }.kind_of Rake.const_get(type)
-        asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.equals prerequisites
-      end
-
-      asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[1]] }).empty? }
+      test_tasks tasks
     end
 
     context "generate folder + zip" do

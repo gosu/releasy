@@ -15,6 +15,15 @@ def project_path
   File.expand_path("../test_project", __FILE__)
 end
 
+def test_tasks(tasks)
+  tasks.each do |type, name, prerequisites|
+    asserts("task #{name}") { Rake::Task[name] }.kind_of Rake.const_get(type)
+    asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.equals prerequisites
+  end
+
+  asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[1]] }).empty? }
+end
+
 $original_path = Dir.pwd
 
 

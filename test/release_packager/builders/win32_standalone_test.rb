@@ -14,7 +14,7 @@ context ReleasePackager::Builders::Win32Standalone do
   context "win32 standalone as 7z" do
     hookup do
       topic.add_output :win32_standalone
-      topic.add_archive :"7z"
+      topic.add_archive_format :"7z"
       topic.generate_tasks
     end
 
@@ -34,12 +34,7 @@ context ReleasePackager::Builders::Win32Standalone do
           [ :FileTask, "pkg/test_0_1_WIN32_EXE.7z", %w[pkg/test_0_1_WIN32_EXE] ],
       ]
 
-      tasks.each do |type, name, prerequisites|
-        asserts("task #{name}") { Rake::Task[name] }.kind_of Rake.const_get(type)
-        asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.equals prerequisites
-      end
-
-      asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[1]] }).empty? }
+      test_tasks tasks
     end
 
     context "generate folder + 7z" do

@@ -34,8 +34,10 @@ context ReleasePackager::Project do
 
     asserts("attempting to generate tasks without any outputs") { topic.generate_tasks }.raises(RuntimeError)
 
-    asserts(:add_archive, :zip).equals :zip
-    asserts(:add_archive, :unknown).raises(ArgumentError, /unsupported archive/i)
+    asserts(:active_archivers).empty
+    asserts(:add_archive_format, :zip).equals :zip
+    asserts(:active_archivers).equals [ReleasePackager::Archivers::Zip]
+    asserts(:add_archive_format, :unknown).raises(ArgumentError, /unsupported archive/i)
 
     asserts(:active_builders).empty
     asserts(:add_output, :source).equals :source
@@ -49,8 +51,8 @@ context ReleasePackager::Project do
         p.name = "Test Project - (2a)"
         p.version = "v0.1.5"
 
-        p.add_archive :"7z"
-        p.add_archive :zip
+        p.add_archive_format :"7z"
+        p.add_archive_format :zip
 
         p.add_output :source
         p.add_output :win32_standalone
@@ -68,5 +70,6 @@ context ReleasePackager::Project do
     asserts(:folder_base).equals "pkg/test_project_2a_v0_1_5"
     asserts(:links).equals "www.frog.com" => "Frog", "www2.fish.com" => "Fish"
     asserts(:active_builders).equals [ReleasePackager::Builders::Source, ReleasePackager::Builders::Win32Standalone]
+    asserts(:active_archivers).equals [ReleasePackager::Archivers::SevenZip, ReleasePackager::Archivers::Zip]
   end
 end

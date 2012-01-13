@@ -34,8 +34,4 @@ module ReleasePackager
       end
     end
   end
-
-  module Builders
-
-  end
 end

@@ -9,7 +9,8 @@ context ReleasePackager::Builders::Source do
       p.readme = "README.txt"
 
       p.add_output :source
-      p.add_archive :zip
+      p.add_archive_format :tar_gz
+      p.add_archive_format :tar_bz2
     end
   end
 
@@ -25,30 +26,35 @@ context ReleasePackager::Builders::Source do
   context "tasks" do
     tasks = [
         [ :Task, "package", %w[package:source] ],
-        [ :Task, "package:source", %w[package:source:zip] ],
-        [ :Task, "package:source:zip", %w[pkg/test_0_1_SOURCE.zip] ],
+        [ :Task, "package:source", %w[package:source:tar_gz package:source:tar_bz2] ],
+        [ :Task, "package:source:tar_gz", %w[pkg/test_0_1_SOURCE.tar.gz] ],
+        [ :Task, "package:source:tar_bz2", %w[pkg/test_0_1_SOURCE.tar.bz2] ],
 
         [ :Task, "build", %w[build:source] ],
         [ :Task, "build:source", %w[pkg/test_0_1_SOURCE] ],
 
         [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
         [ :FileCreationTask, "pkg/test_0_1_SOURCE", source_files ],
-        [ :FileTask, "pkg/test_0_1_SOURCE.zip", %w[pkg/test_0_1_SOURCE] ],
+        [ :FileTask, "pkg/test_0_1_SOURCE.tar.gz", %w[pkg/test_0_1_SOURCE] ],
+        [ :FileTask, "pkg/test_0_1_SOURCE.tar.bz2", %w[pkg/test_0_1_SOURCE] ],
     ]
 
-    tasks.each do |type, name, prerequisites|
-      asserts("task #{name}") { Rake::Task[name] }.kind_of Rake.const_get(type)
-      asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.equals prerequisites
-    end
-
-    asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[1]] }).empty? }
+    test_tasks tasks
   end
 
-  context "generate folder + zip" do
-    hookup { Rake::Task["package:source:zip"].invoke }
+  context "generate folder + tar.gz" do
+    hookup {Rake::Task["package:source:tar_gz"].invoke }
 
     asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_0_1_SOURCE/#{f}") == File.read(f) } }
-    asserts("archive created") { File.size("pkg/test_0_1_SOURCE.zip") > 0}
-    asserts("archive contains expected files") { `7z l pkg/test_0_1_SOURCE.zip` =~ /4 files, 4 folders/m }
+    asserts("archive created") { File.size("pkg/test_0_1_SOURCE.tar.gz") > 0}
+    asserts("archive contains expected files") { `7z x -so -bd -tgzip pkg/test_0_1_SOURCE.tar.gz | 7z l -si -bd -ttar` =~ /4 files, 4 folders/m }
+  end
+
+  context "generate folder + tar.bz2" do
+    hookup {Rake::Task["package:source:tar_bz2"].invoke }
+
+    asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_0_1_SOURCE/#{f}") == File.read(f) } }
+    asserts("archive created") { File.size("pkg/test_0_1_SOURCE.tar.bz2") > 0}
+    asserts("archive contains expected files") { `7z x -so -bd -tbzip2 pkg/test_0_1_SOURCE.tar.bz2 | 7z l -si -bd -ttar` =~ /4 files, 4 folders/m }
   end
 end
