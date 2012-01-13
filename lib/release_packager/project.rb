@@ -1,7 +1,6 @@
-require "release_packager/osx"
-require "release_packager/source"
-require "release_packager/win32"
-
+%w[osx_app source win32_folder win32_installer win32_standalone].each do |builder|
+  require "release_packager/builders/#{builder}"
+end
 
 module ReleasePackager
   ARCHIVE_FORMATS = {
@@ -10,24 +9,17 @@ module ReleasePackager
       :tar_bz => "tar -jcvf" # 7z -tgzip (gzip), -ttar (tar), tbzip2 (bzip2)
   }
 
-  OUTPUTS = [:osx_app, :source, :win32_folder, :win32_installer, :win32_standalone]
-
-  FOLDER_SUFFIXES = {
-    :osx_app => "OSX",
-    :source => SOURCE_SUFFIX,
-    :win32_folder => "WIN32",
-    :win32_installer => "WIN32_INSTALLER",
-    :win32_standalone => "WIN32_EXE",
-  }
-
   DEFAULT_PACKAGE_FOLDER = "pkg"
+
+  # Builder identifier => Builder class
+  BUILDERS = {}
+  Builders.constants.each do |constant|
+    builder = Builders.const_get constant
+    BUILDERS[builder.identifier] = builder if builder.ancestors.include? Builder
+  end
 
   class Project
     include Rake::DSL
-
-    include Osx
-    include Source
-    include Win32
 
     attr_reader :underscored_name, :underscored_version, :license
     attr_accessor :name, :files, :version, :ocra_parameters, :executable, :icon, :output_path, :installer_group, :readme
@@ -90,7 +82,7 @@ module ReleasePackager
 
     # Add a type of output to produce. Must define at least one of these.
     def add_output(type)
-      raise ArgumentError, "Unsupported output type #{type}" unless OUTPUTS.include? type
+      raise ArgumentError, "Unsupported output type #{type}" unless BUILDERS.has_key? type
       @outputs << type unless @outputs.include? type
 
       type
@@ -107,31 +99,30 @@ module ReleasePackager
     def generate_tasks
       raise "Must specify at least one output with #add_output before tasks can be generated" if @outputs.empty?
 
-      build_groups = []
+      build_outputs = []
+      build_groups = Hash.new {|h, k| h[k] = [] }
 
-      if @outputs.include? :source
-        build_source_folder
-        build_groups << "source"
+      BUILDERS.each do |identifier, builder|
+        if @outputs.include? identifier
+          builder.new self
+          task_name = "build:#{builder.identifier.to_s.tr("_", ":")}"
+
+          if builder.identifier.to_s =~ /_/
+            build_groups[builder.group] << task_name
+            build_outputs << "build:#{builder.group}"
+          else
+            build_outputs << task_name
+          end
+        end
       end
 
-      if @outputs.include? :osx_app
-        build_osx_app
-        build_groups << "osx"
-      end
-
-      build_win32_installer if @outputs.include? :win32_installer
-      build_win32_standalone if @outputs.include? :win32_standalone
-      build_win32_folder if @outputs.include? :win32_folder
-      win32_outputs = @outputs.select {|o| o.to_s[0..4] == "win32" }
-
-      if win32_outputs.any?
-        build_groups << "win32"
-        desc "Build all win32 outputs"
-        task "build:win32" => win32_outputs.map {|t| "build:#{t.to_s.split("_").join(":")}" }
+      build_groups.each_pair do |group, tasks|
+        desc "Build all #{group} outputs"
+        task "build:#{group}" => tasks
       end
 
       desc "Build all outputs"
-      task "build" => build_groups.map {|t| "build:#{t}" }
+      task "build" => build_outputs
 
       generate_archive_tasks
 
@@ -139,25 +130,28 @@ module ReleasePackager
     end
 
     # The path to the folder to create. All variations will be based on extending this path.
-    protected
     def folder_base
       File.join(@output_path, "#{underscored_name}#{version ? "_#{underscored_version}" : ""}")
     end
+
+    protected
+    # Only allow access to this from Builder
+    def links; @links; end
 
     # Generates the general tasks for compressing folders.
     protected
     def generate_archive_tasks
       win32_tasks = []
       top_level_tasks = []
-      FOLDER_SUFFIXES.each_pair do |name, output_suffix|
-        next unless @outputs.include? name
+      BUILDERS.values.each do |builder|
+        next unless @outputs.include? builder.identifier
 
-        task = name.to_s.sub '_', ':'
+        task = builder.identifier.to_s.sub '_', ':'
 
         ARCHIVE_FORMATS.each_pair do |archive, command|
           next unless @archives.include? archive
 
-          folder = "#{folder_base}_#{output_suffix}"
+          folder = "#{folder_base}_#{builder.folder_suffix}"
           package = "#{folder}.#{archive}"
 
 
@@ -194,16 +188,6 @@ module ReleasePackager
       rm package if File.exist? package
       cd @output_path do
         puts %x[#{command} "#{File.basename(package)}" "#{File.basename(folder)}"]
-      end
-    end
-
-    # Copy a number of files into a folder, maintaining relative paths.
-    protected
-    def copy_files_relative(files, folder)
-      files.each do |file|
-        destination = File.join(folder, File.dirname(file))
-        mkdir_p destination unless File.exists? destination
-        cp file, destination
       end
     end
   end

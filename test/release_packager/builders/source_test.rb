@@ -1,6 +1,6 @@
-require File.expand_path("../teststrap", File.dirname(__FILE__))
+require File.expand_path("../../teststrap", File.dirname(__FILE__))
 
-context ReleasePackager::Source do
+context ReleasePackager::Builders::Source do
   setup do
     ReleasePackager::Project.new do |p|
       p.name = "Test"
