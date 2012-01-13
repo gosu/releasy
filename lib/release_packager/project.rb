@@ -102,17 +102,15 @@ module ReleasePackager
       build_outputs = []
       build_groups = Hash.new {|h, k| h[k] = [] }
 
-      BUILDERS.each do |identifier, builder|
-        if @outputs.include? identifier
-          builder.new self
-          task_name = "build:#{builder.identifier.to_s.tr("_", ":")}"
+      active_builders.each do |builder|
+        builder.new self
+        task_name = "build:#{builder.identifier.to_s.tr("_", ":")}"
 
-          if builder.identifier.to_s =~ /_/
-            build_groups[builder.group] << task_name
-            build_outputs << "build:#{builder.group}"
-          else
-            build_outputs << task_name
-          end
+        if builder.identifier.to_s =~ /_/
+          build_groups[builder.group] << task_name
+          build_outputs << "build:#{builder.group}"
+        else
+          build_outputs << task_name
         end
       end
 
@@ -138,14 +136,17 @@ module ReleasePackager
     # Only allow access to this from Builder
     def links; @links; end
 
+    protected
+    def active_builders
+      BUILDERS.values.select {|b| @outputs.include? b.identifier }
+    end
+
     # Generates the general tasks for compressing folders.
     protected
     def generate_archive_tasks
       win32_tasks = []
       top_level_tasks = []
-      BUILDERS.values.each do |builder|
-        next unless @outputs.include? builder.identifier
-
+      active_builders.each do |builder|
         task = builder.identifier.to_s.sub '_', ':'
 
         ARCHIVE_FORMATS.each_pair do |archive, command|

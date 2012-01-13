@@ -25,7 +25,7 @@ context ReleasePackager::Project do
     asserts(:license).nil
     asserts(:icon).nil
     asserts(:installer_group).nil
-    asserts(:files).equals []
+    asserts(:files).empty
     asserts(:verbose?).equals true
     asserts(:readme).nil
 
@@ -37,7 +37,9 @@ context ReleasePackager::Project do
     asserts(:add_archive, :zip).equals :zip
     asserts(:add_archive, :unknown).raises(ArgumentError, /unsupported archive/i)
 
+    asserts(:active_builders).empty
     asserts(:add_output, :source).equals :source
+    asserts(:active_builders).equals [ReleasePackager::Builders::Source]
     asserts(:add_output, :unknown).raises(ArgumentError, /unsupported output/i)
   end
 
@@ -61,5 +63,7 @@ context ReleasePackager::Project do
     asserts(:underscored_name).equals "test_project_2a"
     asserts(:executable).equals "bin/test_project_2a"
     asserts(:folder_base).equals "pkg/test_project_2a_v0_1_5"
+
+    asserts(:active_builders).equals [ReleasePackager::Builders::Source, ReleasePackager::Builders::Win32Standalone]
   end
 end
