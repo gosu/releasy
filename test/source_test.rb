@@ -9,7 +9,7 @@ context ReleasePackager::Source do
       p.readme = "README.txt"
 
       p.add_output :source
-      p.add_compression :zip
+      p.add_archive :zip
     end
   end
 

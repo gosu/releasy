@@ -10,7 +10,7 @@ context ReleasePackager::Osx do
       p.readme = "README.txt"
 
       p.add_output :osx_app
-      p.add_compression :zip
+      p.add_archive :zip
     end
 =end
   end

@@ -34,8 +34,8 @@ context ReleasePackager::Project do
 
     asserts("attempting to generate tasks without any outputs") { topic.generate_tasks }.raises(RuntimeError)
 
-    asserts(:add_compression, :zip).equals :zip
-    asserts(:add_compression, :unknown).raises(ArgumentError, /unsupported compression/i)
+    asserts(:add_archive, :zip).equals :zip
+    asserts(:add_archive, :unknown).raises(ArgumentError, /unsupported archive/i)
 
     asserts(:add_output, :source).equals :source
     asserts(:add_output, :unknown).raises(ArgumentError, /unsupported output/i)
@@ -47,8 +47,8 @@ context ReleasePackager::Project do
         p.name = "Test Project - (2a)"
         p.version = "v0.1.5"
 
-        p.add_compression :"7z"
-        p.add_compression :zip
+        p.add_archive :"7z"
+        p.add_archive :zip
 
         p.add_output :source
         p.add_output :win32_standalone

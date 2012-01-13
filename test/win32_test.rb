@@ -23,7 +23,7 @@ context ReleasePackager::Win32 do
   context "win32 folder as zip" do
     hookup do
       topic.add_output :win32_folder
-      topic.add_compression :zip
+      topic.add_archive :zip
       topic.generate_tasks
     end
 
@@ -66,7 +66,7 @@ context ReleasePackager::Win32 do
   context "win32 installer as zip" do
     hookup do
       topic.add_output :win32_installer
-      topic.add_compression :zip
+      topic.add_archive :zip
       topic.generate_tasks
     end
 
@@ -108,7 +108,7 @@ context ReleasePackager::Win32 do
   context "win32 standalone as 7z" do
     hookup do
       topic.add_output :win32_standalone
-      topic.add_compression :"7z"
+      topic.add_archive :"7z"
       topic.generate_tasks
     end
 

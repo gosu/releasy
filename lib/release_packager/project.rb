@@ -4,7 +4,7 @@ require "release_packager/win32"
 
 
 module ReleasePackager
-  COMPRESSIONS = {
+  ARCHIVE_FORMATS = {
       :"7z" => "7z a -mmt -t7z", # -mmt -> multithreaded compression. -mx0 -> don't compress
       :zip => "7z a -mmt -tzip",
       :tar_bz => "tar -jcvf" # 7z -tgzip (gzip), -ttar (tar), tbzip2 (bzip2)
@@ -65,9 +65,9 @@ module ReleasePackager
     end
 
     def initialize
-      @compressions = []
+      @archives = []
       @outputs = []
-      @links= {}
+      @links = {}
       @files = []
       @output_path = DEFAULT_PACKAGE_FOLDER
       @verbose = true
@@ -81,9 +81,9 @@ module ReleasePackager
       end
     end
 
-    def add_compression(type)
-      raise ArgumentError, "Unsupported compression type #{type}" unless COMPRESSIONS.has_key? type
-      @compressions << type unless @compressions.include? type
+    def add_archive(type)
+      raise ArgumentError, "Unsupported archive format #{type}" unless ARCHIVE_FORMATS.has_key? type
+      @archives << type unless @archives.include? type
 
       type
     end
@@ -101,11 +101,6 @@ module ReleasePackager
       @links[url] = title
 
       url
-    end
-
-    # The path to the folder to create. All variations will be based on extending this path.
-    def folder_base
-      File.join(@output_path, "#{underscored_name}#{version ? "_#{underscored_version}" : ""}")
     end
 
     # Generates all tasks required by the user. Automatically called at the end of the block, if #new is given a block.
@@ -138,14 +133,20 @@ module ReleasePackager
       desc "Build all outputs"
       task "build" => build_groups.map {|t| "build:#{t}" }
 
-      generate_compression_tasks
+      generate_archive_tasks
 
       self
     end
 
+    # The path to the folder to create. All variations will be based on extending this path.
+    protected
+    def folder_base
+      File.join(@output_path, "#{underscored_name}#{version ? "_#{underscored_version}" : ""}")
+    end
+
     # Generates the general tasks for compressing folders.
     protected
-    def generate_compression_tasks
+    def generate_archive_tasks
       win32_tasks = []
       top_level_tasks = []
       FOLDER_SUFFIXES.each_pair do |name, output_suffix|
@@ -153,22 +154,22 @@ module ReleasePackager
 
         task = name.to_s.sub '_', ':'
 
-        COMPRESSIONS.each_pair do |compression, command|
-          next unless @compressions.include? compression
+        ARCHIVE_FORMATS.each_pair do |archive, command|
+          next unless @archives.include? archive
 
           folder = "#{folder_base}_#{output_suffix}"
-          package = "#{folder}.#{compression}"
+          package = "#{folder}.#{archive}"
 
 
           desc "Create #{package}"
-          task "package:#{task}:#{compression}" => package
+          task "package:#{task}:#{archive}" => package
           file package => folder do
-            compress(package, folder, command)
+            archive(package, folder, command)
           end
         end
 
-        desc "Package #{name} in all compressions"
-        task "package:#{task}" => @compressions.map {|c| "package:#{task}:#{c}" }
+        desc "Package #{name} in all archive formats"
+        task "package:#{task}" => @archives.map {|c| "package:#{task}:#{c}" }
 
         if task.to_s =~ /win32/
           win32_tasks << "package:#{task}"
@@ -188,7 +189,7 @@ module ReleasePackager
     end
 
     protected
-    def compress(package, folder, command)
+    def archive(package, folder, command)
       puts "Compressing #{package}"
       rm package if File.exist? package
       cd @output_path do
