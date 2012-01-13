@@ -1,4 +1,4 @@
-require File.expand_path("teststrap", File.dirname(__FILE__))
+require File.expand_path("../teststrap", File.dirname(__FILE__))
 
 # Change directory into the project, since that is where we work from normally.
 
