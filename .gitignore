@@ -14,3 +14,4 @@ doc/
 test/test_project/pkg
 
 /test/test_project/test.exe
+osx_app/

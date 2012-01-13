@@ -29,6 +29,9 @@ context ReleasePackager::Project do
     asserts(:verbose?).equals true
     asserts(:readme).nil
     asserts(:links).equals Hash.new
+    asserts(:osx_app_wrapper).nil
+    asserts(:osx_app_url).nil
+    asserts(:osx_gems).empty
 
     asserts(:output_path).equals "pkg"
     asserts(:folder_base).equals "pkg/" # Would be more, but dependent on name.
@@ -62,6 +65,10 @@ context ReleasePackager::Project do
 
         p.add_link "www.frog.com", "Frog"
         p.add_link "www2.fish.com", "Fish"
+
+        p.osx_app_wrapper = "Ruby.app"
+        p.osx_app_url = "org.url.app"
+        p.osx_gems = Bundler.setup.gems
       end
     end
 
@@ -70,6 +77,9 @@ context ReleasePackager::Project do
     asserts(:executable).equals "bin/test_project_2a"
     asserts(:folder_base).equals "pkg/test_project_2a_v0_1_5"
     asserts(:links).equals "www.frog.com" => "Frog", "www2.fish.com" => "Fish"
+    asserts(:osx_app_wrapper).equals "Ruby.app"
+    asserts(:osx_app_url).equals "org.url.app"
+
     asserts(:active_builders).equals [ReleasePackager::Builders::Source, ReleasePackager::Builders::Win32Standalone]
     asserts(:active_archivers).equals [ReleasePackager::Archivers::SevenZip, ReleasePackager::Archivers::Zip]
   end

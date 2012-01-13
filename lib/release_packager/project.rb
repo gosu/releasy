@@ -52,6 +52,12 @@ module ReleasePackager
     attr_accessor :readme
     # @return [String] Filename of license file - Must be text or rtf file, which will be shown to user who will be requested to accept it (win32 installer only).
     attr_accessor :license
+    # @return [String] Name of .app directory used as the framework for osx app release.
+    attr_accessor :osx_app_wrapper
+    # @return [String] Inverse url of game (e.g. 'org.supergames.blasterbotsfrommars')
+    attr_accessor :osx_app_url
+    # @return [Array<Gem>] List of gems used by the application, which should usually be: Bundler.setup.gems
+    attr_accessor :osx_gems
 
     # Verbosity of the console output.
     # @return [Boolean] True to make the tasks output more information.
@@ -101,11 +107,13 @@ module ReleasePackager
       @outputs = []
       @links = {}
       @files = []
+      @osx_gems = []
       @output_path = DEFAULT_PACKAGE_FOLDER
       @verbose = true
-      @readme = nil
 
-      @name = @underscored_name = @underscored_version = @ocra_parameters = @version = @executable = @license = @icon = @installer_group = nil
+      @name = @underscored_name = @underscored_version = @ocra_parameters = nil
+      @version = @readme =  @executable = @license = @icon = nil
+      @installer_group = @osx_app_wrapper = @osx_app_url = nil
 
       if block_given?
         yield self
@@ -180,7 +188,7 @@ module ReleasePackager
 
 
     def folder_base
-      File.join(@output_path, "#{underscored_name}#{version ? "_#{underscored_version}" : ""}")
+      File.join(output_path, "#{underscored_name}#{version ? "_#{underscored_version}" : ""}")
     end
 
     protected
@@ -204,6 +212,7 @@ module ReleasePackager
     # Generates the general tasks for compressing folders.
     def generate_archive_tasks
       win32_tasks = []
+      osx_tasks = []
       top_level_tasks = []
       active_builders.each do |builder|
         output_task = builder.identifier.to_s.sub '_', ':'
@@ -217,17 +226,26 @@ module ReleasePackager
         desc "Package #{name} in all archive formats"
         task "package:#{output_task}" => @archive_formats.map {|c| "package:#{output_task}:#{c}" }
 
-        if output_task.to_s =~ /win32/
-          win32_tasks << "package:#{output_task}"
-          top_level_tasks << "package:win32" unless top_level_tasks.include? "package:win32"
-        else
-          top_level_tasks << "package:#{output_task}"
+        case output_task
+          when /^win32:/
+            win32_tasks << "package:#{output_task}"
+            top_level_tasks << "package:win32" unless top_level_tasks.include? "package:win32"
+          when /^osx:/
+            osx_tasks << "package:#{output_task}"
+            top_level_tasks << "package:osx" unless top_level_tasks.include? "package:osx"
+          else
+            top_level_tasks << "package:#{output_task}"
         end
       end
 
       unless win32_tasks.empty?
         desc "Package all win32"
         task "package:win32" => win32_tasks
+      end
+
+      unless osx_tasks.empty?
+        desc "Package all osx"
+        task "package:osx" => osx_tasks
       end
 
       desc "Package all"
