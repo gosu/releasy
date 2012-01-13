@@ -3,7 +3,6 @@ require File.expand_path("../teststrap", File.dirname(__FILE__))
 # Change directory into the project, since that is where we work from normally.
 
 context ReleasePackager::Project do
-  #setup { FileUtils.rm_r "pkg" if File.exists? "pkg" }
   teardown do
     Rake::Task.clear
     Dir.chdir $original_path
@@ -28,6 +27,7 @@ context ReleasePackager::Project do
     asserts(:files).empty
     asserts(:verbose?).equals true
     asserts(:readme).nil
+    asserts(:links).equals Hash.new
 
     asserts(:output_path).equals "pkg"
     asserts(:folder_base).equals "pkg/" # Would be more, but dependent on name.
@@ -56,6 +56,9 @@ context ReleasePackager::Project do
         p.add_output :win32_standalone
 
         p.files = source_files
+
+        p.add_link "www.frog.com", "Frog"
+        p.add_link "www2.fish.com", "Fish"
       end
     end
 
@@ -63,7 +66,7 @@ context ReleasePackager::Project do
     asserts(:underscored_name).equals "test_project_2a"
     asserts(:executable).equals "bin/test_project_2a"
     asserts(:folder_base).equals "pkg/test_project_2a_v0_1_5"
-
+    asserts(:links).equals "www.frog.com" => "Frog", "www2.fish.com" => "Fish"
     asserts(:active_builders).equals [ReleasePackager::Builders::Source, ReleasePackager::Builders::Win32Standalone]
   end
 end
