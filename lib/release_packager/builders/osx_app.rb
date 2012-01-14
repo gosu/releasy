@@ -54,12 +54,12 @@ module ReleasePackager
         gem_dir = "#{app}/Contents/Resources/lib"
 
         # Don't include binary gems already in the .app or bundler, since it will get confused.
-        gem_names = (project.osx_gems.map(&:name) - %w[bundler gosu texplay chipmunk]).sort
+        gem_names = (project.osx_app_gems.map(&:name) - %w[bundler gosu texplay chipmunk]).sort
 
         # Copy my gems.
         puts "Copying gems to #{gem_dir}" if project.verbose?
         gem_names.each do |gem|
-          gem_path = project.osx_gems.find {|g| g.name == gem }.full_gem_path
+          gem_path = project.osx_app_gems.find {|g| g.name == gem }.full_gem_path
           puts "Copying gem: #{File.basename gem_path}" if project.verbose?
           cp_r File.join(gem_path, 'lib'), File.dirname(gem_dir)
 

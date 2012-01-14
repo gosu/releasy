@@ -17,7 +17,7 @@ context ReleasePackager::Builders::OsxApp do
     topic.readme = "README.txt"
     topic.osx_app_url = "org.frog.fish"
     # Just use the dev gems, but some won't work, so ignore them.
-    topic.osx_gems = Gem.loaded_specs.values.reject {|g| %w[rake ocra].include? g.name }
+    topic.osx_app_gems = Gem.loaded_specs.values.reject {|g| %w[rake ocra].include? g.name }
 
     topic.add_output :osx_app
     topic.add_archive_format :tar_gz

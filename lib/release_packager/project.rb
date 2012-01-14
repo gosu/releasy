@@ -57,7 +57,7 @@ module ReleasePackager
     # @return [String] Inverse url of game (e.g. 'org.supergames.blasterbotsfrommars')
     attr_accessor :osx_app_url
     # @return [Array<Gem>] List of gems used by the application, which should usually be: Bundler.setup.gems
-    attr_accessor :osx_gems
+    attr_accessor :osx_app_gems
 
     # Verbosity of the console output.
     # @return [Boolean] True to make the tasks output more information.
@@ -107,7 +107,7 @@ module ReleasePackager
       @outputs = []
       @links = {}
       @files = []
-      @osx_gems = []
+      @osx_app_gems = []
       @output_path = DEFAULT_PACKAGE_FOLDER
       @verbose = true
 
