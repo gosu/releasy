@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'bundler'
 require 'rake/testtask'
 require 'rake/clean'
