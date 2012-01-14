@@ -69,7 +69,7 @@ context ReleasePackager::Builders::OsxApp do
 
       asserts("Main.rb is correct") do
         File.read("pkg/test_0_1_OSX/Test.app/Contents/Resources/Main.rb") == <<END
-OSX_EXECUTABLE_FOLDER = File.expand_path("../../.." __FILE__)
+OSX_EXECUTABLE_FOLDER = File.expand_path("../../..", __FILE__)
 
 # Really hacky fudge-fix for something oddly missing in the .app.
 class Encoding

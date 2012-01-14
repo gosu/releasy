@@ -79,7 +79,7 @@ module ReleasePackager
         puts "--- Creating Main.rb"
         File.open("#{app}/Contents/Resources/Main.rb", "w") do |file|
           file.puts <<END_TEXT
-OSX_EXECUTABLE_FOLDER = File.expand_path("../../.." __FILE__)
+OSX_EXECUTABLE_FOLDER = File.expand_path("../../..", __FILE__)
 
 # Really hacky fudge-fix for something oddly missing in the .app.
 class Encoding
