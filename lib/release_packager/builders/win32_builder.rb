@@ -52,7 +52,7 @@ END
 AppName=#{project.underscored_name}
 AppVersion=#{project.version}
 DefaultDirName={pf}\\#{project.name.gsub(/[^\w\s]/, '')}
-DefaultGroupName=#{project.installer_group ? "#{project.installer_group}\\" : ""}#{project.name}
+DefaultGroupName=#{project.win32_installer_group ? "#{project.win32_installer_group}\\" : ""}#{project.name}
 OutputDir=#{File.dirname output_file}
 OutputBaseFilename=#{File.basename(output_file).chomp(File.extname(output_file))}
 UninstallDisplayIcon={app}\\#{project.underscored_name}.exe

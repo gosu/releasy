@@ -14,6 +14,7 @@ context ReleasePackager::Builders::Win32Installer do
   context "win32 installer as zip" do
     hookup do
       topic.add_output :win32_installer
+      topic.win32_installer_group = "Test Apps"
       topic.add_archive_format :zip
     end
 

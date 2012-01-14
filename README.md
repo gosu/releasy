@@ -58,7 +58,7 @@ Example
       p.add_output :win32_installer
 
       # Settings for specific outputs.
-      p.installer_group = "Spooner Games"
+      p.win32_installer_group = "Spooner Games"
       p.osx_app_url = "com.github.spooner.games.alpha_channel"
       p.osx_app_wrapper = "../osx_app/RubyGosu App.app"
 

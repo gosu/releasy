@@ -47,7 +47,7 @@ module ReleasePackager
     # @return [String] Extra options to send to Ocra (win32 outputs only).
     attr_accessor :ocra_parameters
     # @return [String] Optional start-menu grouping of the application when installed (if name == "app" and installer_group == "frog", then it will get put into 'frog/app' in the start menu).
-    attr_accessor :installer_group
+    attr_accessor :win32_installer_group
     # @return [String] File name of readme file - End user will have the option to view this after the win32 installer has installed, but must be .txt/.rtf.
     attr_accessor :readme
     # @return [String] Filename of license file - Must be text or rtf file, which will be shown to user who will be requested to accept it (win32 installer only).
@@ -113,7 +113,7 @@ module ReleasePackager
 
       @name = @underscored_name = @underscored_version = @ocra_parameters = nil
       @version = @readme =  @executable = @license = @icon = nil
-      @installer_group = @osx_app_wrapper = @osx_app_url = nil
+      @win32_installer_group = @osx_app_wrapper = @osx_app_url = nil
 
       if block_given?
         yield self

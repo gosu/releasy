@@ -24,7 +24,7 @@ context ReleasePackager::Project do
     asserts(:executable).nil
     asserts(:license).nil
     asserts(:icon).nil
-    asserts(:installer_group).nil
+    asserts(:win32_installer_group).nil
     asserts(:files).empty
     asserts(:verbose?).equals true
     asserts(:readme).nil
