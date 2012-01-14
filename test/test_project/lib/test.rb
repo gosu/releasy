@@ -2,4 +2,4 @@
 require 'riot'
 require 'riot/rr'
 
-require 'test/stuff.rb'
+require 'test/stuff'

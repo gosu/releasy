@@ -86,7 +86,7 @@ class Encoding
   UTF_7 = UTF_16BE = UTF_16LE = UTF_32BE = UTF_32LE = Encoding.list.first
 end
 
-require '#{project.underscored_name}/#{project.executable}'
+load '#{project.underscored_name}/#{project.executable}'
 END_TEXT
         end
       end
