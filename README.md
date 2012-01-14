@@ -1,7 +1,9 @@
 ReleasePackager
 ================
 
-ReleasePackager automates the release of Ruby applications. It generates a number of Rake tasks for the application
+ReleasePackager automates the release of Ruby applications.
+It generates a number of Rake tasks for use when there is a need to release a new version of the
+application.
 
 Project
 -------
@@ -14,21 +16,21 @@ Output types supported
 
 The project can create one or more release folders:
 
-* :source - Plain source folder, which can be used by anyone with Ruby already installed.
-* :osx_app - OSX application bundle [won't be executable if generated on Windows, but otherwise will work]. Note that this only contains binary gems for Gosu, TexPlay and Chipmunk, but will work with applications using any source gems.
-* :win32_folder - A folder containing Ruby, application source files and [creation on Windows only and requires InnoSetup to be installed]
-* :win32_installer - A regular Windows installer [creation on Windows only and requires InnoSetup to be installed]
-* :win32_standalone - Standalone exe file that self-extracts to a temporary directory - slower startup than the other win32 options [creation on Windows only]
+* `:source` - Plain source folder, which can be used by anyone with Ruby already installed.
+* `:osx_app` - OSX application bundle (.app) [won't be executable if generated on Windows, but otherwise will work. Note that this only contains binary gems for Gosu, TexPlay and Chipmunk, but will work with applications using any source gems].
+* `:win32_folder` - A folder containing Ruby, application source files and an EXE to run them [creation on Windows only and requires InnoSetup to be installed]
+* `:win32_installer` - A regular Windows installer [creation on Windows only and requires InnoSetup to be installed]
+* `:win32_standalone` - Standalone EXE file that self-extracts to a temporary directory - slower startup than the other win32 options [creation on Windows only]
 
 Archive types supported
 -----------------------
 
 Optionally, release folders can be archived using one or more of:
 
-* :"7z" - 7Zip format (.7z - Best compression)
-* :tar_bz2 - BZip2 tarball (.tar.bz2)
-* :tar_gz - GZip tarball (.tar.gz)
-* :zip - Standard zip format (.zip - Poor compression, but best compatibility)
+* `:"7z"` - 7Zip format (.7z - Best compression)
+* `:tar_bz2` - BZip2 tarball (.tar.bz2)
+* `:tar_gz` - GZip tarball (.tar.gz)
+* `:zip` - Standard zip format (.zip - Poor compression, but best compatibility)
 
 Example
 -------
@@ -67,7 +69,7 @@ Example
 
 ### Tasks created
 
-The win32 tasks will not be created unless running on Windows.
+Note: The _win32_ tasks will not be created unless running on Windows.
 
     rake build                         # Build all outputs
     rake build:osx                     # Build all osx outputs
@@ -96,7 +98,7 @@ External Requirements
 ---------------------
 
 * To create package archives (optional), the [7z](http://www.7-zip.org/download.html) must be installed.
-* To create :win32_folder and :win32_installer outputs, [InnoSetup](http://www.jrsoftware.org/isdl.php) must be installed on the machine.
+* To create `:win32_folder` and `:win32_installer` outputs, [InnoSetup](http://www.jrsoftware.org/isdl.php) must be installed.
 
 Credits
 -------
