@@ -1,7 +1,7 @@
 require File.expand_path("../../teststrap", File.dirname(__FILE__))
 require File.expand_path("helpers/win32", File.dirname(__FILE__))
 
-context ReleasePackager::Builders::Win32Folder do
+context Relapse::Builders::Win32Folder do
   setup { win32_project }
 
   teardown do
@@ -45,13 +45,13 @@ context ReleasePackager::Builders::Win32Folder do
 
           asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_app_0_1_WIN32/#{f}") == File.read(f) } }
           asserts("folder includes links") { File.read("pkg/test_app_0_1_WIN32/Website.url") == link_file }
-          asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_app_0_1_WIN32/test.exe") > 0 }
+          asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_app_0_1_WIN32/test_app.exe") > 0 }
           asserts("archive created and of reasonable size") { File.size("pkg/test_app_0_1_WIN32.zip") > 2**20 }
           asserts("uninstaller files have been removed") { FileList["pkg/test_app_0_1_WIN32/unins000.*"].empty? }
         end
 
         context "the builder itself" do
-          setup { ReleasePackager::Builders::Win32Folder.new(topic) }
+          setup { Relapse::Builders::Win32Folder.new(topic) }
 
           asserts(:folder_suffix).equals "WIN32"
           asserts(:temp_installer_script).equals "pkg/win32_folder.iss"

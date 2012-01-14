@@ -1,6 +1,6 @@
-require "release_packager/archivers/tar_archiver"
+require "relapse/archivers/tar_archiver"
 
-module ReleasePackager
+module Relapse
   module Archivers
     class TarGzip < TarArchiver
       def self.identifier; :tar_gz; end

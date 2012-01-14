@@ -1,15 +1,15 @@
-ReleasePackager
+Relapse
 ================
 
-ReleasePackager automates the release of Ruby applications.
+_Relapse_ automates the release of Ruby applications (from: "release apps").
 It generates a number of Rake tasks for use when there is a need to release a new version of the
 application.
 
 Project
 -------
 
-* [Github project](https://github.com/Spooner/release_packager)
-* [Reporting issues](https://github.com/Spooner/release_packager/issues)
+* [Github project](https://github.com/Spooner/relapse)
+* [Reporting issues](https://github.com/Spooner/relapse/issues)
 
 Output types supported
 ----------------------
@@ -37,10 +37,10 @@ Example
 
 ### Project's Rakefile
 
-    require 'release_packager'
+    require 'relapse'
 
     # Example is from my game, Alpha Channel.
-    ReleasePackager::Project.new do |p|
+    Relapse::Project.new do |p|
       p.name = "Alpha Channel"
       p.version = AlphaChannel::VERSION
       p.executable = "bin/alpha_channel.rbw"

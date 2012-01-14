@@ -1,6 +1,6 @@
-require "release_packager/builders/win32_builder"
+require "relapse/builders/win32_builder"
 
-module ReleasePackager
+module Relapse
   module Builders
     # Builds a folder containing Ruby + your source + a small win32 executable to run your executable script.
     class Win32Folder < Win32Builder

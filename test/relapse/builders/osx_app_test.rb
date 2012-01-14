@@ -1,7 +1,7 @@
 require File.expand_path("../../teststrap", File.dirname(__FILE__))
 
-context ReleasePackager::Builders::OsxApp do
-  setup { ReleasePackager::Project.new }
+context Relapse::Builders::OsxApp do
+  setup { Relapse::Project.new }
 
   teardown do
     Rake::Task.clear
@@ -70,7 +70,6 @@ context ReleasePackager::Builders::OsxApp do
       asserts("archive created") { File.size("pkg/test_app_0_1_OSX.tar.gz") > 0 }
 
       asserts("Main.rb is correct") do
-        puts File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/Main.rb")
         File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/Main.rb") == <<END
 OSX_EXECUTABLE_FOLDER = File.expand_path("../../..", __FILE__)
 
@@ -140,7 +139,7 @@ END
       end
 
       # Bundler should also be asked for, but it shouldn't be copied in.
-      %w[release_packager rr riot yard].each do |gem|
+      %w[relapse rr riot yard].each do |gem|
         asserts("#{gem} gem folder copied") { File.directory?("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/lib/#{gem}") }
       end
 
@@ -149,7 +148,7 @@ END
     end
 
     context "the builder itself" do
-      setup { ReleasePackager::Builders::OsxApp.new(topic) }
+      setup { Relapse::Builders::OsxApp.new(topic) }
 
       asserts(:folder_suffix).equals "OSX"
       asserts(:app_name).equals "Test App.app"

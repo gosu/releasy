@@ -1,4 +1,4 @@
-module ReleasePackager
+module Relapse
   # @abstract
   class Archiver
     include Rake::DSL

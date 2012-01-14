@@ -3,7 +3,7 @@ require File.expand_path("../teststrap", File.dirname(__FILE__))
 # Change directory into the project, since that is where we work from normally.
 
 # @author Bil Bas (Spooner)
-context ReleasePackager::Project do
+context Relapse::Project do
   teardown do
     Rake::Task.clear
     Dir.chdir $original_path
@@ -14,7 +14,7 @@ context ReleasePackager::Project do
   end
 
   context "default" do
-    setup { ReleasePackager::Project.new }
+    setup { Relapse::Project.new }
 
     # Defaults are mostly nil.
     asserts(:name).nil
@@ -40,18 +40,18 @@ context ReleasePackager::Project do
 
     asserts(:active_archivers).empty
     asserts(:add_archive_format, :zip).equals { topic }
-    asserts(:active_archivers).equals [ReleasePackager::Archivers::Zip]
+    asserts(:active_archivers).equals [Relapse::Archivers::Zip]
     asserts(:add_archive_format, :unknown).raises(ArgumentError, /unsupported archive/i)
 
     asserts(:active_builders).empty
     asserts(:add_output, :source).equals { topic }
-    asserts(:active_builders).equals [ReleasePackager::Builders::Source]
+    asserts(:active_builders).equals [Relapse::Builders::Source]
     asserts(:add_output, :unknown).raises(ArgumentError, /unsupported output/i)
   end
 
   context "defined" do
     setup do
-      ReleasePackager::Project.new do |p|
+      Relapse::Project.new do |p|
         p.name = "Test Project - (2a)"
         p.version = "v0.1.5"
 
@@ -81,7 +81,7 @@ context ReleasePackager::Project do
     asserts(:osx_app_wrapper).equals "../../../osx_app/RubyGosu App.app"
     asserts(:osx_app_url).equals "org.url.app"
 
-    asserts(:active_builders).equals [ReleasePackager::Builders::OsxApp, ReleasePackager::Builders::Source, ReleasePackager::Builders::Win32Standalone]
-    asserts(:active_archivers).equals [ReleasePackager::Archivers::SevenZip, ReleasePackager::Archivers::Zip]
+    asserts(:active_builders).equals [Relapse::Builders::OsxApp, Relapse::Builders::Source, Relapse::Builders::Win32Standalone]
+    asserts(:active_archivers).equals [Relapse::Archivers::SevenZip, Relapse::Archivers::Zip]
   end
 end

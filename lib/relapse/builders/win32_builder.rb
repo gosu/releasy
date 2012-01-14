@@ -1,6 +1,6 @@
-require "release_packager/builder"
+require "relapse/builder"
 
-module ReleasePackager
+module Relapse
   # General functionality for win32 builders.
   # @abstract
   class Win32Builder < Builder

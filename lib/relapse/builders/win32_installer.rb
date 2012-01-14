@@ -1,6 +1,6 @@
-require "release_packager/builders/win32_builder"
+require "relapse/builders/win32_builder"
 
-module ReleasePackager
+module Relapse
   module Builders
     # Builds a win32 installer for the application.
     class Win32Installer < Win32Builder

@@ -1,8 +1,8 @@
 require File.expand_path("../../teststrap", File.dirname(__FILE__))
 
-context ReleasePackager::Builders::Source do
+context Relapse::Builders::Source do
   setup do
-    ReleasePackager::Project.new do |p|
+    Relapse::Project.new do |p|
       p.name = "Test App"
       p.version = "0.1"
       p.files = source_files
@@ -61,7 +61,7 @@ context ReleasePackager::Builders::Source do
   end
 
   context "the builder itself" do
-    setup { ReleasePackager::Builders::Source.new(topic) }
+    setup { Relapse::Builders::Source.new(topic) }
 
     asserts(:folder_suffix).equals "SOURCE"
   end

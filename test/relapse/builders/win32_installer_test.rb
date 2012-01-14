@@ -1,7 +1,7 @@
 require File.expand_path("../../teststrap", File.dirname(__FILE__))
 require File.expand_path("helpers/win32", File.dirname(__FILE__))
 
-context ReleasePackager::Builders::Win32Installer do
+context Relapse::Builders::Win32Installer do
   setup { win32_project }
 
   teardown do
@@ -46,13 +46,13 @@ context ReleasePackager::Builders::Win32Installer do
 
           asserts("readme copied to folder") { File.read("pkg/test_app_0_1_WIN32_INSTALLER/README.txt") == File.read("README.txt") }
           asserts("folder includes links") { File.read("pkg/test_app_0_1_WIN32_INSTALLER/Website.url") == link_file }
-          asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_app_0_1_WIN32_INSTALLER/test_setup.exe") > 2**20 }
+          asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_app_0_1_WIN32_INSTALLER/test_app_setup.exe") > 2**20 }
           asserts("archive created") { File.exists? "pkg/test_app_0_1_WIN32_INSTALLER.zip" }
           asserts("archive contains expected files") { `7z l pkg/test_app_0_1_WIN32_INSTALLER.zip` =~ /3 files, 1 folders/m }
         end
 
         context "the builder itself" do
-          setup { ReleasePackager::Builders::Win32Installer.new(topic) }
+          setup { Relapse::Builders::Win32Installer.new(topic) }
 
           asserts(:folder_suffix).equals "WIN32_INSTALLER"
           asserts(:temp_installer_script).equals "pkg/win32_installer.iss"

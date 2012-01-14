@@ -1,6 +1,6 @@
-require "release_packager/builder"
+require "relapse/builder"
 
-module ReleasePackager
+module Relapse
   module Builders
     class OsxApp < Builder
       def self.folder_suffix; "OSX"; end

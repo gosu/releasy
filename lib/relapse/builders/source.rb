@@ -1,6 +1,6 @@
-require "release_packager/builder"
+require "relapse/builder"
 
-module ReleasePackager
+module Relapse
   module Builders
     # Creates a folder containing the application source.
     class Source < Builder

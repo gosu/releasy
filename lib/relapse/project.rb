@@ -1,12 +1,12 @@
 %w[osx_app source win32_folder win32_installer win32_standalone].each do |builder|
-  require "release_packager/builders/#{builder}"
+  require "relapse/builders/#{builder}"
 end
 
 %w[seven_zip tar_bzip2 tar_gzip zip].each do |archiver|
-  require "release_packager/archivers/#{archiver}"
+  require "relapse/archivers/#{archiver}"
 end
 
-module ReleasePackager
+module Relapse
   DEFAULT_PACKAGE_FOLDER = "pkg"
 
   # Builder identifier => Builder class

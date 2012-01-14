@@ -1,5 +1,5 @@
 def win32_project
-  project = ReleasePackager::Project.new
+  project = Relapse::Project.new
   project.name = "Test App"
   project.version = "0.1"
   project.files = source_files

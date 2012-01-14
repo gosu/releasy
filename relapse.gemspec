@@ -1,18 +1,18 @@
 # -*- encoding: utf-8 -*-
 $LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
-require "release_packager/version"
+require "relapse/version"
 
 Gem::Specification.new do |s|
-  s.name        = "release_packager"
-  s.version     = ReleasePackager::VERSION
+  s.name        = "relapse"
+  s.version     = Relapse::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Bil Bas (Spooner)"]
   s.email       = ["bil.bagpuss@gmail.com"]
-  s.homepage    = "http://spooner.github.com/libraries/release_packager/"
-  s.summary     = %q{ReleasePackager helps to make application releases simpler}
-  s.description = %q{ReleasePackager helps to make application releases simpler, by outputting source folders, win32 folders, win32 standalone executables, win32 installers}
+  s.homepage    = "http://spooner.github.com/libraries/relapse/"
+  s.summary     = %q{Relapse helps to make application releases simpler}
+  s.description = %q{Relapse helps to make application releases simpler, by outputting source folders, win32 folders, win32 standalone executables, win32 installers}
 
-  s.rubyforge_project = "release_packager"
+  s.rubyforge_project = "relapse"
   
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

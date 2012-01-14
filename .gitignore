@@ -12,6 +12,4 @@ ctags
 .idea/
 doc/
 test/test_project/pkg
-
-/test/test_project/test.exe
-osx_app/
+test/test_project/test_app.exe

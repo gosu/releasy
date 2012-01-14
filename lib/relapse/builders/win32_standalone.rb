@@ -1,6 +1,6 @@
-require "release_packager/builders/win32_builder"
+require "relapse/builders/win32_builder"
 
-module ReleasePackager
+module Relapse
   module Builders
     # Creates a completely standalone (self-extracting when run) win32 executable.
     class Win32Standalone < Win32Builder

@@ -9,7 +9,7 @@ CLEAN << "test/test_project/pkg" # Created by running tests.
 Bundler::GemHelper.install_tasks
 
 desc "Run all tests"
-task :test_app do
+task :test do
   Rake::TestTask.new do |t|
     t.libs << "test"
     t.pattern = "test/**/*_test.rb"
@@ -19,4 +19,4 @@ end
 
 YARD::Rake::YardocTask.new
 
-task :default => :test_app
+task :default => :test

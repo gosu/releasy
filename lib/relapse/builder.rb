@@ -1,4 +1,4 @@
-module ReleasePackager
+module Relapse
   class Builder
     include Rake::DSL
 

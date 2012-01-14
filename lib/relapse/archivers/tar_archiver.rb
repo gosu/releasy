@@ -1,6 +1,6 @@
-require "release_packager/archiver"
+require "relapse/archiver"
 
-module ReleasePackager
+module Relapse
   # An archiver that tars and then compresses the folder.
   # @abstract
   class TarArchiver < Archiver

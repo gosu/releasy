@@ -1,6 +1,6 @@
-require "release_packager/archiver"
+require "relapse/archiver"
 
-module ReleasePackager
+module Relapse
   module Archivers
     class SevenZip < Archiver
       def self.identifier; :"7z"; end
