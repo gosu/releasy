@@ -67,7 +67,7 @@ context ReleasePackager::Project do
         p.add_link "www.frog.com", "Frog"
         p.add_link "www2.fish.com", "Fish"
 
-        p.osx_app_wrapper = "osx_app/RubyGosu App.app"
+        p.osx_app_wrapper = "../../../osx_app/RubyGosu App.app"
         p.osx_app_url = "org.url.app"
         p.osx_app_gems = Bundler.setup.gems
       end
@@ -78,7 +78,7 @@ context ReleasePackager::Project do
     asserts(:executable).equals "bin/test_project_2a"
     asserts(:folder_base).equals "pkg/test_project_2a_v0_1_5"
     asserts(:links).equals "www.frog.com" => "Frog", "www2.fish.com" => "Fish"
-    asserts(:osx_app_wrapper).equals "osx_app/RubyGosu App.app"
+    asserts(:osx_app_wrapper).equals "../../../osx_app/RubyGosu App.app"
     asserts(:osx_app_url).equals "org.url.app"
 
     asserts(:active_builders).equals [ReleasePackager::Builders::OsxApp, ReleasePackager::Builders::Source, ReleasePackager::Builders::Win32Standalone]
