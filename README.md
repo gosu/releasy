@@ -67,6 +67,8 @@ Example
 
 ### Tasks created
 
+The win32 tasks will not be created unless running on Windows.
+
     rake build                         # Build all outputs
     rake build:osx                     # Build all osx outputs
     rake build:osx:app                 # Build OS X app
