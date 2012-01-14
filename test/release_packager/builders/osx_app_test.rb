@@ -80,6 +80,62 @@ require 'test/bin/test'
 END
       end
 
+      asserts("Info.plist is correct") do
+        File.read("pkg/test_0_1_OSX/Test.app/Contents/Info.plist") == <<END
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>BuildMachineOSBuild</key>
+	<string>11C74</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>Test</string>
+	<key>CFBundleIconFile</key>
+	<string>Gosu</string>
+	<key>CFBundleIdentifier</key>
+	<string>org.frog.fish</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>1.0</string>
+	<key>DTCompiler</key>
+	<string>4.0</string>
+	<key>DTPlatformBuild</key>
+	<string>10M2518</string>
+	<key>DTPlatformVersion</key>
+	<string>PG</string>
+	<key>DTSDKBuild</key>
+	<string>8S2167</string>
+	<key>DTSDKName</key>
+	<string>macosx10.4</string>
+	<key>DTXcode</key>
+	<string>0400</string>
+	<key>DTXcodeBuild</key>
+	<string>10M2518</string>
+	<key>LSMinimumSystemVersionByArchitecture</key>
+	<dict>
+		<key>i386</key>
+		<string>10.4.0</string>
+		<key>ppc</key>
+		<string>10.4.0</string>
+		<key>x86_64</key>
+		<string>10.6.0</string>
+	</dict>
+	<key>NSMainNibFile</key>
+	<string>MainMenu</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+</dict>
+</plist>
+END
+      end
+
       # Bundler should also be asked for, but it shouldn't be copied in.
       %w[release_packager rr riot yard].each do |gem|
         asserts("#{gem} gem folder copied") { File.directory?("pkg/test_0_1_OSX/Test.app/Contents/Resources/lib/#{gem}") }
