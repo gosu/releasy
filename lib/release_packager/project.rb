@@ -223,7 +223,7 @@ module ReleasePackager
           archiver.create_tasks output_task, folder
         end
 
-        desc "Package #{name} in all archive formats"
+        desc "Package all #{builder.identifier}"
         task "package:#{output_task}" => @archive_formats.map {|c| "package:#{output_task}:#{c}" }
 
         case output_task

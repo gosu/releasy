@@ -80,17 +80,17 @@ Note: The _win32_ tasks will not be created unless running on Windows.
     rake build:win32:installer         # Build installer 1.4.0 [Innosetup]
     rake package                       # Package all
     rake package:osx                   # Package all osx
-    rake package:osx:app               # Package Alpha Channel in all archive f...
+    rake package:osx:app               # Package all osx_app
     rake package:osx:app:7z            # Create pkg/alpha_channel_1_4_0_OSX.7z
     rake package:osx:app:zip           # Create pkg/alpha_channel_1_4_0_OSX.zip
-    rake package:source                # Package Alpha Channel in all archive f...
+    rake package:source                # Package all source
     rake package:source:7z             # Create pkg/alpha_channel_1_4_0_SOURCE.7z
     rake package:source:zip            # Create pkg/alpha_channel_1_4_0_SOURCE.zip
-    rake package:win32                 # Package all win32
+    rake package:win32                 # Package all win32_folder
     rake package:win32:folder          # Package Alpha Channel in all archive f...
     rake package:win32:folder:7z       # Create pkg/alpha_channel_1_4_0_WIN32.7z
     rake package:win32:folder:zip      # Create pkg/alpha_channel_1_4_0_WIN32.zip
-    rake package:win32:installer       # Package Alpha Channel in all archive f...
+    rake package:win32:installer       # Package all win32_installer
     rake package:win32:installer:7z    # Create pkg/alpha_channel_1_4_0_WIN32_I...
     rake package:win32:installer:zip   # Create pkg/alpha_channel_1_4_0_WIN32_I...
 
