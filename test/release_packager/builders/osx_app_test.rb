@@ -35,7 +35,7 @@ context ReleasePackager::Builders::OsxApp do
 
   context "valid wrapper" do
     hookup do
-      topic.osx_app_wrapper = "osx_app/RubyGosu App.app"
+      topic.osx_app_wrapper = "../../../osx_app/RubyGosu App.app"
       topic.generate_tasks
     end
 
@@ -51,7 +51,7 @@ context ReleasePackager::Builders::OsxApp do
           [ :Task, "build:osx:app", %w[pkg/test_0_1_OSX] ],
 
           [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
-          [ :FileCreationTask, "pkg/test_0_1_OSX", source_files + ["osx_app/RubyGosu App.app"]],
+          [ :FileCreationTask, "pkg/test_0_1_OSX", source_files + ["../../../osx_app/RubyGosu App.app"]],
           [ :FileTask, "pkg/test_0_1_OSX.tar.gz", %w[pkg/test_0_1_OSX] ],
       ]
 
