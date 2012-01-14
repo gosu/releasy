@@ -33,6 +33,10 @@ Optionally, release folders can be archived using one or more of:
 Example
 -------
 
+### Project's Rakefile
+
+    require 'release_packager'
+
     # Example is from my game, Alpha Channel.
     ReleasePackager::Project.new do |p|
       p.name = "Alpha Channel"
@@ -51,14 +55,40 @@ Example
       p.add_output :win32_folder
       p.add_output :win32_installer
 
+      # Settings for specific outputs.
       p.installer_group = "Spooner Games"
       p.osx_app_url = "com.github.spooner.games.alpha_channel"
       p.osx_app_wrapper = "../osx_app/RubyGosu App.app"
 
-      # Create all packages as zip and 7z.
+      # Create all packages as zip and 7z archives.
       p.add_archive_format :zip
       p.add_archive_format :'7z'
     end
+
+### Tasks created
+
+    rake build                         # Build all outputs
+    rake build:osx                     # Build all osx outputs
+    rake build:osx:app                 # Build OS X app
+    rake build:source                  # Build source folder
+    rake build:win32                   # Build all win32 outputs
+    rake build:win32:folder            # Build source/exe folder 1.4.0 [Innosetup]
+    rake build:win32:installer         # Build installer 1.4.0 [Innosetup]
+    rake package                       # Package all
+    rake package:osx                   # Package all osx
+    rake package:osx:app               # Package Alpha Channel in all archive f...
+    rake package:osx:app:7z            # Create pkg/alpha_channel_1_4_0_OSX.7z
+    rake package:osx:app:zip           # Create pkg/alpha_channel_1_4_0_OSX.zip
+    rake package:source                # Package Alpha Channel in all archive f...
+    rake package:source:7z             # Create pkg/alpha_channel_1_4_0_SOURCE.7z
+    rake package:source:zip            # Create pkg/alpha_channel_1_4_0_SOURCE.zip
+    rake package:win32                 # Package all win32
+    rake package:win32:folder          # Package Alpha Channel in all archive f...
+    rake package:win32:folder:7z       # Create pkg/alpha_channel_1_4_0_WIN32.7z
+    rake package:win32:folder:zip      # Create pkg/alpha_channel_1_4_0_WIN32.zip
+    rake package:win32:installer       # Package Alpha Channel in all archive f...
+    rake package:win32:installer:7z    # Create pkg/alpha_channel_1_4_0_WIN32_I...
+    rake package:win32:installer:zip   # Create pkg/alpha_channel_1_4_0_WIN32_I...
 
 External Requirements
 ---------------------
