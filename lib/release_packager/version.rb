@@ -1,3 +1,3 @@
 module ReleasePackager
-  VERSION = "0.0.1pre2"
+  VERSION = "0.1.0beta1"
 end

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    release_packager (0.0.1pre2)
+    release_packager (0.1.0beta1)
       ocra (~> 1.3.0)
       rake
 
