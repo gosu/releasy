@@ -8,7 +8,7 @@ $LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
 require 'release_packager'
 
 def source_files
-  %w[bin/test lib/test.rb lib/test/stuff.rb README.txt]
+  %w[bin/test_app lib/test_app.rb lib/test_app/stuff.rb README.txt]
 end
 
 def project_path

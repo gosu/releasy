@@ -2,4 +2,4 @@
 require 'riot'
 require 'riot/rr'
 
-require 'test/stuff'
+require 'test_app/stuff'

@@ -12,33 +12,33 @@ module ReleasePackager
       protected
       # FOLDER containing EXE, Ruby + source.
       def create_tasks
-        directory executable_folder_path
+        directory folder
 
-        file executable_folder_path => project.files do
-          create_link_files executable_folder_path
+        file folder => project.files do
+          create_link_files folder
 
-          create_installer folder_installer_name, :links => false
+          create_installer installer_name, :links => false
 
           # Extract the installer to the directory.
-          command = %[#{folder_installer_name} /SILENT /DIR=#{executable_folder_path}]
+          command = %[#{installer_name} /SILENT /DIR=#{folder}]
           puts command if project.verbose?
           system command
 
           # Remove files that would be used to uninstall.
-          UNINSTALLER_FILES.each {|f| rm File.join(executable_folder_path, f) }
+          UNINSTALLER_FILES.each {|f| rm File.join(folder, f) }
           rm temp_installer_script
-          rm folder_installer_name
+          rm installer_name
         end
 
         desc "Build source/exe folder #{project.version} [Innosetup]"
-        task "build:win32:folder" => executable_folder_path
+        task "build:win32:folder" => folder
       end
 
       protected
-      def temp_installer_script; "#{@output_path}/#{INSTALLER_SCRIPT}"; end
-      def folder_installer_name; "#{project.folder_base}_setup_to_folder.exe"; end
+      def temp_installer_script; "#{project.output_path}/#{INSTALLER_SCRIPT}"; end
+      def installer_name; "#{project.folder_base}_setup_to_folder.exe"; end
       def executable_name; "#{project.underscored_name}.exe"; end
-      def executable_folder_path; "#{project.folder_base}_WIN32"; end
+      def folder; "#{project.folder_base}_#{folder_suffix}"; end
     end
   end
 end

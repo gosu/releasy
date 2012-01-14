@@ -11,11 +11,11 @@ module ReleasePackager
       protected
       # Regular windows installer, but some users consider them evil.
       def create_tasks
-        directory installer_folder
+        directory folder
 
-        file installer_folder => project.files do
-          create_link_files installer_folder
-          cp project.readme, installer_folder if project.readme
+        file folder => project.files do
+          create_link_files folder
+          cp project.readme, folder if project.readme
 
           create_installer installer_name, :links => true
 
@@ -23,13 +23,13 @@ module ReleasePackager
         end
 
         desc "Build installer #{project.version} [Innosetup]"
-        task "build:win32:installer" => installer_folder
+        task "build:win32:installer" => folder
       end
 
       protected
-      def temp_installer_script; "#{@output_path}/#{INSTALLER_SCRIPT}"; end
-      def installer_folder; "#{project.folder_base}_#{folder_suffix}"; end
-      def installer_name; "#{installer_folder}/#{project.underscored_name}_setup.exe"; end
+      def temp_installer_script; "#{project.output_path}/#{INSTALLER_SCRIPT}"; end
+      def folder; "#{project.folder_base}_#{folder_suffix}"; end
+      def installer_name; "#{folder}/#{project.underscored_name}_setup.exe"; end
     end
   end
 end

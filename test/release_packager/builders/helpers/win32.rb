@@ -1,6 +1,6 @@
 def win32_project
   project = ReleasePackager::Project.new
-  project.name = "Test"
+  project.name = "Test App"
   project.version = "0.1"
   project.files = source_files
   project.ocra_parameters = "--no-enc"

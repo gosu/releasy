@@ -27,15 +27,15 @@ context ReleasePackager::Builders::Win32Folder do
             [ :Task, "package", %w[package:win32] ],
             [ :Task, "package:win32", %w[package:win32:folder] ],
             [ :Task, "package:win32:folder", %w[package:win32:folder:zip] ],
-            [ :Task, "package:win32:folder:zip", %w[pkg/test_0_1_WIN32.zip] ],
+            [ :Task, "package:win32:folder:zip", %w[pkg/test_app_0_1_WIN32.zip] ],
 
             [ :Task, "build", %w[build:win32] ],
             [ :Task, "build:win32", %w[build:win32:folder] ],
-            [ :Task, "build:win32:folder", %w[pkg/test_0_1_WIN32] ],
+            [ :Task, "build:win32:folder", %w[pkg/test_app_0_1_WIN32] ],
 
             [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
-            [ :FileCreationTask, "pkg/test_0_1_WIN32", source_files ],
-            [ :FileTask, "pkg/test_0_1_WIN32.zip", %w[pkg/test_0_1_WIN32] ],
+            [ :FileCreationTask, "pkg/test_app_0_1_WIN32", source_files ],
+            [ :FileTask, "pkg/test_app_0_1_WIN32.zip", %w[pkg/test_app_0_1_WIN32] ],
         ]
 
         test_tasks tasks
@@ -43,11 +43,21 @@ context ReleasePackager::Builders::Win32Folder do
         context "generate folder + zip" do
           hookup { begin; Rake::Task["package:win32:folder:zip"].invoke; rescue; end }
 
-          asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_0_1_WIN32/#{f}") == File.read(f) } }
-          asserts("folder includes links") { File.read("pkg/test_0_1_WIN32/Website.url") == link_file }
-          asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_0_1_WIN32/test.exe") > 0 }
-          asserts("archive created and of reasonable size") { File.size("pkg/test_0_1_WIN32.zip") > 2**20 }
-          asserts("uninstaller files have been removed") { FileList["pkg/test_0_1_WIN32/unins000.*"].empty? }
+          asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_app_0_1_WIN32/#{f}") == File.read(f) } }
+          asserts("folder includes links") { File.read("pkg/test_app_0_1_WIN32/Website.url") == link_file }
+          asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_app_0_1_WIN32/test.exe") > 0 }
+          asserts("archive created and of reasonable size") { File.size("pkg/test_app_0_1_WIN32.zip") > 2**20 }
+          asserts("uninstaller files have been removed") { FileList["pkg/test_app_0_1_WIN32/unins000.*"].empty? }
+        end
+
+        context "the builder itself" do
+          setup { ReleasePackager::Builders::Win32Folder.new(topic) }
+
+          asserts(:folder_suffix).equals "WIN32"
+          asserts(:temp_installer_script).equals "pkg/win32_folder.iss"
+          asserts(:installer_name).equals "pkg/test_app_0_1_setup_to_folder.exe"
+          asserts(:executable_name).equals "test_app.exe"
+          asserts(:folder).equals "pkg/test_app_0_1_WIN32"
         end
       end
     else

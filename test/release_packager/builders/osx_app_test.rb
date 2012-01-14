@@ -11,7 +11,7 @@ context ReleasePackager::Builders::OsxApp do
   hookup do
     Dir.chdir project_path
 
-    topic.name = "Test"
+    topic.name = "Test App"
     topic.version = "0.1"
     topic.files = source_files
     topic.readme = "README.txt"
@@ -46,15 +46,15 @@ context ReleasePackager::Builders::OsxApp do
           [ :Task, "package", %w[package:osx] ],
           [ :Task, "package:osx", %w[package:osx:app] ],
           [ :Task, "package:osx:app", %w[package:osx:app:tar_gz] ],
-          [ :Task, "package:osx:app:tar_gz", %w[pkg/test_0_1_OSX.tar.gz] ],
+          [ :Task, "package:osx:app:tar_gz", %w[pkg/test_app_0_1_OSX.tar.gz] ],
 
           [ :Task, "build", %w[build:osx] ],
           [ :Task, "build:osx", %w[build:osx:app] ],
-          [ :Task, "build:osx:app", %w[pkg/test_0_1_OSX] ],
+          [ :Task, "build:osx:app", %w[pkg/test_app_0_1_OSX] ],
 
           [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
-          [ :FileCreationTask, "pkg/test_0_1_OSX", source_files + ["../../../osx_app/RubyGosu App.app"]],
-          [ :FileTask, "pkg/test_0_1_OSX.tar.gz", %w[pkg/test_0_1_OSX] ],
+          [ :FileCreationTask, "pkg/test_app_0_1_OSX", source_files + ["../../../osx_app/RubyGosu App.app"]],
+          [ :FileTask, "pkg/test_app_0_1_OSX.tar.gz", %w[pkg/test_app_0_1_OSX] ],
       ]
 
       test_tasks tasks
@@ -63,14 +63,15 @@ context ReleasePackager::Builders::OsxApp do
     context "generate folder + tar.gz" do
       hookup { Rake::Task["package:osx:app:tar_gz"].invoke }
 
-      asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_0_1_OSX/Test.app/Contents/Resources/test/#{f}") == File.read(f) } }
-      asserts("readme copied to folder") { File.read("pkg/test_0_1_OSX/README.txt") == File.read("README.txt") }
+      asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/test_app/#{f}") == File.read(f) } }
+      asserts("readme copied to folder") { File.read("pkg/test_app_0_1_OSX/README.txt") == File.read("README.txt") }
 
-      asserts("app is an executable (will fail in Windows)") { File.executable?("pkg/test_0_1_OSX/Test.app/Contents/MacOS/RubyGosu App") }
-      asserts("archive created") { File.size("pkg/test_0_1_OSX.tar.gz") > 0 }
+      asserts("app is an executable (will fail in Windows)") { File.executable?("pkg/test_app_0_1_OSX/Test App.app/Contents/MacOS/RubyGosu App") }
+      asserts("archive created") { File.size("pkg/test_app_0_1_OSX.tar.gz") > 0 }
 
       asserts("Main.rb is correct") do
-        File.read("pkg/test_0_1_OSX/Test.app/Contents/Resources/Main.rb") == <<END
+        puts File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/Main.rb")
+        File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/Main.rb") == <<END
 OSX_EXECUTABLE_FOLDER = File.expand_path("../../..", __FILE__)
 
 # Really hacky fudge-fix for something oddly missing in the .app.
@@ -78,12 +79,12 @@ class Encoding
   UTF_7 = UTF_16BE = UTF_16LE = UTF_32BE = UTF_32LE = Encoding.list.first
 end
 
-load 'test/bin/test'
+load 'test_app/bin/test_app'
 END
       end
 
       asserts("Info.plist is correct") do
-        File.read("pkg/test_0_1_OSX/Test.app/Contents/Info.plist") == <<END
+        File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Info.plist") == <<END
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -140,15 +141,18 @@ END
 
       # Bundler should also be asked for, but it shouldn't be copied in.
       %w[release_packager rr riot yard].each do |gem|
-        asserts("#{gem} gem folder copied") { File.directory?("pkg/test_0_1_OSX/Test.app/Contents/Resources/lib/#{gem}") }
+        asserts("#{gem} gem folder copied") { File.directory?("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/lib/#{gem}") }
       end
 
-      denies("bundler gem folder copied")  { File.directory?("pkg/test_0_1_OSX/Test.app/Contents/Resources/lib/bundler") }
+      denies("bundler gem folder copied")  { File.directory?("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/lib/bundler") }
+      denies("archive is empty") { `7z x -so -bd -tgzip pkg/test_app_0_1_OSX.tar.gz | 7z l -si -bd -ttar` =~ /0 files, 0 folders/m }
+    end
 
-      denies("Info.plist contains old url") { File.read("pkg/test_0_1_OSX/Test.app/Contents/Info.plist") =~ %r[<string>org\.libgosu\.UntitledGame</string>] }
-      asserts("Info.plist contains correct url") { File.read("pkg/test_0_1_OSX/Test.app/Contents/Info.plist") =~ %r[<string>org\.frog\.fish</string>]  }
+    context "the builder itself" do
+      setup { ReleasePackager::Builders::OsxApp.new(topic) }
 
-      denies("archive is empty") { `7z x -so -bd -tgzip pkg/test_0_1_OSX.tar.gz | 7z l -si -bd -ttar` =~ /0 files, 0 folders/m }
+      asserts(:folder_suffix).equals "OSX"
+      asserts(:app_name).equals "Test App.app"
+    end
   end
-end
 end
