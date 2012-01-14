@@ -64,7 +64,7 @@ context ReleasePackager::Builders::OsxApp do
       asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_0_1_OSX/Test.app/Contents/Resources/test/#{f}") == File.read(f) } }
       asserts("readme copied to folder") { File.read("pkg/test_0_1_OSX/README.txt") == File.read("README.txt") }
 
-      asserts("app folder is an executable file") { File.executable?("pkg/test_0_1_OSX/Test.app") }
+      asserts("app is an executable") { File.executable?("pkg/test_0_1_OSX/Test.app/Contents/MacOS/RubyGosu App") }
       asserts("archive created") { File.size("pkg/test_0_1_OSX.tar.gz") > 0 }
 
       asserts("Main.rb is correct") do

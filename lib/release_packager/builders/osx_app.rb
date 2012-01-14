@@ -32,7 +32,7 @@ module ReleasePackager
           cp_r original_app, new_app
 
           ## Copy my source files.
-          copy_files_relative project.files, "#{new_app}/Contents/Resources/#{project.name}"
+          copy_files_relative project.files, "#{new_app}/Contents/Resources/#{project.underscored_name}"
 
           # Copy accompanying files.
           cp project.readme, folder if project.readme
@@ -42,7 +42,7 @@ module ReleasePackager
           create_main new_app
           edit_init new_app
 
-          chmod 0755, new_app
+          chmod 0755, "#{new_app}/Contents/MacOS/RubyGosu App"
         end
       end
 
