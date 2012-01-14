@@ -91,7 +91,7 @@ END
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>Test</string>
+	<string>RubyGosu App</string>
 	<key>CFBundleIconFile</key>
 	<string>Gosu</string>
 	<key>CFBundleIdentifier</key>
@@ -145,9 +145,6 @@ END
 
       denies("Info.plist contains old url") { File.read("pkg/test_0_1_OSX/Test.app/Contents/Info.plist") =~ %r[<string>org\.libgosu\.UntitledGame</string>] }
       asserts("Info.plist contains correct url") { File.read("pkg/test_0_1_OSX/Test.app/Contents/Info.plist") =~ %r[<string>org\.frog\.fish</string>]  }
-
-      denies("Info.plist contains old app name") { File.read("pkg/test_0_1_OSX/Test.app/Contents/Info.plist") =~ %r[<string>RubyGosu App</string>]  }
-      asserts("Info.plist contains correct app name") { File.read("pkg/test_0_1_OSX/Test.app/Contents/Info.plist") =~ %r[<string>Test</string>]  }
 
       denies("archive is empty") { `7z x -so -bd -tgzip pkg/test_0_1_OSX.tar.gz | 7z l -si -bd -ttar` =~ /0 files, 0 folders/m }
   end

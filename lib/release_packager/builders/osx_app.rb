@@ -97,7 +97,6 @@ END_TEXT
         # Edit the info file to be specific for my game.
         puts "--- Editing init"
         info = File.read(file)
-        info.sub!('<string>RubyGosu App</string>', "<string>#{project.name}</string>")
         info.sub!('<string>org.libgosu.UntitledGame</string>', "<string>#{project.osx_app_url}</string>")
         File.open(file, "w") {|f| f.puts info }
       end
