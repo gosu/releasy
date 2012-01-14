@@ -23,6 +23,8 @@ context ReleasePackager::Builders::Source do
     Dir.chdir project_path
   end
 
+  test_active_builders
+
   context "tasks" do
     tasks = [
         [ :Task, "package", %w[package:source] ],

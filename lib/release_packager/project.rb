@@ -156,7 +156,7 @@ module ReleasePackager
 
     # Generates all tasks required by the user. Automatically called at the end of the block, if #new is given a block.
     def generate_tasks
-      raise "Must specify at least one output with #add_output before tasks can be generated" if @outputs.empty?
+      raise "Must specify at least one valid output for this OS with #add_output before tasks can be generated" if active_builders.empty?
 
       build_outputs = []
       build_groups = Hash.new {|h, k| h[k] = [] }
@@ -199,7 +199,7 @@ module ReleasePackager
     protected
     # @return [Array<Builder>]
     def active_builders
-      BUILDERS.values.find_all {|b| @outputs.include? b.identifier }
+      BUILDERS.values.find_all {|b| @outputs.include? b.identifier and b.valid_for_platform? }
     end
 
     protected

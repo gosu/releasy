@@ -15,36 +15,46 @@ context ReleasePackager::Builders::Win32Folder do
     hookup do
       topic.add_output :win32_folder
       topic.add_archive_format :zip
-      topic.generate_tasks
     end
 
-    context "tasks" do
-      tasks = [
-          [ :Task, "package", %w[package:win32] ],
-          [ :Task, "package:win32", %w[package:win32:folder] ],
-          [ :Task, "package:win32:folder", %w[package:win32:folder:zip] ],
-          [ :Task, "package:win32:folder:zip", %w[pkg/test_0_1_WIN32.zip] ],
+    test_active_builders
 
-          [ :Task, "build", %w[build:win32] ],
-          [ :Task, "build:win32", %w[build:win32:folder] ],
-          [ :Task, "build:win32:folder", %w[pkg/test_0_1_WIN32] ],
+    if RUBY_PLATFORM =~ /win32|mingw/
+      context "on Windows" do
+        hookup { topic.generate_tasks }
 
-          [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
-          [ :FileCreationTask, "pkg/test_0_1_WIN32", source_files ],
-          [ :FileTask, "pkg/test_0_1_WIN32.zip", %w[pkg/test_0_1_WIN32] ],
-      ]
+        tasks = [
+            [ :Task, "package", %w[package:win32] ],
+            [ :Task, "package:win32", %w[package:win32:folder] ],
+            [ :Task, "package:win32:folder", %w[package:win32:folder:zip] ],
+            [ :Task, "package:win32:folder:zip", %w[pkg/test_0_1_WIN32.zip] ],
 
-      test_tasks tasks
-    end
+            [ :Task, "build", %w[build:win32] ],
+            [ :Task, "build:win32", %w[build:win32:folder] ],
+            [ :Task, "build:win32:folder", %w[pkg/test_0_1_WIN32] ],
 
-    context "generate folder + zip" do
-      hookup { begin; Rake::Task["package:win32:folder:zip"].invoke; rescue; end }
+            [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
+            [ :FileCreationTask, "pkg/test_0_1_WIN32", source_files ],
+            [ :FileTask, "pkg/test_0_1_WIN32.zip", %w[pkg/test_0_1_WIN32] ],
+        ]
 
-      asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_0_1_WIN32/#{f}") == File.read(f) } }
-      asserts("folder includes links") { File.read("pkg/test_0_1_WIN32/Website.url") == link_file }
-      asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_0_1_WIN32/test.exe") > 0 }
-      asserts("archive created and of reasonable size") { File.size("pkg/test_0_1_WIN32.zip") > 2**20 }
-      asserts("uninstaller files have been removed") { FileList["pkg/test_0_1_WIN32/unins000.*"].empty? }
+        test_tasks tasks
+
+        context "generate folder + zip" do
+          hookup { begin; Rake::Task["package:win32:folder:zip"].invoke; rescue; end }
+
+          asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_0_1_WIN32/#{f}") == File.read(f) } }
+          asserts("folder includes links") { File.read("pkg/test_0_1_WIN32/Website.url") == link_file }
+          asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_0_1_WIN32/test.exe") > 0 }
+          asserts("archive created and of reasonable size") { File.size("pkg/test_0_1_WIN32.zip") > 2**20 }
+          asserts("uninstaller files have been removed") { FileList["pkg/test_0_1_WIN32/unins000.*"].empty? }
+        end
+      end
+    else
+      context "NOT on Windows" do
+        asserts(:active_builders).empty
+        asserts(:generate_tasks).raises RuntimeError
+      end
     end
   end
 end

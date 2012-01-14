@@ -15,36 +15,46 @@ context ReleasePackager::Builders::Win32Standalone do
     hookup do
       topic.add_output :win32_standalone
       topic.add_archive_format :"7z"
-      topic.generate_tasks
     end
 
-    context "tasks" do
-      tasks = [
-          [ :Task, "package", %w[package:win32] ],
-          [ :Task, "package:win32", %w[package:win32:standalone] ],
-          [ :Task, "package:win32:standalone", %w[package:win32:standalone:7z] ],
-          [ :Task, "package:win32:standalone:7z", %w[pkg/test_0_1_WIN32_EXE.7z] ],
+    test_active_builders
 
-          [ :Task, "build", %w[build:win32] ],
-          [ :Task, "build:win32", %w[build:win32:standalone] ],
-          [ :Task, "build:win32:standalone", %w[pkg/test_0_1_WIN32_EXE] ],
+    if RUBY_PLATFORM =~ /win32|mingw/
+      context "on Windows" do
+        hookup { topic.generate_tasks }
 
-          [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
-          [ :FileCreationTask, "pkg/test_0_1_WIN32_EXE", source_files ],
-          [ :FileTask, "pkg/test_0_1_WIN32_EXE.7z", %w[pkg/test_0_1_WIN32_EXE] ],
-      ]
+        tasks = [
+            [ :Task, "package", %w[package:win32] ],
+            [ :Task, "package:win32", %w[package:win32:standalone] ],
+            [ :Task, "package:win32:standalone", %w[package:win32:standalone:7z] ],
+            [ :Task, "package:win32:standalone:7z", %w[pkg/test_0_1_WIN32_EXE.7z] ],
 
-      test_tasks tasks
-    end
+            [ :Task, "build", %w[build:win32] ],
+            [ :Task, "build:win32", %w[build:win32:standalone] ],
+            [ :Task, "build:win32:standalone", %w[pkg/test_0_1_WIN32_EXE] ],
 
-    context "generate folder + 7z" do
-      hookup { Rake::Task["package:win32:standalone:7z"].invoke }
+            [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
+            [ :FileCreationTask, "pkg/test_0_1_WIN32_EXE", source_files ],
+            [ :FileTask, "pkg/test_0_1_WIN32_EXE.7z", %w[pkg/test_0_1_WIN32_EXE] ],
+        ]
 
-      asserts("readme copied to folder") { File.read("pkg/test_0_1_WIN32_EXE/README.txt") == File.read("README.txt") }
-      asserts("folder includes links") { File.read("pkg/test_0_1_WIN32_EXE/Website.url") == link_file }
-      asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_0_1_WIN32_EXE/test.exe") > 2**20 }
-      asserts("archive created") { File.exists? "pkg/test_0_1_WIN32_EXE.7z" }
-      asserts("archive contains expected files") { `7z l pkg/test_0_1_WIN32_EXE.7z` =~ /3 files, 1 folders/m }
+        test_tasks tasks
+
+        context "generate folder + 7z" do
+          hookup { Rake::Task["package:win32:standalone:7z"].invoke }
+
+          asserts("readme copied to folder") { File.read("pkg/test_0_1_WIN32_EXE/README.txt") == File.read("README.txt") }
+          asserts("folder includes links") { File.read("pkg/test_0_1_WIN32_EXE/Website.url") == link_file }
+          asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_0_1_WIN32_EXE/test.exe") > 2**20 }
+          asserts("archive created") { File.exists? "pkg/test_0_1_WIN32_EXE.7z" }
+          asserts("archive contains expected files") { `7z l pkg/test_0_1_WIN32_EXE.7z` =~ /3 files, 1 folders/m }
+        end
+      end
+    else
+      context "NOT on Windows" do
+        asserts(:active_builders).empty
+        asserts(:generate_tasks).raises RuntimeError
+      end
     end
   end
 end

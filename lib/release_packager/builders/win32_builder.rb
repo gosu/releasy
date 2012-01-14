@@ -6,6 +6,8 @@ module ReleasePackager
   class Win32Builder < Builder
     OCRA_COMMAND = "ocra"
 
+    def self.valid_for_platform?; RUBY_PLATFORM =~ /win32|mingw/; end
+
     protected
     def ocra_command
       command = %[#{OCRA_COMMAND} "#{project.executable}" #{project.ocra_parameters} ]

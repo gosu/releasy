@@ -24,6 +24,10 @@ def test_tasks(tasks)
   asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[1]] }).empty? }
 end
 
+def test_active_builders
+  asserts("#active_builders are valid") { topic.send(:active_builders).all?(&:valid_for_platform?) }
+end
+
 $original_path = Dir.pwd
 
 # Ensure that the pkg directory is clean before starting tests, but don't do it for every test.

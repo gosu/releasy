@@ -23,6 +23,8 @@ context ReleasePackager::Builders::OsxApp do
     topic.add_archive_format :tar_gz
   end
 
+  test_active_builders
+
   context "no wrapper" do
     asserts(:generate_tasks).raises RuntimeError
   end

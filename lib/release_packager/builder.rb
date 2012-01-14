@@ -9,6 +9,8 @@ module ReleasePackager
       create_tasks
     end
 
+    def self.valid_for_platform?; true; end
+
     def self.identifier
       id = name[/[a-z0-9]+$/i]
       id.gsub! /([A-Z]+)([A-Z][a-z])/, '\1_\2'
