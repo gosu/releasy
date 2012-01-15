@@ -19,7 +19,7 @@ module Relapse
           create_installer installer_name, :links => false
 
           # Extract the installer to the directory.
-          command = %[#{installer_name} /SILENT /DIR=#{folder}]
+          command = %[#{installer_name} /VERYSILENT /DIR=#{folder}]
           puts command if project.verbose?
           system command
 
