@@ -53,12 +53,14 @@ Example
 
       # Create a variety of releases, for all platforms.
       p.add_output :osx_app do |o|
+        o.add_archive_format :tar_gz
         o.url = "com.github.spooner.games.alpha_channel"
         o.wrapper = "../osx_app/RubyGosu App.app"
         o.gems = Bundler.definition.specs_for([:default]) # Don't want :development gems.
       end
       p.add_output :source
       p.add_output :win32_folder do |o|
+        o.add_archive_format :exe
         o.ocra_parameters = "--no-enc"
       end
       p.add_output :win32_installer do |o|
@@ -66,9 +68,7 @@ Example
         o.start_menu_group = "Spooner Games"
       end
 
-      # Create all packages as zip and 7z archives.
-      p.add_archive_format :zip
-      p.add_archive_format :'7z'
+      o.add_archive_format :zip # All outputs given this archive format.
     end
 
 ### Tasks created
@@ -85,17 +85,15 @@ Note: The _win32_ tasks will not be created unless running on Windows.
     rake package                       # Package all
     rake package:osx                   # Package all osx
     rake package:osx:app               # Package all osx_app
-    rake package:osx:app:7z            # Create pkg/alpha_channel_1_4_0_OSX.7z
+    rake package:osx:app:tar_gz        # Create pkg/alpha_channel_1_4_0_OSX.tar.gz
     rake package:osx:app:zip           # Create pkg/alpha_channel_1_4_0_OSX.zip
     rake package:source                # Package all source
-    rake package:source:7z             # Create pkg/alpha_channel_1_4_0_SOURCE.7z
     rake package:source:zip            # Create pkg/alpha_channel_1_4_0_SOURCE.zip
-    rake package:win32                 # Package all win32_folder
-    rake package:win32:folder          # Package Alpha Channel in all archive f...
-    rake package:win32:folder:7z       # Create pkg/alpha_channel_1_4_0_WIN32.7z
+    rake package:win32                 # Package all win32
+    rake package:win32:folder          # Package all win32_folder
+    rake package:win32:folder:exe      # Create pkg/alpha_channel_1_4_0_WIN32.exe
     rake package:win32:folder:zip      # Create pkg/alpha_channel_1_4_0_WIN32.zip
     rake package:win32:installer       # Package all win32_installer
-    rake package:win32:installer:7z    # Create pkg/alpha_channel_1_4_0_WIN32_I...
     rake package:win32:installer:zip   # Create pkg/alpha_channel_1_4_0_WIN32_I...
 
 External Requirements

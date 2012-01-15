@@ -1,6 +1,9 @@
+require "relapse/mixins/has_archivers"
+
 module Relapse
   class Builder
     include Rake::DSL
+    include HasArchivers
 
     attr_reader :project
 
@@ -19,6 +22,7 @@ module Relapse
     def folder_suffix; self.class.folder_suffix; end
 
     def initialize(project)
+      super()
       @project = project
       setup
     end

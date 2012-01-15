@@ -6,6 +6,8 @@ end
   require "relapse/archivers/#{archiver}"
 end
 
+require "relapse/mixins/has_archivers"
+
 module Relapse
   DEFAULT_PACKAGE_FOLDER = "pkg"
 
@@ -29,6 +31,7 @@ module Relapse
   # @attr_reader folder_base [String] The path to the folder to create - All variations of output will be based on extending this path.
   class Project
     include Rake::DSL
+    include HasArchivers
 
     attr_writer :underscored_name, :underscored_version, :executable
 
@@ -93,7 +96,8 @@ module Relapse
     #     project.add_output :source
     #     project.generate_tasks
     def initialize
-      @archivers = []
+      super()
+
       @builders = []
       @links = {}
       @files = []
@@ -109,21 +113,7 @@ module Relapse
       end
     end
 
-    # Add an archive type to be generated for each of your outputs.
-    #
-    # @param type [:exe, :"7z", :tar_bz2, :tar_gz, :zip]
-    # @return [Project] self
-    def add_archive_format(type, &block)
-      raise ArgumentError, "Unsupported archive format #{type}" unless ARCHIVERS.has_key? type
-      raise RuntimeError, "Already have archive format #{type.inspect}" if @archivers.any? {|a| a.type == type }
 
-      archiver = ARCHIVERS[type].new(self)
-      @archivers << archiver
-
-      yield archiver if block_given?
-
-      archiver
-    end
 
     # Add a type of output to produce. Must define at least one of these.
     #
@@ -204,12 +194,6 @@ module Relapse
     end
 
     protected
-    # @return [Array<Archiver>]
-    def active_archivers
-      @archivers
-    end
-
-    protected
     # Generates the general tasks for compressing folders.
     def generate_archive_tasks
       return if active_builders.empty?
@@ -220,12 +204,13 @@ module Relapse
       active_builders.each do |builder|
         output_task = builder.type.to_s.sub '_', ':'
 
-        active_archivers.each do |archiver|
+        archivers = active_archivers(builder)
+        archivers.each do |archiver|
           archiver.create_tasks output_task, builder.folder
         end
 
         desc "Package all #{builder.type}"
-        task "package:#{output_task}" => active_archivers.map {|c| "package:#{output_task}:#{c.type}" }
+        task "package:#{output_task}" => archivers.map {|c| "package:#{output_task}:#{c.type}" }
 
         case output_task
           when /^win32:/
@@ -251,6 +236,15 @@ module Relapse
 
       desc "Package all"
       task "package" => top_level_tasks
+    end
+
+    protected
+    def active_archivers(builder)
+      # Use archivers specifically set on the builder and those set globally that aren't on the builder.
+      archivers = builder.send(:active_archivers)
+      archiver_types = archivers.map(&:type)
+
+      archivers + super().reject {|a| archiver_types.include? a.type }
     end
   end
 end

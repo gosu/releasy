@@ -3,6 +3,7 @@
   * Allowed outputs to be configured separately from the project (Warning: API changed significantly).
   * Included gems in osx-app more safely, so that no files will be missing.
   * Added :exe archive format (win32 self-extractor, made on any OS).
+  * Allowed project and outputs to have archive formats (called on Project, affects all outputs).
 
 = v0.1.0
 

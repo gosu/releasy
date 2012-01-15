@@ -33,15 +33,15 @@ context Relapse::Project do
 
     asserts("attempting to generate tasks without any outputs") { topic.generate_tasks }.raises(RuntimeError)
 
-    asserts(:active_archivers).empty
-    asserts(:add_archive_format, :zip).kind_of Relapse::Archivers::Zip
-    asserts(:active_archivers).size 1
-    asserts(:add_archive_format, :unknown).raises(ArgumentError, /unsupported archive/i)
-
     asserts(:active_builders).empty
     asserts(:add_output, :source).kind_of Relapse::Builders::Source
     asserts(:active_builders).size 1
     asserts(:add_output, :unknown).raises(ArgumentError, /unsupported output/i)
+
+    asserts("active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).first) }.empty
+    asserts(:add_archive_format, :zip).kind_of Relapse::Archivers::Zip
+    asserts("active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).first) }.size 1
+    asserts(:add_archive_format, :unknown).raises(ArgumentError, /unsupported archive/i)
   end
 
   context "defined" do
@@ -55,6 +55,7 @@ context Relapse::Project do
 
         p.add_output :source
         p.add_output :osx_app do |o|
+          o.add_archive_format :tar_gz
           o.wrapper = "../../../osx_app/RubyGosu App.app"
           o.url = "org.url.app"
           o.gems = Bundler.setup.gems
@@ -77,6 +78,10 @@ context Relapse::Project do
     asserts(:links).equals "www.frog.com" => "Frog", "www2.fish.com" => "Fish"
 
     asserts(:active_builders).size(windows? ? 3 : 2)
-    asserts(:active_archivers).size 2
+    asserts("source active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).find {|b| b.type == :source }) }.size 2
+    asserts("osx app active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).find {|b| b.type == :osx_app }) }.size 3
+    if windows?
+      asserts("win32 standalone active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).find {|b| b.type == :win32_standalone }) }.size 2
+    end
   end
 end

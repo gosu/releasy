@@ -9,8 +9,9 @@ context Relapse::Builders::Source do
       p.readme = "README.txt"
       p.license = "LICENSE.txt"
 
-      p.add_output :source
-      p.add_archive_format :exe
+      p.add_output :source do |o|
+        o.add_archive_format :exe
+      end
       p.add_archive_format :tar_gz
       p.add_archive_format :tar_bz2
     end

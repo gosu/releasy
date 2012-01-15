@@ -13,8 +13,9 @@ context Relapse::Builders::Win32Folder do
 
   context "win32 folder as zip" do
     hookup do
-      topic.add_output :win32_folder
-      topic.add_archive_format :zip
+      topic.add_output :win32_folder do |o|
+        o.add_archive_format :zip
+      end
     end
 
     test_active_builders
