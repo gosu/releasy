@@ -23,11 +23,13 @@ Gem::Specification.new do |s|
     s.add_runtime_dependency('ocra', '~> 1.3.0')
     s.add_runtime_dependency('rake')
     s.add_development_dependency('riot', '~> 0.12.5')
+    s.add_development_dependency('rr', '~> 1.0.4')
     s.add_development_dependency('yard')
   else
     s.add_dependency('ocra', '~> 1.3.0')
     s.add_dependency('rake')
     s.add_dependency('riot', '~> 0.12.5')
+    s.add_dependency('rr', '~> 1.0.4')
     s.add_dependency('yard')
   end
 end
