@@ -9,9 +9,8 @@ module Relapse
 
       def self.folder_suffix; "WIN32"; end
 
-      protected
       # FOLDER containing EXE, Ruby + source.
-      def create_tasks
+      def generate_tasks
         directory folder
 
         file folder => project.files do
@@ -38,7 +37,6 @@ module Relapse
       def temp_installer_script; "#{project.output_path}/#{INSTALLER_SCRIPT}"; end
       def installer_name; "#{project.folder_base}_setup_to_folder.exe"; end
       def executable_name; "#{project.underscored_name}.exe"; end
-      def folder; "#{project.folder_base}_#{folder_suffix}"; end
     end
   end
 end

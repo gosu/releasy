@@ -6,11 +6,19 @@ module Relapse
   class Win32Builder < Builder
     OCRA_COMMAND = "ocra"
 
+    # @return [String] Extra options to send to Ocra (win32 outputs only).
+    attr_accessor :ocra_parameters
+
     def self.valid_for_platform?; RUBY_PLATFORM =~ /win32|mingw/; end
 
     protected
+    def setup
+      @ocra_parameters = ""
+    end
+
+    protected
     def ocra_command
-      command = %[#{OCRA_COMMAND} "#{project.executable}" #{project.ocra_parameters} ]
+      command = %[#{OCRA_COMMAND} "#{project.executable}" #{ocra_parameters} ]
       command += %[--icon "#{project.icon}" ] if project.icon
       command += (project.files - [project.executable]).map {|f| %["#{f}"]}.join(" ")
       command
@@ -52,13 +60,18 @@ END
 AppName=#{project.underscored_name}
 AppVersion=#{project.version}
 DefaultDirName={pf}\\#{project.name.gsub(/[^\w\s]/, '')}
-DefaultGroupName=#{project.win32_installer_group ? "#{project.win32_installer_group}\\" : ""}#{project.name}
 OutputDir=#{File.dirname output_file}
 OutputBaseFilename=#{File.basename(output_file).chomp(File.extname(output_file))}
 UninstallDisplayIcon={app}\\#{project.underscored_name}.exe
 END
 
         if installer_links
+          if start_menu_group
+            file.puts "DefaultGroupName=#{start_menu_group}\\#{project.name}"
+          else
+            file.puts "DefaultGroupName=#{project.name}"
+          end
+
           file.puts "LicenseFile=#{project.license}" if project.license # User must accept license.
           file.puts "SetupIconFile=#{project.icon}" if project.icon
           file.puts

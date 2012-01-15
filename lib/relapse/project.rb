@@ -44,20 +44,10 @@ module Relapse
     attr_accessor :icon
     # @return [String] Folder to output to (defaults to 'pkg/')
     attr_accessor :output_path
-    # @return [String] Extra options to send to Ocra (win32 outputs only).
-    attr_accessor :ocra_parameters
-    # @return [String] Optional start-menu grouping of the application when installed (if name == "app" and installer_group == "frog", then it will get put into 'frog/app' in the start menu).
-    attr_accessor :win32_installer_group
     # @return [String] File name of readme file - End user will have the option to view this after the win32 installer has installed, but must be .txt/.rtf.
     attr_accessor :readme
     # @return [String] Filename of license file - Must be text or rtf file, which will be shown to user who will be requested to accept it (win32 installer only).
     attr_accessor :license
-    # @return [String] Name of .app directory used as the framework for osx app release.
-    attr_accessor :osx_app_wrapper
-    # @return [String] Inverse url of game (e.g. 'org.supergames.blasterbotsfrommars')
-    attr_accessor :osx_app_url
-    # @return [Array<Gem>] List of gems used by the application, which should usually be: Bundler.setup.gems
-    attr_accessor :osx_app_gems
 
     # Verbosity of the console output.
     # @return [Boolean] True to make the tasks output more information.
@@ -103,8 +93,8 @@ module Relapse
     #     project.add_output :source
     #     project.generate_tasks
     def initialize
-      @archive_formats = []
-      @outputs = []
+      @archivers = []
+      @builders = []
       @links = {}
       @files = []
       @osx_app_gems = []
@@ -125,22 +115,32 @@ module Relapse
     #
     # @param type [:7z, :tar_bz2, :tar_gz, :zip]
     # @return [Project] self
-    def add_archive_format(type)
+    def add_archive_format(type, &block)
       raise ArgumentError, "Unsupported archive format #{type}" unless ARCHIVERS.has_key? type
-      @archive_formats << type unless @archive_formats.include? type
+      raise RuntimeError, "Already have archive format #{type.inspect}" if @archivers.any? {|a| a.identifier == type }
 
-      self
+      archiver = ARCHIVERS[type].new(self)
+      @archivers << archiver
+
+      yield archiver if block_given?
+
+      archiver
     end
 
     # Add a type of output to produce. Must define at least one of these.
     #
     # @param [Symbol]
     # @return [Project] self
-    def add_output(type)
+    def add_output(type, &block)
       raise ArgumentError, "Unsupported output type #{type}" unless BUILDERS.has_key? type
-      @outputs << type unless @outputs.include? type
+      raise RuntimeError, "Already have output #{type.inspect}" if @builders.any? {|b| b.identifier == type }
 
-      self
+      builder = BUILDERS[type].new(self)
+      @builders << builder
+
+      yield builder if block_given?
+
+      builder
     end
 
     # Add a link file to be included in the win32 releases. Will create the file _title.url_ for you.
@@ -162,12 +162,12 @@ module Relapse
       build_groups = Hash.new {|h, k| h[k] = [] }
 
       active_builders.each do |builder|
-        builder.new self
+        builder.generate_tasks
         task_name = "build:#{builder.identifier.to_s.tr("_", ":")}"
 
         if builder.identifier.to_s =~ /_/
-          build_groups[builder.group] << task_name
-          build_outputs << "build:#{builder.group}"
+          build_groups[builder.task_group] << task_name
+          build_outputs << "build:#{builder.task_group}"
         else
           build_outputs << task_name
         end
@@ -199,13 +199,13 @@ module Relapse
     protected
     # @return [Array<Builder>]
     def active_builders
-      BUILDERS.values.find_all {|b| @outputs.include? b.identifier and b.valid_for_platform? }
+      @builders.find_all {|b| b.valid_for_platform? }
     end
 
     protected
     # @return [Array<Archiver>]
     def active_archivers
-      ARCHIVERS.values.find_all {|a| @archive_formats.include? a.identifier }
+      @archivers
     end
 
     protected
@@ -216,15 +216,13 @@ module Relapse
       top_level_tasks = []
       active_builders.each do |builder|
         output_task = builder.identifier.to_s.sub '_', ':'
-        folder = "#{folder_base}_#{builder.folder_suffix}"
 
-        active_archivers.each do |archiver_klass|
-          archiver = archiver_klass.new self
-          archiver.create_tasks output_task, folder
+        active_archivers.each do |archiver|
+          archiver.create_tasks output_task, builder.folder
         end
 
         desc "Package all #{builder.identifier}"
-        task "package:#{output_task}" => @archive_formats.map {|c| "package:#{output_task}:#{c}" }
+        task "package:#{output_task}" => active_archivers.map {|c| "package:#{output_task}:#{c.identifier}" }
 
         case output_task
           when /^win32:/

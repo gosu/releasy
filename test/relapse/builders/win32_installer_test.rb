@@ -13,14 +13,16 @@ context Relapse::Builders::Win32Installer do
 
   context "win32 installer as zip" do
     hookup do
-      topic.add_output :win32_installer
-      topic.win32_installer_group = "Test Apps"
+      topic.add_output :win32_installer do |o|
+        o.start_menu_group = "Test Apps"
+        o.ocra_parameters = "--no-enc"
+      end
       topic.add_archive_format :zip
     end
 
     test_active_builders
 
-    if RUBY_PLATFORM =~ /win32|mingw/
+    if windows?
       context "on Windows" do
         hookup { topic.generate_tasks }
 
@@ -52,7 +54,7 @@ context Relapse::Builders::Win32Installer do
         end
 
         context "the builder itself" do
-          setup { Relapse::Builders::Win32Installer.new(topic) }
+          setup { topic.send(:active_builders).first }
 
           asserts(:folder_suffix).equals "WIN32_INSTALLER"
           asserts(:temp_installer_script).equals "pkg/win32_installer.iss"

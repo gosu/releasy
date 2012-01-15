@@ -6,11 +6,13 @@ module Relapse
     class Win32Installer < Win32Builder
       INSTALLER_SCRIPT = "win32_installer.iss"
 
+      # @return [String] Optional start-menu grouping of the application when installed (if name == "app" and installer_group == "frog", then it will get put into 'frog/app' in the start menu).
+      attr_accessor :start_menu_group
+
       def self.folder_suffix; "WIN32_INSTALLER"; end
 
-      protected
       # Regular windows installer, but some users consider them evil.
-      def create_tasks
+      def generate_tasks
         directory folder
 
         file folder => project.files do
@@ -27,8 +29,13 @@ module Relapse
       end
 
       protected
+      def setup
+        super
+        @start_menu_group = ""
+      end
+
+      protected
       def temp_installer_script; "#{project.output_path}/#{INSTALLER_SCRIPT}"; end
-      def folder; "#{project.folder_base}_#{folder_suffix}"; end
       def installer_name; "#{folder}/#{project.underscored_name}_setup.exe"; end
     end
   end

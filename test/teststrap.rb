@@ -28,6 +28,10 @@ def test_active_builders
   asserts("#active_builders are valid") { topic.send(:active_builders).all?(&:valid_for_platform?) }
 end
 
+def windows?
+  RUBY_PLATFORM =~ /mingw|win32/
+end
+
 $original_path = Dir.pwd
 
 # Ensure that the pkg directory is clean before starting tests, but don't do it for every test.

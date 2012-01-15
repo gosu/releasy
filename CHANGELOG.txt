@@ -1,0 +1,7 @@
+= v0.2.0
+
+  * Allowed outputs to be configured separately from the project (fixes #3).
+
+= v0.1.0
+
+  * First public release

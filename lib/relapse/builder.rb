@@ -4,13 +4,6 @@ module Relapse
 
     attr_reader :project
 
-    def initialize(project)
-      @project = project
-      create_tasks
-    end
-
-    def self.valid_for_platform?; true; end
-
     def self.identifier
       id = name[/[a-z0-9]+$/i]
       id.gsub! /([A-Z]+)([A-Z][a-z])/, '\1_\2'
@@ -19,12 +12,19 @@ module Relapse
       id.to_sym
     end
 
-    def self.group
-      identifier.to_s.split(/_/).first
+    def identifier; self.class.identifier; end
+    def folder; "#{project.folder_base}_#{folder_suffix}"; end
+    def valid_for_platform?; true; end
+    def task_group; identifier.to_s.split(/_/).first; end
+    def folder_suffix; self.class.folder_suffix; end
+
+    def initialize(project)
+      @project = project
+      setup
     end
 
     protected
-    def folder_suffix; self.class.folder_suffix; end
+    def setup; end
 
     protected
     # Copy a number of files into a folder, maintaining relative paths.

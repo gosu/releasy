@@ -12,6 +12,7 @@ module Relapse
       id.downcase!
       id.to_sym
     end
+    def identifier; self.class.identifier; end
 
     def initialize(project)
       @project = project
@@ -36,7 +37,6 @@ module Relapse
     end
 
     protected
-    def identifier; self.class.identifier; end
     def extension; identifier.to_s.tr("_", "."); end
     def package(folder); "#{folder}.#{extension}"; end
 

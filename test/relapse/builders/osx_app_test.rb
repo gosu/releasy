@@ -15,29 +15,40 @@ context Relapse::Builders::OsxApp do
     topic.version = "0.1"
     topic.files = source_files
     topic.readme = "README.txt"
-    topic.osx_app_url = "org.frog.fish"
-    # Just use the dev gems, but some won't work, so ignore them.
-    topic.osx_app_gems = Bundler.definition.specs_for([:development])
 
-    topic.add_output :osx_app
     topic.add_archive_format :tar_gz
   end
 
   test_active_builders
 
   context "no wrapper" do
+    hookup do
+      topic.add_output :osx_app do |o|
+        o.url = "org.frog.fish"
+      end
+    end
     asserts(:generate_tasks).raises RuntimeError
   end
 
   context "invalid wrapper" do
-    hookup { topic.osx_app_wrapper= "no file" }
+    hookup do
+      topic.add_output :osx_app do |o|
+        o.url = "org.frog.fish"
+        o.wrapper = "whatever"
+      end
+    end
 
     asserts(:generate_tasks).raises RuntimeError
   end
 
   context "valid wrapper" do
     hookup do
-      topic.osx_app_wrapper = "../../../osx_app/RubyGosu App.app"
+      topic.add_output :osx_app do |o|
+        o.url = "org.frog.fish"
+        # Just use the dev gems, but some won't work, so ignore them.
+        o.gems = Bundler.definition.specs_for([:development])
+        o.wrapper = "../../../osx_app/RubyGosu App.app"
+      end
       topic.generate_tasks
     end
 
@@ -148,10 +159,12 @@ END
     end
 
     context "the builder itself" do
-      setup { Relapse::Builders::OsxApp.new(topic) }
+      setup { topic.send(:active_builders).first }
 
       asserts(:folder_suffix).equals "OSX"
       asserts(:app_name).equals "Test App.app"
+      asserts(:url).equals "org.frog.fish"
+      asserts(:wrapper).equals "../../../osx_app/RubyGosu App.app"
     end
   end
 end

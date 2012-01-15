@@ -7,27 +7,25 @@ module Relapse
 
       def self.folder_suffix; "WIN32_EXE"; end
 
-      protected
       # Self-extracting standalone executable.
-      def create_tasks
-        directory standalone_folder_path
+      def generate_tasks
+        directory folder
 
-        file standalone_folder_path => project.files do
-          cp project.readme, standalone_folder_path if project.readme
-          create_link_files standalone_folder_path
+        file folder => project.files do
+          cp project.readme, folder if project.readme
+          create_link_files folder
 
-          command = %[#{ocra_command} --output "#{standalone_folder_path}/#{executable_name}"]
+          command = %[#{ocra_command} --output "#{folder}/#{executable_name}"]
           puts command if project.verbose?
           system command
         end
 
         desc "Build standalone exe #{project.version} [Ocra]"
-        task "build:win32:standalone" => standalone_folder_path
+        task "build:win32:standalone" => folder
       end
 
       protected
       def executable_name; "#{project.underscored_name}.exe"; end
-      def standalone_folder_path; "#{project.folder_base}_#{folder_suffix}"; end
     end
   end
 end

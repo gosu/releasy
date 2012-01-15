@@ -12,14 +12,18 @@ module Relapse
           'clipboard' => %w[VERSION],
       }
 
-      protected
-      def create_tasks
-        original_app = project.osx_app_wrapper
-        raise "Project#osx_app_url not set" unless project.osx_app_url
-        raise "Project#osx_app_wrapper not set" unless original_app
-        raise "Project#osx_app_wrapper not valid .app folder" unless File.extname(original_app) == ".app" and File.directory? original_app
+      # @return [String] Name of .app directory used as the framework for osx app release.
+      attr_accessor :wrapper
+      # @return [String] Inverse url of application (e.g. 'org.supergames.blasterbotsfrommars')
+      attr_accessor :url
+      # @return [Array<Gem>] List of gems used by the application, which should usually be: Bundler.definition.gems_for([:default])
+      attr_accessor :gems
 
-        folder = "#{project.folder_base}_#{folder_suffix}"
+      def generate_tasks
+        raise "#url not set" unless url
+        raise "#wrapper not set" unless wrapper
+        raise "#wrapper not valid .app folder" unless File.extname(wrapper) == ".app" and File.directory? wrapper
+
         new_app = "#{folder}/#{app_name}"
 
         directory folder
@@ -27,9 +31,9 @@ module Relapse
         desc "Build OS X app"
         task "build:osx:app" => folder
 
-        file folder => project.files + [original_app] do
+        file folder => project.files + [wrapper] do
           # Copy the app files.
-          cp_r original_app, new_app
+          cp_r wrapper, new_app
 
           ## Copy my source files.
           copy_files_relative project.files, "#{new_app}/Contents/Resources/#{project.underscored_name}"
@@ -47,6 +51,13 @@ module Relapse
       end
 
       protected
+      def setup
+        @url = nil
+        @wrapper = nil
+        @gems = []
+      end
+
+      protected
       def app_name; "#{project.name}.app"; end
 
       protected
@@ -54,12 +65,12 @@ module Relapse
         gem_dir = "#{app}/Contents/Resources/lib"
 
         # Don't include binary gems already in the .app or bundler, since it will get confused.
-        gem_names = (project.osx_app_gems.map(&:name) - %w[bundler gosu texplay chipmunk]).sort
+        gem_names = (gems.map(&:name) - %w[bundler gosu texplay chipmunk]).sort
 
         # Copy my gems.
         puts "Copying gems to #{gem_dir}" if project.verbose?
         gem_names.each do |gem|
-          gem_path = project.osx_app_gems.find {|g| g.name == gem }.full_gem_path
+          gem_path = gems.find {|g| g.name == gem }.full_gem_path
           puts "Copying gem: #{File.basename gem_path}" if project.verbose?
           cp_r File.join(gem_path, 'lib'), File.dirname(gem_dir)
 
@@ -97,7 +108,7 @@ END_TEXT
         # Edit the info file to be specific for my game.
         puts "--- Editing init"
         info = File.read(file)
-        info.sub!('<string>org.libgosu.UntitledGame</string>', "<string>#{project.osx_app_url}</string>")
+        info.sub!('<string>org.libgosu.UntitledGame</string>', "<string>#{url}</string>")
         File.open(file, "w") {|f| f.puts info }
       end
     end

@@ -45,23 +45,25 @@ Example
       p.version = AlphaChannel::VERSION
       p.executable = "bin/alpha_channel.rbw"
       p.files = `git ls-files`.split("\n").reject {|f| f[0] == '.' }
-      p.ocra_parameters = "--no-enc"
       p.icon = "media/icon.ico"
       p.readme = "README.html"
 
       p.add_link "http://spooner.github.com/games/alpha_channel", "Alpha Channel website"
 
       # Create a variety of releases, for all platforms.
-      p.add_output :osx_app
+      p.add_output :osx_app do |o|
+        o.url = "com.github.spooner.games.alpha_channel"
+        o.wrapper = "../osx_app/RubyGosu App.app"
+        o.gems = Bundler.definition.specs_for([:default]) # Don't want :development gems.
+      end
       p.add_output :source
-      p.add_output :win32_folder
-      p.add_output :win32_installer
-
-      # Settings for specific outputs.
-      p.win32_installer_group = "Spooner Games"
-      p.osx_app_url = "com.github.spooner.games.alpha_channel"
-      p.osx_app_wrapper = "../osx_app/RubyGosu App.app"
-      p.osx_app_gems = Bundler.definition.specs_for([:default]) # Don't want :development gems.
+      p.add_output :win32_folder do |o|
+        o.ocra_parameters = "--no-enc"
+      end
+      p.add_output :win32_installer do |o|
+        o.ocra_parameters = "--no-enc"
+        o.start_menu_group = "Spooner Games"
+      end
 
       # Create all packages as zip and 7z archives.
       p.add_archive_format :zip

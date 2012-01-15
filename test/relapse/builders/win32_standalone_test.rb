@@ -13,13 +13,15 @@ context Relapse::Builders::Win32Standalone do
 
   context "win32 standalone as 7z" do
     hookup do
-      topic.add_output :win32_standalone
+      topic.add_output :win32_standalone do |o|
+        o.ocra_parameters = "--no-enc"
+      end
       topic.add_archive_format :"7z"
     end
 
     test_active_builders
 
-    if RUBY_PLATFORM =~ /win32|mingw/
+    if windows?
       context "on Windows" do
         hookup { topic.generate_tasks }
 
@@ -55,7 +57,7 @@ context Relapse::Builders::Win32Standalone do
 
           asserts(:folder_suffix).equals "WIN32_EXE"
           asserts(:executable_name).equals "test_app.exe"
-          asserts(:standalone_folder_path).equals "pkg/test_app_0_1_WIN32_EXE"
+          asserts(:folder).equals "pkg/test_app_0_1_WIN32_EXE"
         end
       end
     else

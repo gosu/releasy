@@ -19,19 +19,14 @@ context Relapse::Project do
     # Defaults are mostly nil.
     asserts(:name).nil
     asserts(:underscored_name).nil
-    asserts(:ocra_parameters).nil
     asserts(:version).nil
     asserts(:executable).nil
     asserts(:license).nil
     asserts(:icon).nil
-    asserts(:win32_installer_group).nil
     asserts(:files).empty
     asserts(:verbose?).equals true
     asserts(:readme).nil
     asserts(:links).equals Hash.new
-    asserts(:osx_app_wrapper).nil
-    asserts(:osx_app_url).nil
-    asserts(:osx_app_gems).empty
 
     asserts(:output_path).equals "pkg"
     asserts(:folder_base).equals "pkg/" # Would be more, but dependent on name.
@@ -39,13 +34,13 @@ context Relapse::Project do
     asserts("attempting to generate tasks without any outputs") { topic.generate_tasks }.raises(RuntimeError)
 
     asserts(:active_archivers).empty
-    asserts(:add_archive_format, :zip).equals { topic }
-    asserts(:active_archivers).equals [Relapse::Archivers::Zip]
+    asserts(:add_archive_format, :zip).kind_of Relapse::Archivers::Zip
+    asserts(:active_archivers).size 1
     asserts(:add_archive_format, :unknown).raises(ArgumentError, /unsupported archive/i)
 
     asserts(:active_builders).empty
-    asserts(:add_output, :source).equals { topic }
-    asserts(:active_builders).equals [Relapse::Builders::Source]
+    asserts(:add_output, :source).kind_of Relapse::Builders::Source
+    asserts(:active_builders).size 1
     asserts(:add_output, :unknown).raises(ArgumentError, /unsupported output/i)
   end
 
@@ -59,17 +54,19 @@ context Relapse::Project do
         p.add_archive_format :zip
 
         p.add_output :source
-        p.add_output :osx_app
-        p.add_output :win32_standalone
+        p.add_output :osx_app do |o|
+          o.wrapper = "../../../osx_app/RubyGosu App.app"
+          o.url = "org.url.app"
+          o.gems = Bundler.setup.gems
+        end
+        p.add_output :win32_standalone do |o|
+          o.ocra_parameters = "--no-enc"
+        end
 
         p.files = source_files
 
         p.add_link "www.frog.com", "Frog"
         p.add_link "www2.fish.com", "Fish"
-
-        p.osx_app_wrapper = "../../../osx_app/RubyGosu App.app"
-        p.osx_app_url = "org.url.app"
-        p.osx_app_gems = Bundler.setup.gems
       end
     end
 
@@ -78,10 +75,8 @@ context Relapse::Project do
     asserts(:executable).equals "bin/test_project_2a"
     asserts(:folder_base).equals "pkg/test_project_2a_v0_1_5"
     asserts(:links).equals "www.frog.com" => "Frog", "www2.fish.com" => "Fish"
-    asserts(:osx_app_wrapper).equals "../../../osx_app/RubyGosu App.app"
-    asserts(:osx_app_url).equals "org.url.app"
 
-    asserts(:active_builders).equals [Relapse::Builders::OsxApp, Relapse::Builders::Source, Relapse::Builders::Win32Standalone]
-    asserts(:active_archivers).equals [Relapse::Archivers::SevenZip, Relapse::Archivers::Zip]
+    asserts(:active_builders).size(windows? ? 3 : 2)
+    asserts(:active_archivers).size 2
   end
 end

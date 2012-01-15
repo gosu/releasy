@@ -6,10 +6,7 @@ module Relapse
     class Source < Builder
       def self.folder_suffix; "SOURCE"; end
 
-      protected
-      def create_tasks
-        folder = "#{project.folder_base}_#{folder_suffix}"
-
+      def generate_tasks
         desc "Build source folder"
         task "build:source" => folder
 
