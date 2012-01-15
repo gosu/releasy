@@ -9,27 +9,24 @@ Gem::Specification.new do |s|
   s.authors     = ["Bil Bas (Spooner)"]
   s.email       = ["bil.bagpuss@gmail.com"]
   s.homepage    = "http://spooner.github.com/libraries/relapse/"
-  s.summary     = %q{Relapse helps to make application releases simpler}
-  s.description = %q{Relapse helps to make application releases simpler, by outputting source folders, win32 folders, win32 standalone executables, win32 installers}
+  s.summary     = %q{Relapse helps to make Ruby application releases simpler}
+  s.description = <<END
+#{s.summary}, by creating and archiving source folders, win32 folders,
+win32 standalone executables, win32 installers and osx app bundles
+END
 
   s.rubyforge_project = "relapse"
-  
+
+  s.requirements << '7z (optional; used to generate archives)'
+  s.requirements << 'InnoSetup (optional; used to make Win32 installer)'
+
   s.files         = `git ls-files`.split("\n")
-  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  s.test_files    = Dir["test/**/*_test.rb"]
   s.require_paths = %w[lib]
 
-  if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-    s.add_runtime_dependency('ocra', '~> 1.3.0')
-    s.add_runtime_dependency('rake')
-    s.add_development_dependency('riot', '~> 0.12.5')
-    s.add_development_dependency('rr', '~> 1.0.4')
-    s.add_development_dependency('yard')
-  else
-    s.add_dependency('ocra', '~> 1.3.0')
-    s.add_dependency('rake')
-    s.add_dependency('riot', '~> 0.12.5')
-    s.add_dependency('rr', '~> 1.0.4')
-    s.add_dependency('yard')
-  end
+  s.add_runtime_dependency('ocra', '~> 1.3.0')
+  s.add_runtime_dependency('rake')
+  s.add_development_dependency('riot', '~> 0.12.5')
+  s.add_development_dependency('rr', '~> 1.0.4')
+  s.add_development_dependency('yard')
 end
