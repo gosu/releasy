@@ -98,7 +98,19 @@ Note: The _win32_ tasks will not be created unless running on Windows.
 External Requirements
 ---------------------
 
-* To create package archives (optional), the [7z](http://www.7-zip.org/download.html) must be installed.
+* To create package archives (optional), [7z](http://www.7-zip.org) must be installed.
+  - Installing on OS X homebrew:
+
+    `brew install p7zip`
+
+  - Installing on Ubuntu/Debian:
+
+    `sudo apt-get install p7zip-full`
+
+  - Installing on win32 (or other OS):
+
+    [7z downloads](http://www.7-zip.org/download.html)
+
 * To create `:win32_folder` and `:win32_installer` outputs, [InnoSetup](http://www.jrsoftware.org/isdl.php) must be installed.
 
 Credits
