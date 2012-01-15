@@ -156,7 +156,10 @@ module Relapse
 
     # Generates all tasks required by the user. Automatically called at the end of the block, if #new is given a block.
     def generate_tasks
-      raise "Must specify at least one valid output for this OS with #add_output before tasks can be generated" if active_builders.empty?
+      raise "Must specify at least one valid output for this OS with #add_output before tasks can be generated" if @builders.empty?
+
+      # Even if there are builders specified, none may work on this platform.
+      return if active_builders.empty?
 
       build_outputs = []
       build_groups = Hash.new {|h, k| h[k] = [] }
@@ -211,6 +214,8 @@ module Relapse
     protected
     # Generates the general tasks for compressing folders.
     def generate_archive_tasks
+      return if active_builders.empty?
+
       win32_tasks = []
       osx_tasks = []
       top_level_tasks = []
