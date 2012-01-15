@@ -79,7 +79,8 @@ context Relapse::Builders::OsxApp do
       asserts("readme copied to folder") { File.read("pkg/test_app_0_1_OSX/README.txt") == File.read("README.txt") }
       asserts("license copied to folder") { File.read("pkg/test_app_0_1_OSX/LICENSE.txt") == File.read("LICENSE.txt") }
 
-      asserts("app is an executable (will fail in Windows)") { File.executable?("pkg/test_app_0_1_OSX/Test App.app/Contents/MacOS/RubyGosu App") }
+      asserts("executable renamed") { File.exists?("pkg/test_app_0_1_OSX/Test App.app/Contents/MacOS/Test App") }
+      asserts("app is an executable (will fail in Windows)") { File.executable?("pkg/test_app_0_1_OSX/Test App.app/Contents/MacOS/Test App") }
       asserts("archive created") { File.size("pkg/test_app_0_1_OSX.tar.gz") > 0 }
 
       asserts("Main.rb is correct") do
@@ -110,7 +111,7 @@ END
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>RubyGosu App</string>
+	<string>Test App</string>
 	<key>CFBundleIconFile</key>
 	<string>Gosu</string>
 	<key>CFBundleIdentifier</key>

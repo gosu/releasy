@@ -45,8 +45,7 @@ module Relapse
           create_main new_app
           edit_init new_app
           remove_gems new_app
-
-          chmod 0755, "#{new_app}/Contents/MacOS/RubyGosu App"
+          rename_executable new_app
         end
       end
 
@@ -63,6 +62,13 @@ module Relapse
       protected
       # Don't include binary gems already in the .app or bundler, since it will get confused.
       def vendored_gem_names; (gems.map(&:name) - %w[bundler] - BINARY_GEMS).sort; end
+
+      protected
+      def rename_executable(app)
+        new_executable = "#{app}/Contents/MacOS/#{project.name}"
+        mv "#{app}/Contents/MacOS/RubyGosu App" , new_executable
+        chmod 0755, new_executable
+      end
 
       protected
       def copy_gems(app)
@@ -112,6 +118,7 @@ END_TEXT
         # Edit the info file to be specific for my game.
         puts "--- Editing init"
         info = File.read(file)
+        info.sub!('<string>RubyGosu App</string>', "<string>#{project.name}</string>")
         info.sub!('<string>org.libgosu.UntitledGame</string>', "<string>#{url}</string>")
         File.open(file, "w") {|f| f.puts info }
       end
