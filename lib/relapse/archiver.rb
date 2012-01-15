@@ -5,14 +5,14 @@ module Relapse
 
     attr_reader :project
 
-    def self.identifier
+    def self.type
       id = name[/[a-z0-9]+$/i]
       id.gsub! /([A-Z]+)([A-Z][a-z])/, '\1_\2'
       id.gsub! /([a-z\d])([A-Z])/, '\1_\2'
       id.downcase!
       id.to_sym
     end
-    def identifier; self.class.identifier; end
+    def type; self.class.type; end
 
     def initialize(project)
       @project = project
@@ -22,7 +22,7 @@ module Relapse
       pkg = package folder
 
       desc "Create #{pkg}"
-      task "package:#{output_task}:#{identifier}" => pkg
+      task "package:#{output_task}:#{type}" => pkg
 
       file pkg => folder do
         puts "Creating #{pkg}" if project.verbose?
@@ -37,12 +37,12 @@ module Relapse
     end
 
     protected
-    def extension; identifier.to_s.tr("_", "."); end
+    def extension; type.to_s.tr("_", "."); end
     def package(folder); "#{folder}.#{extension}"; end
 
     protected
     def command(folder)
-      %[7z a -mmt -bd -t#{identifier} "#{package(folder)}" "#{folder}"]
+      %[7z a -mmt -bd -t#{type} "#{package(folder)}" "#{folder}"]
     end
   end
 end

@@ -9,18 +9,18 @@ end
 module Relapse
   DEFAULT_PACKAGE_FOLDER = "pkg"
 
-  # Builder identifier => Builder class
+  # Builder type => Builder class
   BUILDERS = {}
   Builders.constants.each do |constant|
     builder = Builders.const_get constant
-    BUILDERS[builder.identifier] = builder if builder.ancestors.include? Builder
+    BUILDERS[builder.type] = builder if builder.ancestors.include? Builder
   end
 
-  # Archiver identifier => Archiver class
+  # Archiver type => Archiver class
   ARCHIVERS = {}
   Archivers.constants.each do |constant|
     archiver = Archivers.const_get constant
-    ARCHIVERS[archiver.identifier] = archiver if archiver.ancestors.include? Archiver
+    ARCHIVERS[archiver.type] = archiver if archiver.ancestors.include? Archiver
   end
 
   # @attr underscored_name [String] Project name underscored (as used in file names), which will be derived from {#name}, but can be manually set.
@@ -117,7 +117,7 @@ module Relapse
     # @return [Project] self
     def add_archive_format(type, &block)
       raise ArgumentError, "Unsupported archive format #{type}" unless ARCHIVERS.has_key? type
-      raise RuntimeError, "Already have archive format #{type.inspect}" if @archivers.any? {|a| a.identifier == type }
+      raise RuntimeError, "Already have archive format #{type.inspect}" if @archivers.any? {|a| a.type == type }
 
       archiver = ARCHIVERS[type].new(self)
       @archivers << archiver
@@ -133,7 +133,7 @@ module Relapse
     # @return [Project] self
     def add_output(type, &block)
       raise ArgumentError, "Unsupported output type #{type}" unless BUILDERS.has_key? type
-      raise RuntimeError, "Already have output #{type.inspect}" if @builders.any? {|b| b.identifier == type }
+      raise RuntimeError, "Already have output #{type.inspect}" if @builders.any? {|b| b.type == type }
 
       builder = BUILDERS[type].new(self)
       @builders << builder
@@ -163,9 +163,9 @@ module Relapse
 
       active_builders.each do |builder|
         builder.generate_tasks
-        task_name = "build:#{builder.identifier.to_s.tr("_", ":")}"
+        task_name = "build:#{builder.type.to_s.tr("_", ":")}"
 
-        if builder.identifier.to_s =~ /_/
+        if builder.type.to_s =~ /_/
           build_groups[builder.task_group] << task_name
           build_outputs << "build:#{builder.task_group}"
         else
@@ -215,14 +215,14 @@ module Relapse
       osx_tasks = []
       top_level_tasks = []
       active_builders.each do |builder|
-        output_task = builder.identifier.to_s.sub '_', ':'
+        output_task = builder.type.to_s.sub '_', ':'
 
         active_archivers.each do |archiver|
           archiver.create_tasks output_task, builder.folder
         end
 
-        desc "Package all #{builder.identifier}"
-        task "package:#{output_task}" => active_archivers.map {|c| "package:#{output_task}:#{c.identifier}" }
+        desc "Package all #{builder.type}"
+        task "package:#{output_task}" => active_archivers.map {|c| "package:#{output_task}:#{c.type}" }
 
         case output_task
           when /^win32:/

@@ -6,8 +6,8 @@ require File.expand_path("../teststrap", File.dirname(__FILE__))
     [:tar_bz2, Relapse::Archivers::TarBzip2, %[7z a -so -mmt -bd -ttar "f.tar" "f" | 7z a -si -bd -tbzip2 "f.tar.bz2"]],
     [:tar_gz,  Relapse::Archivers::TarGzip,  %[7z a -so -mmt -bd -ttar "f.tar" "f" | 7z a -si -bd -tgzip "f.tar.gz"]],
     [:zip,     Relapse::Archivers::Zip,      %[7z a -mmt -bd -tzip "f.zip" "f"]],
-].each do |identifier, archiver, command|
-  extension = identifier.to_s.tr("_", ".")
+].each do |type, archiver, command|
+  extension = type.to_s.tr("_", ".")
 
   context archiver do
     teardown { Rake::Task.clear }
@@ -15,13 +15,13 @@ require File.expand_path("../teststrap", File.dirname(__FILE__))
     context "class" do
       setup { archiver }
 
-      asserts(:identifier).equals identifier
+      asserts(:type).equals type
     end
 
     context "instance" do
       setup { archiver.new Object.new }
 
-      asserts(:identifier).equals identifier
+      asserts(:type).equals type
       asserts(:extension).equals extension
       asserts(:command, "f").equals command
       asserts(:package, "f").equals "f.#{extension}"
@@ -31,7 +31,7 @@ require File.expand_path("../teststrap", File.dirname(__FILE__))
 
         tasks = [
             [:FileTask, "frog.#{extension}", %w[frog]],
-            [:Task, "package:source:#{identifier}", ["frog.#{extension}"]],
+            [:Task, "package:source:#{type}", ["frog.#{extension}"]],
         ]
 
         test_tasks tasks

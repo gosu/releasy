@@ -4,7 +4,7 @@ module Relapse
 
     attr_reader :project
 
-    def self.identifier
+    def self.type
       id = name[/[a-z0-9]+$/i]
       id.gsub! /([A-Z]+)([A-Z][a-z])/, '\1_\2'
       id.gsub! /([a-z\d])([A-Z])/, '\1_\2'
@@ -12,10 +12,10 @@ module Relapse
       id.to_sym
     end
 
-    def identifier; self.class.identifier; end
+    def type; self.class.type; end
     def folder; "#{project.folder_base}_#{folder_suffix}"; end
     def valid_for_platform?; true; end
-    def task_group; identifier.to_s.split(/_/).first; end
+    def task_group; type.to_s.split(/_/).first; end
     def folder_suffix; self.class.folder_suffix; end
 
     def initialize(project)
