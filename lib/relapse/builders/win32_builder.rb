@@ -9,7 +9,7 @@ module Relapse
     # @return [String] Extra options to send to Ocra (win32 outputs only).
     attr_accessor :ocra_parameters
 
-    def self.valid_for_platform?; RUBY_PLATFORM =~ /win32|mingw/; end
+    def valid_for_platform?; RUBY_PLATFORM =~ /win32|mingw/; end
 
     protected
     def setup

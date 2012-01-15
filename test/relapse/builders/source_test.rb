@@ -10,6 +10,7 @@ context Relapse::Builders::Source do
       p.license = "LICENSE.txt"
 
       p.add_output :source
+      p.add_archive_format :exe
       p.add_archive_format :tar_gz
       p.add_archive_format :tar_bz2
     end
@@ -29,7 +30,8 @@ context Relapse::Builders::Source do
   context "tasks" do
     tasks = [
         [ :Task, "package", %w[package:source] ],
-        [ :Task, "package:source", %w[package:source:tar_gz package:source:tar_bz2] ],
+        [ :Task, "package:source", %w[package:source:exe package:source:tar_gz package:source:tar_bz2] ],
+        [ :Task, "package:source:exe", %w[pkg/test_app_0_1_SOURCE.exe] ],
         [ :Task, "package:source:tar_gz", %w[pkg/test_app_0_1_SOURCE.tar.gz] ],
         [ :Task, "package:source:tar_bz2", %w[pkg/test_app_0_1_SOURCE.tar.bz2] ],
 
@@ -38,11 +40,18 @@ context Relapse::Builders::Source do
 
         [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
         [ :FileCreationTask, "pkg/test_app_0_1_SOURCE", source_files ],
+        [ :FileTask, "pkg/test_app_0_1_SOURCE.exe", %w[pkg/test_app_0_1_SOURCE] ],
         [ :FileTask, "pkg/test_app_0_1_SOURCE.tar.gz", %w[pkg/test_app_0_1_SOURCE] ],
         [ :FileTask, "pkg/test_app_0_1_SOURCE.tar.bz2", %w[pkg/test_app_0_1_SOURCE] ],
     ]
 
     test_tasks tasks
+  end
+
+  context "generate folder + exe" do
+    hookup {Rake::Task["package:source:exe"].invoke }
+
+    asserts("archive created") { File.size("pkg/test_app_0_1_SOURCE.exe") > 0}
   end
 
   context "generate folder + tar.gz" do

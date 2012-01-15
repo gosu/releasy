@@ -2,7 +2,7 @@
   require "relapse/builders/#{builder}"
 end
 
-%w[seven_zip tar_bzip2 tar_gzip zip].each do |archiver|
+%w[exe seven_zip tar_bzip2 tar_gzip zip].each do |archiver|
   require "relapse/archivers/#{archiver}"
 end
 
@@ -97,13 +97,11 @@ module Relapse
       @builders = []
       @links = {}
       @files = []
-      @osx_app_gems = []
       @output_path = DEFAULT_PACKAGE_FOLDER
       @verbose = true
 
-      @name = @underscored_name = @underscored_version = @ocra_parameters = nil
+      @name = @underscored_name = @underscored_version = nil
       @version = @readme =  @executable = @license = @icon = nil
-      @win32_installer_group = @osx_app_wrapper = @osx_app_url = nil
 
       if block_given?
         yield self
@@ -113,7 +111,7 @@ module Relapse
 
     # Add an archive type to be generated for each of your outputs.
     #
-    # @param type [:7z, :tar_bz2, :tar_gz, :zip]
+    # @param type [:exe, :"7z", :tar_bz2, :tar_gz, :zip]
     # @return [Project] self
     def add_archive_format(type, &block)
       raise ArgumentError, "Unsupported archive format #{type}" unless ARCHIVERS.has_key? type
@@ -202,7 +200,7 @@ module Relapse
     protected
     # @return [Array<Builder>]
     def active_builders
-      @builders.find_all {|b| b.valid_for_platform? }
+      @builders.find_all(&:valid_for_platform?)
     end
 
     protected

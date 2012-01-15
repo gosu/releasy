@@ -27,6 +27,7 @@ Archive types supported
 
 Optionally, release folders can be archived using one or more of:
 
+* `:exe` - Windows self-extractor (.exe - Includes a 7z decompression module, so not efficient for small releases)
 * `:"7z"` - 7Zip format (.7z - Best compression)
 * `:tar_bz2` - BZip2 tarball (.tar.bz2)
 * `:tar_gz` - GZip tarball (.tar.gz)
@@ -122,4 +123,9 @@ Credits
 * Thanks to larsh for the [Ocra gem](http://ocra.rubyforge.org/), which is used for generating Win32 executables.
 * Thanks to jlnr for help testing the OS X package builder.
 * Thanks to shawn42 for help designing the API.
+
+Third Party Assets included
+---------------------------
+
+* bin/7z.sfx - Windows [7z 9.20](http://www.7-zip.org) self-extractor module [License: [GNU LGPL](http://www.7-zip.org/license.txt)]
 

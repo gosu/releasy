@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
 win32 standalone executables, win32 installers and osx app bundles
 END
 
+  s.licenses = ["GNU LGPL"] # Since I include a file from 7z.
   s.rubyforge_project = "relapse"
 
   s.requirements << '7z (optional; used to generate archives)'

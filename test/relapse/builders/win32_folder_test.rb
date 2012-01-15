@@ -13,15 +13,13 @@ context Relapse::Builders::Win32Folder do
 
   context "win32 folder as zip" do
     hookup do
-      topic.add_output :win32_folder do |o|
-        o.ocra_parameters = "--no-enc"
-      end
+      topic.add_output :win32_folder
       topic.add_archive_format :zip
     end
 
     test_active_builders
 
-    if windows?
+    if RUBY_PLATFORM =~ /win32|mingw/
       context "on Windows" do
         hookup { topic.generate_tasks }
 
@@ -53,7 +51,7 @@ context Relapse::Builders::Win32Folder do
         end
 
         context "the builder itself" do
-          setup { topic.send(:active_builders).first }
+          setup { Relapse::Builders::Win32Folder.new(topic) }
 
           asserts(:folder_suffix).equals "WIN32"
           asserts(:temp_installer_script).equals "pkg/win32_folder.iss"
@@ -65,7 +63,6 @@ context Relapse::Builders::Win32Folder do
     else
       context "NOT on Windows" do
         asserts(:active_builders).empty
-        asserts(:generate_tasks).raises RuntimeError
       end
     end
   end

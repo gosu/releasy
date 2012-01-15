@@ -37,8 +37,8 @@ module Relapse
     end
 
     protected
-    def extension; type.to_s.tr("_", "."); end
-    def package(folder); "#{folder}.#{extension}"; end
+    def extension; ".#{type.to_s.tr("_", ".")}"; end
+    def package(folder); "#{folder}#{extension}"; end
 
     protected
     def command(folder)

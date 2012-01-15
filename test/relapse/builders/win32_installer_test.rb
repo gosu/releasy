@@ -66,7 +66,6 @@ context Relapse::Builders::Win32Installer do
     else
       context "NOT on Windows" do
         asserts(:active_builders).empty
-        asserts(:generate_tasks).raises RuntimeError
       end
     end
   end
