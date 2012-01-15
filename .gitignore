@@ -13,3 +13,4 @@ ctags
 doc/
 test/test_project/pkg
 test/test_project/test_app.exe
+Gemfile.lock
