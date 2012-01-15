@@ -15,6 +15,7 @@ context Relapse::Builders::OsxApp do
     topic.version = "0.1"
     topic.files = source_files
     topic.readme = "README.txt"
+    topic.license = "LICENSE.txt"
 
     topic.add_archive_format :tar_gz
   end
@@ -74,8 +75,9 @@ context Relapse::Builders::OsxApp do
     context "generate folder + tar.gz" do
       hookup { Rake::Task["package:osx:app:tar_gz"].invoke }
 
-      asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/test_app/#{f}") == File.read(f) } }
+      asserts("files copied inside app") { source_files.all? {|f| File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/test_app/#{f}") == File.read(f) } }
       asserts("readme copied to folder") { File.read("pkg/test_app_0_1_OSX/README.txt") == File.read("README.txt") }
+      asserts("license copied to folder") { File.read("pkg/test_app_0_1_OSX/LICENSE.txt") == File.read("LICENSE.txt") }
 
       asserts("app is an executable (will fail in Windows)") { File.executable?("pkg/test_app_0_1_OSX/Test App.app/Contents/MacOS/RubyGosu App") }
       asserts("archive created") { File.size("pkg/test_app_0_1_OSX.tar.gz") > 0 }

@@ -7,6 +7,7 @@ context Relapse::Builders::Source do
       p.version = "0.1"
       p.files = source_files
       p.readme = "README.txt"
+      p.license = "LICENSE.txt"
 
       p.add_output :source
       p.add_archive_format :tar_gz
@@ -49,7 +50,7 @@ context Relapse::Builders::Source do
 
     asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_app_0_1_SOURCE/#{f}") == File.read(f) } }
     asserts("archive created") { File.size("pkg/test_app_0_1_SOURCE.tar.gz") > 0}
-    asserts("archive contains expected files") { `7z x -so -bd -tgzip pkg/test_app_0_1_SOURCE.tar.gz | 7z l -si -bd -ttar` =~ /4 files, 4 folders/m }
+    asserts("archive contains expected files") { `7z x -so -bd -tgzip pkg/test_app_0_1_SOURCE.tar.gz | 7z l -si -bd -ttar` =~ /5 files, 4 folders/m }
   end
 
   context "generate folder + tar.bz2" do
@@ -57,12 +58,13 @@ context Relapse::Builders::Source do
 
     asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_app_0_1_SOURCE/#{f}") == File.read(f) } }
     asserts("archive created") { File.size("pkg/test_app_0_1_SOURCE.tar.bz2") > 0}
-    asserts("archive contains expected files") { `7z x -so -bd -tbzip2 pkg/test_app_0_1_SOURCE.tar.bz2 | 7z l -si -bd -ttar` =~ /4 files, 4 folders/m }
+    asserts("archive contains expected files") { `7z x -so -bd -tbzip2 pkg/test_app_0_1_SOURCE.tar.bz2 | 7z l -si -bd -ttar` =~ /5 files, 4 folders/m }
   end
 
   context "the builder itself" do
-    setup { Relapse::Builders::Source.new(topic) }
+    setup { topic.send(:active_builders).first }
 
+    asserts(:folder).equals "pkg/test_app_0_1_SOURCE"
     asserts(:folder_suffix).equals "SOURCE"
   end
 end

@@ -13,6 +13,8 @@ module Relapse
 
         file folder => project.files do
           cp project.readme, folder if project.readme
+          cp project.license, folder if project.license
+
           create_link_files folder
 
           command = %[#{ocra_command} --output "#{folder}/#{executable_name}"]

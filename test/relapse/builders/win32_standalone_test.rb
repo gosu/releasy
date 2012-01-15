@@ -46,10 +46,11 @@ context Relapse::Builders::Win32Standalone do
           hookup { Rake::Task["package:win32:standalone:7z"].invoke }
 
           asserts("readme copied to folder") { File.read("pkg/test_app_0_1_WIN32_EXE/README.txt") == File.read("README.txt") }
+          asserts("license copied to folder") { File.read("pkg/test_app_0_1_WIN32_EXE/LICENSE.txt") == File.read("LICENSE.txt") }
           asserts("folder includes links") { File.read("pkg/test_app_0_1_WIN32_EXE/Website.url") == link_file }
           asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_app_0_1_WIN32_EXE/test_app.exe") > 2**20 }
           asserts("archive created") { File.exists? "pkg/test_app_0_1_WIN32_EXE.7z" }
-          asserts("archive contains expected files") { `7z l pkg/test_app_0_1_WIN32_EXE.7z` =~ /3 files, 1 folders/m }
+          asserts("archive contains expected files") { `7z l pkg/test_app_0_1_WIN32_EXE.7z` =~ /4 files, 1 folders/m }
         end
 
         context "the builder itself" do

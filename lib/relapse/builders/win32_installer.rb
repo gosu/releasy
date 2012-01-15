@@ -18,6 +18,7 @@ module Relapse
         file folder => project.files do
           create_link_files folder
           cp project.readme, folder if project.readme
+          cp project.license, folder if project.license
 
           create_installer installer_name, :links => true
 
