@@ -1,6 +1,7 @@
 = v0.2.0
 
-  * Allowed outputs to be configured separately from the project (fixes #3).
+  * Allowed outputs to be configured separately from the project (Warning: API changed significantly).
+  * Included gems in osx-app more safely, so that no files will be missing.
 
 = v0.1.0
 
