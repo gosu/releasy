@@ -84,6 +84,10 @@ context Relapse::Builders::OsxApp do
 
       asserts("Main.rb is correct") do
         File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/Main.rb") == <<END
+["riot", "rr", "yard"].each do |gem|
+  $LOAD_PATH.unshift File.expand_path("../vendor/gems/\#{gem}/lib", __FILE__)
+end
+
 OSX_EXECUTABLE_FOLDER = File.expand_path("../../..", __FILE__)
 
 # Really hacky fudge-fix for something oddly missing in the .app.
@@ -153,10 +157,11 @@ END
 
       # Bundler should also be asked for, but it shouldn't be copied in.
       %w[rr riot yard].each do |gem|
-        asserts("#{gem} gem folder copied") { File.directory?("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/lib/#{gem}") }
+        asserts("#{gem} gem folder copied") { File.exists?("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/vendor/gems/#{gem}") }
       end
 
-      denies("bundler gem folder copied")  { File.directory?("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/lib/bundler") }
+      denies("default chingu gem left in app")  { File.exists?("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/lib/chingu") }
+      denies("bundler gem folder copied")  { File.exists?("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/vendor/gems/bundler") }
       denies("archive is empty") { `7z x -so -bd -tgzip pkg/test_app_0_1_OSX.tar.gz | 7z l -si -bd -ttar` =~ /0 files, 0 folders/m }
     end
 

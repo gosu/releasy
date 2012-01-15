@@ -5,12 +5,11 @@ module Relapse
     class OsxApp < Builder
       def self.folder_suffix; "OSX"; end
 
-      EXTRA_FOLDERS_OSX = {
-          'nokogiri' => %w[ext],
-          'fidgit' => %w[config media],
-          'r18n-core' => %w[base locales],
-          'clipboard' => %w[VERSION],
-      }
+      # Binary gems included in app.
+      BINARY_GEMS = %w[gosu texplay chipmunk]
+
+      # Source gems included in app that we should remove.
+      SOURCE_GEMS_TO_REMOVE = %w[chingu]
 
       # @return [String] Name of .app directory used as the framework for osx app release.
       attr_accessor :wrapper
@@ -45,6 +44,7 @@ module Relapse
           copy_gems new_app
           create_main new_app
           edit_init new_app
+          remove_gems new_app
 
           chmod 0755, "#{new_app}/Contents/MacOS/RubyGosu App"
         end
@@ -61,26 +61,26 @@ module Relapse
       def app_name; "#{project.name}.app"; end
 
       protected
+      # Don't include binary gems already in the .app or bundler, since it will get confused.
+      def vendored_gem_names; (gems.map(&:name) - %w[bundler] - BINARY_GEMS).sort; end
+
+      protected
       def copy_gems(app)
-        gem_dir = "#{app}/Contents/Resources/lib"
 
-        # Don't include binary gems already in the .app or bundler, since it will get confused.
-        gem_names = (gems.map(&:name) - %w[bundler gosu texplay chipmunk]).sort
-
-        # Copy my gems.
-        puts "Copying gems to #{gem_dir}" if project.verbose?
-        gem_names.each do |gem|
+        puts "Copying gems into app" if project.verbose?
+        mkdir_p "#{app}/Contents/Resources/vendor/gems"
+        vendored_gem_names.each do |gem|
           gem_path = gems.find {|g| g.name == gem }.full_gem_path
           puts "Copying gem: #{File.basename gem_path}" if project.verbose?
-          cp_r File.join(gem_path, 'lib'), File.dirname(gem_dir)
+          cp_r gem_path, "#{app}/Contents/Resources/vendor/gems/#{gem}"
+        end
+      end
 
-          # Some gems use files outside of /lib, which is not supported by the .app!
-          # NOTE: This will fail if multiple gems require the same extra files/folders to included!
-          # TODO: The way the app is originally built needs to change to remove this workaround.
-          Array(EXTRA_FOLDERS_OSX[gem]).each do |extra|
-            puts "  - copying extra #{File.directory?(extra) ? "folder" : "file"}: #{extra}"
-            cp_r File.expand_path(extra, gem_path), File.dirname(gem_dir)
-          end
+      protected
+      # Remove unnecessary gems from the distribution.
+      def remove_gems(app)
+        SOURCE_GEMS_TO_REMOVE.each do |gem|
+          rm_r "#{app}/Contents/Resources/lib/#{gem}"
         end
       end
 
@@ -90,6 +90,10 @@ module Relapse
         puts "--- Creating Main.rb"
         File.open("#{app}/Contents/Resources/Main.rb", "w") do |file|
           file.puts <<END_TEXT
+#{vendored_gem_names}.each do |gem|
+  $LOAD_PATH.unshift File.expand_path("../vendor/gems/\#{gem}/lib", __FILE__)
+end
+
 OSX_EXECUTABLE_FOLDER = File.expand_path("../../..", __FILE__)
 
 # Really hacky fudge-fix for something oddly missing in the .app.
