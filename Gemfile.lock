@@ -22,4 +22,5 @@ PLATFORMS
 DEPENDENCIES
   relapse!
   riot (~> 0.12.5)
+  rr (~> 1.0.4)
   yard

@@ -17,7 +17,7 @@ context Relapse::Builders::OsxApp do
     topic.readme = "README.txt"
     topic.osx_app_url = "org.frog.fish"
     # Just use the dev gems, but some won't work, so ignore them.
-    topic.osx_app_gems = Gem.loaded_specs.values.reject {|g| %w[rake ocra].include? g.name }
+    topic.osx_app_gems = Bundler.definition.specs_for([:development])
 
     topic.add_output :osx_app
     topic.add_archive_format :tar_gz
@@ -139,7 +139,7 @@ END
       end
 
       # Bundler should also be asked for, but it shouldn't be copied in.
-      %w[relapse rr riot yard].each do |gem|
+      %w[rr riot yard].each do |gem|
         asserts("#{gem} gem folder copied") { File.directory?("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/lib/#{gem}") }
       end
 
