@@ -75,7 +75,7 @@ context Relapse::Builders::OsxApp do
     context "generate folder + tar.gz" do
       hookup { Rake::Task["package:osx:app:tar_gz"].invoke }
 
-      asserts("files copied inside app") { source_files.all? {|f| File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/test_app/#{f}") == File.read(f) } }
+      asserts("files copied inside app") { source_files.all? {|f| File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/application/#{f}") == File.read(f) } }
       asserts("readme copied to folder") { File.read("pkg/test_app_0_1_OSX/README.txt") == File.read("README.txt") }
       asserts("license copied to folder") { File.read("pkg/test_app_0_1_OSX/LICENSE.txt") == File.read("LICENSE.txt") }
 
@@ -96,7 +96,7 @@ class Encoding
   UTF_7 = UTF_16BE = UTF_16LE = UTF_32BE = UTF_32LE = Encoding.list.first
 end
 
-load 'test_app/bin/test_app'
+load 'application/bin/test_app'
 END
       end
 

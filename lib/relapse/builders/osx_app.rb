@@ -35,7 +35,7 @@ module Relapse
           cp_r wrapper, new_app
 
           ## Copy my source files.
-          copy_files_relative project.files, "#{new_app}/Contents/Resources/#{project.underscored_name}"
+          copy_files_relative project.files, "#{new_app}/Contents/Resources/application"
 
           # Copy accompanying files.
           cp project.readme, folder if project.readme
@@ -107,7 +107,7 @@ class Encoding
   UTF_7 = UTF_16BE = UTF_16LE = UTF_32BE = UTF_32LE = Encoding.list.first
 end
 
-load '#{project.underscored_name}/#{project.executable}'
+load 'application/#{project.executable}'
 END_TEXT
         end
       end
