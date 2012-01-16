@@ -11,6 +11,6 @@ ctags
 *.lock
 .idea/
 doc/
-test/test_project/pkg
-test/test_project/test_app.exe
+test_project/pkg
+test_project/test_app.exe
 Gemfile.lock

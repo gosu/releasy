@@ -32,20 +32,20 @@ context Relapse::Builders::OsxApp do
   context "valid" do
     hookup do
       topic.url = "org.frog.fish"
-      topic.wrapper = "../../../osx_app/RubyGosu App.app"
+      topic.wrapper = app_wrapper
       topic.generate_tasks
     end
 
     asserts(:folder_suffix).equals "OSX"
     asserts(:app_name).equals "Test App.app"
     asserts(:url).equals "org.frog.fish"
-    asserts(:wrapper).equals "../../../osx_app/RubyGosu App.app"
+    asserts(:wrapper).equals app_wrapper
 
     context "tasks" do
       tasks = [
           [ :Task, "build:osx:app", %w[pkg/test_app_0_1_OSX] ],
           [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
-          [ :FileCreationTask, "pkg/test_app_0_1_OSX", source_files + ["../../../osx_app/RubyGosu App.app"]],
+          [ :FileCreationTask, "pkg/test_app_0_1_OSX", source_files + [app_wrapper]],
       ]
 
       test_tasks tasks

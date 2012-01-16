@@ -21,7 +21,7 @@ context "OS X app as tar.gz" do
       o.url = "org.frog.fish"
       # Just use the dev gems, but some won't work, so ignore them.
       o.gems = Bundler.definition.specs_for([:development])
-      o.wrapper = "../../../osx_app/RubyGosu App.app"
+      o.wrapper = app_wrapper
 
     end
     topic.generate_tasks
@@ -42,7 +42,7 @@ context "OS X app as tar.gz" do
         [ :Task, "build:osx:app", %w[pkg/test_app_0_1_OSX] ],
 
         [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
-        [ :FileCreationTask, "pkg/test_app_0_1_OSX", source_files + ["../../../osx_app/RubyGosu App.app"]],
+        [ :FileCreationTask, "pkg/test_app_0_1_OSX", source_files + [app_wrapper]],
         [ :FileTask, "pkg/test_app_0_1_OSX.tar.gz", %w[pkg/test_app_0_1_OSX] ],
     ]
 
