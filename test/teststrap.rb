@@ -18,13 +18,13 @@ end
 def test_tasks(tasks)
   tasks.each do |type, name, prerequisites|
     asserts("task #{name}") { Rake::Task[name] }.kind_of Rake.const_get(type)
-    asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.equals prerequisites
+    asserts("task #{name} prerequisites") { Rake::Task[name].prerequisites }.same_elements prerequisites
   end
 
   asserts("no other tasks created") { (Rake::Task.tasks - tasks.map {|d| Rake::Task[d[1]] }).empty? }
 end
 
-def test_active_builders
+def active_builders_valid
   asserts("#active_builders are valid") { topic.send(:active_builders).all?(&:valid_for_platform?) }
 end
 
