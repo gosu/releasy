@@ -27,6 +27,10 @@ context "OS X app as tar.gz" do
     topic.generate_tasks
   end
 
+  helper(:data_file) do |file|
+    File.expand_path("../data/#{file}", File.expand_path(__FILE__, $original_path))
+  end
+
   active_builders_valid
 
 
@@ -60,78 +64,8 @@ context "OS X app as tar.gz" do
     asserts("app is an executable (will fail in Windows)") { File.executable?("pkg/test_app_0_1_OSX/Test App.app/Contents/MacOS/Test App") }
     asserts("archive created") { File.size("pkg/test_app_0_1_OSX.tar.gz") > 0 }
 
-    asserts("Main.rb is correct") do
-      File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/Main.rb") ==<<END
-["riot", "rr", "yard"].each do |gem|
-  $LOAD_PATH.unshift File.expand_path("../vendor/gems/\#{gem}/lib", __FILE__)
-end
-
-OSX_EXECUTABLE_FOLDER = File.expand_path("../../..", __FILE__)
-
-# Really hacky fudge-fix for something oddly missing in the .app.
-class Encoding
-  UTF_7 = UTF_16BE = UTF_16LE = UTF_32BE = UTF_32LE = Encoding.list.first
-end
-
-load 'application/bin/test_app'
-END
-    end
-
-    asserts("Info.plist is correct") do
-      File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Info.plist") == <<END
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>BuildMachineOSBuild</key>
-	<string>11C74</string>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>English</string>
-	<key>CFBundleExecutable</key>
-	<string>Test App</string>
-	<key>CFBundleIconFile</key>
-	<string>Gosu</string>
-	<key>CFBundleIdentifier</key>
-	<string>org.frog.fish</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>CFBundleVersion</key>
-	<string>1.0</string>
-	<key>DTCompiler</key>
-	<string>4.0</string>
-	<key>DTPlatformBuild</key>
-	<string>10M2518</string>
-	<key>DTPlatformVersion</key>
-	<string>PG</string>
-	<key>DTSDKBuild</key>
-	<string>8S2167</string>
-	<key>DTSDKName</key>
-	<string>macosx10.4</string>
-	<key>DTXcode</key>
-	<string>0400</string>
-	<key>DTXcodeBuild</key>
-	<string>10M2518</string>
-	<key>LSMinimumSystemVersionByArchitecture</key>
-	<dict>
-		<key>i386</key>
-		<string>10.4.0</string>
-		<key>ppc</key>
-		<string>10.4.0</string>
-		<key>x86_64</key>
-		<string>10.6.0</string>
-	</dict>
-	<key>NSMainNibFile</key>
-	<string>MainMenu</string>
-	<key>NSPrincipalClass</key>
-	<string>NSApplication</string>
-</dict>
-</plist>
-END
-    end
+    asserts("Main.rb is correct") { File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/Main.rb").strip == File.read(data_file("Main.rb")).strip }
+    asserts("Info.plist is correct") { File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Info.plist").strip == File.read(data_file("Info.plist")).strip }
 
     # Bundler should also be asked for, but it shouldn't be copied in.
     %w[rr riot yard].each do |gem|
