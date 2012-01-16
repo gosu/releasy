@@ -22,7 +22,6 @@ context Relapse::Project do
     asserts(:version).nil
     asserts(:executable).nil
     asserts(:license).nil
-    asserts(:icon).nil
     asserts(:files).empty
     asserts(:verbose?).equals true
     asserts(:readme).nil

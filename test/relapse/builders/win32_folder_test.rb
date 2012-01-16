@@ -16,6 +16,7 @@ context Relapse::Builders::Win32Folder do
   asserts(:installer_name).equals "pkg/test_app_0_1_setup_to_folder.exe"
   asserts(:executable_name).equals "test_app.exe"
   asserts(:folder).equals "pkg/test_app_0_1_WIN32"
+  asserts(:icon=, "test_app.icns").raises Relapse::ConfigError, /icon must be a .ico file/
 
   context "valid" do
     if windows?

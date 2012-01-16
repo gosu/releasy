@@ -46,7 +46,6 @@ Example
       p.version = AlphaChannel::VERSION
       p.executable = "bin/alpha_channel.rbw"
       p.files = `git ls-files`.split("\n").reject {|f| f[0] == '.' }
-      p.icon = "media/icon.ico"
       p.readme = "README.html"
 
       p.add_link "http://spooner.github.com/games/alpha_channel", "Alpha Channel website"
@@ -57,13 +56,16 @@ Example
         o.url = "com.github.spooner.games.alpha_channel"
         o.wrapper = "../osx_app/RubyGosu App.app"
         o.gems = Bundler.definition.specs_for([:default]) # Don't want :development gems.
+        o.icon = "media/icon.icns"
       end
       p.add_output :source
       p.add_output :win32_folder do |o|
+        o.icon = "media/icon.ico"
         o.add_archive_format :exe
         o.ocra_parameters = "--no-enc"
       end
       p.add_output :win32_installer do |o|
+        o.icon = "media/icon.ico"
         o.ocra_parameters = "--no-enc"
         o.start_menu_group = "Spooner Games"
       end

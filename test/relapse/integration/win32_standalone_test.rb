@@ -13,6 +13,7 @@ context "win32 standalone as 7z" do
     Dir.chdir project_path
     topic.add_output :win32_standalone do |o|
       o.ocra_parameters = "--no-enc"
+      o.icon = "test_app.ico"
     end
     topic.add_archive_format :"7z"
   end

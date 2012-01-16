@@ -22,6 +22,7 @@ context "OS X app as tar.gz" do
       # Just use the dev gems, but some won't work, so ignore them.
       o.gems = Bundler.definition.specs_for([:development])
       o.wrapper = app_wrapper
+      o.icon = "test_app.icns"
 
     end
     topic.generate_tasks
@@ -64,6 +65,8 @@ context "OS X app as tar.gz" do
     asserts("app is an executable (will fail in Windows)") { File.executable?("pkg/test_app_0_1_OSX/Test App.app/Contents/MacOS/Test App") }
     asserts("archive created") { File.size("pkg/test_app_0_1_OSX.tar.gz") > 0 }
 
+    asserts("Gosu icon deleted") { not File.exists? "pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/Gosu.icns" }
+    asserts("icon is copied to correct location") { File.exists? "pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/test_app.icns" }
     asserts("Main.rb is correct") { File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/Main.rb").strip == File.read(data_file("Main.rb")).strip }
     asserts("Info.plist is correct") { File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Info.plist").strip == File.read(data_file("Info.plist")).strip }
 

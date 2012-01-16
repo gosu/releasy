@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>Test App</string>
 	<key>CFBundleIconFile</key>
-	<string>Gosu</string>
+	<string>test_app</string>
 	<key>CFBundleIdentifier</key>
 	<string>org.frog.fish</string>
 	<key>CFBundleInfoDictionaryVersion</key>

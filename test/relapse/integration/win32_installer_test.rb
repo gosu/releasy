@@ -14,6 +14,7 @@ context "win32 installer as zip" do
     topic.add_output :win32_installer do |o|
       o.start_menu_group = "Test Apps"
       o.ocra_parameters = "--no-enc"
+      o.icon = "test_app.ico"
     end
     topic.add_archive_format :zip
   end

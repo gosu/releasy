@@ -15,6 +15,7 @@ context Relapse::Builders::Win32Installer do
   asserts(:temp_installer_script).equals "pkg/win32_installer.iss"
   asserts(:folder).equals "pkg/test_app_0_1_WIN32_INSTALLER"
   asserts(:installer_name).equals "pkg/test_app_0_1_WIN32_INSTALLER/test_app_setup.exe"
+  asserts(:icon=, "test_app.icns").raises Relapse::ConfigError, /icon must be a .ico file/
 
   context "valid" do
     if windows?

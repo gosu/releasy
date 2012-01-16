@@ -2,12 +2,14 @@ require "relapse/builder"
 
 module Relapse
   module Builders
+    # @attr icon [String] Optional filename of icon to show on executable/installer (.icns).
     class OsxApp < Builder
       def self.folder_suffix; "OSX"; end
 
       # Binary gems included in app.
       BINARY_GEMS = %w[gosu texplay chipmunk]
-
+      # Icon type used in the app.
+      ICON_EXTENSION = ".icns"
       # Source gems included in app that we should remove.
       SOURCE_GEMS_TO_REMOVE = %w[chingu]
 
@@ -17,6 +19,14 @@ module Relapse
       attr_accessor :url
       # @return [Array<Gem>] List of gems used by the application, which should usually be: Bundler.definition.gems_for([:default])
       attr_accessor :gems
+
+      # @return [String] Optional filename of icon to show on app (.icns).
+      attr_reader :icon
+
+      def icon=(icon)
+        raise ConfigError, "icon must be a #{ICON_EXTENSION} file" unless File.extname(icon) == ICON_EXTENSION
+        @icon = icon
+      end
 
       def generate_tasks
         raise ConfigError, "#url not set" unless url
@@ -46,11 +56,13 @@ module Relapse
           edit_init new_app
           remove_gems new_app
           rename_executable new_app
+          update_icon new_app
         end
       end
 
       protected
       def setup
+        @icon = nil
         @url = nil
         @wrapper = nil
         @gems = []
@@ -91,6 +103,14 @@ module Relapse
       end
 
       protected
+      def update_icon(app)
+        if icon
+          rm "#{app}/Contents/Resources/Gosu.icns"
+          cp icon, "#{app}/Contents/Resources"
+        end
+      end
+
+      protected
       def create_main(app)
         # Something for the .app to run -> just a little redirection file.
         puts "--- Creating Main.rb"
@@ -118,6 +138,7 @@ END_TEXT
         # Edit the info file to be specific for my game.
         puts "--- Editing init"
         info = File.read(file)
+        info.sub!('<string>Gosu</string>', "<string>#{File.basename(icon).chomp(File.extname(icon))}</string>") if icon
         info.sub!('<string>RubyGosu App</string>', "<string>#{project.name}</string>")
         info.sub!('<string>org.libgosu.UntitledGame</string>', "<string>#{url}</string>")
         File.open(file, "w") {|f| f.puts info }

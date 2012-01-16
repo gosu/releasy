@@ -14,6 +14,7 @@ context "win32 folder as zip" do
     topic.add_output :win32_folder do |o|
       o.add_archive_format :zip
       o.ocra_parameters = "--no-enc"
+      o.icon = "test_app.ico"
     end
   end
 

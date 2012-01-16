@@ -13,6 +13,8 @@ context Relapse::Builders::OsxApp do
     Dir.chdir project_path
   end
 
+  asserts(:icon=, "test_app.ico").raises Relapse::ConfigError, /icon must be a .icns file/
+
   context "no wrapper" do
     hookup do
       topic.url = "org.frog.fish"
@@ -40,6 +42,7 @@ context Relapse::Builders::OsxApp do
     hookup do
       topic.url = "org.frog.fish"
       topic.wrapper = app_wrapper
+      topic.icon = "test_app.icns"
       topic.generate_tasks
     end
 

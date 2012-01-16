@@ -43,8 +43,6 @@ module Relapse
     attr_accessor :files
     # @return [String] Version number as a string (for example, "1.2.0").
     attr_accessor :version
-    # @return [String] Optional filename of icon to show on executable/installer (.ico).
-    attr_accessor :icon
     # @return [String] Folder to output to (defaults to 'pkg/')
     attr_accessor :output_path
     # @return [String] File name of readme file - End user will have the option to view this after the win32 installer has installed, but must be .txt/.rtf.
@@ -107,7 +105,7 @@ module Relapse
       @verbose = true
 
       @name = @underscored_name = @underscored_version = nil
-      @version = @readme =  @executable = @license = @icon = nil
+      @version = @readme =  @executable = @license = nil
 
       if block_given?
         yield self
