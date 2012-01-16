@@ -96,7 +96,7 @@ module Relapse
         puts "--- Creating Main.rb"
         File.open("#{app}/Contents/Resources/Main.rb", "w") do |file|
           file.puts <<END_TEXT
-#{vendored_gem_names}.each do |gem|
+#{vendored_gem_names.inspect}.each do |gem|
   $LOAD_PATH.unshift File.expand_path("../vendor/gems/\#{gem}/lib", __FILE__)
 end
 
