@@ -27,6 +27,7 @@ context Relapse::Project do
     asserts(:verbose?).equals true
     asserts(:readme).nil
     asserts(:links).equals Hash.new
+    asserts(:to_s).equals "<Relapse::Project>"
 
     asserts(:output_path).equals "pkg"
     asserts(:folder_base).equals "pkg/" # Would be more, but dependent on name.
@@ -73,8 +74,12 @@ context Relapse::Project do
       end
     end
 
+    asserts(:to_s).equals %[<Relapse::Project Test Project - (2a) v0.1.5>]
     asserts(:name).equals "Test Project - (2a)"
     asserts(:underscored_name).equals "test_project_2a"
+    asserts(:version).equals "v0.1.5"
+    asserts(:files).same_elements source_files
+    asserts(:underscored_version).equals "v0_1_5"
     asserts(:executable).equals "bin/test_project_2a"
     asserts(:folder_base).equals "pkg/test_project_2a_v0_1_5"
     asserts(:links).equals "www.frog.com" => "Frog", "www2.fish.com" => "Fish"
@@ -84,6 +89,31 @@ context Relapse::Project do
     asserts("osx app active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).find {|b| b.type == :osx_app }) }.size 3
     if windows?
       asserts("win32 standalone active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).find {|b| b.type == :win32_standalone }) }.size 2
+    end
+
+    context "#generate_archive_tasks" do
+      asserts(:generate_archive_tasks).equals { topic }
+
+      should "call generate_tasks on all archivers" do
+        topic.send(:active_builders).each do |builder|
+          topic.send(:active_archivers, builder).each {|a| mock(a).generate_tasks(builder.type.to_s.sub('_', ':'), builder.folder) }
+        end
+        topic.send :generate_archive_tasks
+      end
+    end
+
+    context "#generate_tasks" do
+      asserts(:generate_tasks).equals { topic }
+
+      should "call generate_tasks on all builders" do
+        topic.send(:active_builders) {|b| mock(b).generate_tasks }
+        topic.generate_tasks
+      end
+
+      should "call #generate_archive_tasks" do
+        mock(topic).generate_archive_tasks
+        topic.generate_tasks
+      end
     end
   end
 end

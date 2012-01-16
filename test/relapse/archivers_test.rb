@@ -20,7 +20,7 @@ require File.expand_path("../teststrap", File.dirname(__FILE__))
     asserts(:package, "f").equals "f#{extension}"
 
     context "generated tasks" do
-      hookup { topic.create_tasks "source", "frog" }
+      hookup { topic.generate_tasks "source", "frog" }
 
       tasks = [
           [:FileTask, "frog#{extension}", %w[frog]],

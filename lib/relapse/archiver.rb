@@ -18,7 +18,7 @@ module Relapse
       @project = project
     end
 
-    def create_tasks(output_task, folder)
+    def generate_tasks(output_task, folder)
       pkg = package folder
 
       desc "Create #{pkg}"

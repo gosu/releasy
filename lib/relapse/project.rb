@@ -56,6 +56,8 @@ module Relapse
     # @return [Boolean] True to make the tasks output more information.
     def verbose?; @verbose; end
 
+    def to_s; "<#{self.class}#{name ? " #{name}" : ""}#{version ? " #{version}" : ""}>"; end
+
     def underscored_name
       if @underscored_name or @name.nil?
         @underscored_name
@@ -206,7 +208,7 @@ module Relapse
 
         archivers = active_archivers(builder)
         archivers.each do |archiver|
-          archiver.create_tasks output_task, builder.folder
+          archiver.generate_tasks output_task, builder.folder
         end
 
         desc "Package all #{builder.type}"
@@ -236,6 +238,8 @@ module Relapse
 
       desc "Package all"
       task "package" => top_level_tasks
+
+      self
     end
 
     protected
