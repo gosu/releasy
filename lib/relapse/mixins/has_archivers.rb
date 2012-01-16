@@ -10,7 +10,7 @@ module Relapse
     # @return [Project] self
     def add_archive_format(type, &block)
       raise ArgumentError, "Unsupported archive format #{type}" unless ARCHIVERS.has_key? type
-      raise RuntimeError, "Already have archive format #{type.inspect}" if @archivers.any? {|a| a.type == type }
+      raise ConfigError, "Already have archive format #{type.inspect}" if @archivers.any? {|a| a.type == type }
 
       archiver = ARCHIVERS[type].new(respond_to?(:project) ? project : self)
       @archivers << archiver

@@ -19,9 +19,9 @@ module Relapse
       attr_accessor :gems
 
       def generate_tasks
-        raise "#url not set" unless url
-        raise "#wrapper not set" unless wrapper
-        raise "#wrapper not valid .app folder" unless File.extname(wrapper) == ".app" and File.directory? wrapper
+        raise ConfigError, "#url not set" unless url
+        raise ConfigError, "#wrapper not set" unless wrapper
+        raise ConfigError, "#wrapper not valid .app folder" unless File.extname(wrapper) == ".app" and File.directory? wrapper
 
         new_app = "#{folder}/#{app_name}"
 

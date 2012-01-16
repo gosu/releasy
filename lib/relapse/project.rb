@@ -121,7 +121,7 @@ module Relapse
     # @return [Project] self
     def add_output(type, &block)
       raise ArgumentError, "Unsupported output type #{type}" unless BUILDERS.has_key? type
-      raise RuntimeError, "Already have output #{type.inspect}" if @builders.any? {|b| b.type == type }
+      raise ConfigError, "Already have output #{type.inspect}" if @builders.any? {|b| b.type == type }
 
       builder = BUILDERS[type].new(self)
       @builders << builder
@@ -144,7 +144,7 @@ module Relapse
 
     # Generates all tasks required by the user. Automatically called at the end of the block, if #new is given a block.
     def generate_tasks
-      raise "Must specify at least one valid output for this OS with #add_output before tasks can be generated" if @builders.empty?
+      raise ConfigError, "Must specify at least one valid output for this OS with #add_output before tasks can be generated" if @builders.empty?
 
       # Even if there are builders specified, none may work on this platform.
       return if active_builders.empty?

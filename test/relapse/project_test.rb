@@ -31,16 +31,18 @@ context Relapse::Project do
     asserts(:output_path).equals "pkg"
     asserts(:folder_base).equals "pkg/" # Would be more, but dependent on name.
 
-    asserts("attempting to generate tasks without any outputs") { topic.generate_tasks }.raises(RuntimeError)
+    asserts("attempting to generate tasks without any outputs") { topic.generate_tasks }.raises Relapse::ConfigError, /must specify at least one valid output/i
 
     asserts(:active_builders).empty
     asserts(:add_output, :source).kind_of Relapse::Builders::Source
     asserts(:active_builders).size 1
+    asserts(:add_output, :source).raises(Relapse::ConfigError, /already have output :source/i)
     asserts(:add_output, :unknown).raises(ArgumentError, /unsupported output/i)
 
     asserts("active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).first) }.empty
     asserts(:add_archive_format, :zip).kind_of Relapse::Archivers::Zip
     asserts("active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).first) }.size 1
+    asserts(:add_archive_format, :zip).raises(Relapse::ConfigError, /already have archive format :zip/i)
     asserts(:add_archive_format, :unknown).raises(ArgumentError, /unsupported archive/i)
   end
 

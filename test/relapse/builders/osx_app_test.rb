@@ -17,7 +17,7 @@ context Relapse::Builders::OsxApp do
     hookup do
       topic.url = "org.frog.fish"
     end
-    asserts(:generate_tasks).raises RuntimeError
+    asserts(:generate_tasks).raises Relapse::ConfigError, /wrapper not set/
   end
 
   context "invalid wrapper" do
@@ -26,7 +26,14 @@ context Relapse::Builders::OsxApp do
       topic.wrapper = "whatever"
     end
 
-    asserts(:generate_tasks).raises RuntimeError
+    asserts(:generate_tasks).raises Relapse::ConfigError, /wrapper not valid/
+  end
+
+  context "no url" do
+    hookup do
+      topic.wrapper = app_wrapper
+    end
+    asserts(:generate_tasks).raises Relapse::ConfigError, /url not set/
   end
 
   context "valid" do
