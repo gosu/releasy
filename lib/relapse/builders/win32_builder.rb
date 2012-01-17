@@ -78,7 +78,7 @@ END
       File.open(temp_installer_script, "w") do |file|
         file.write <<END
 [Setup]
-AppName=#{project.underscored_name}
+AppName=#{project.name}
 AppVersion=#{project.version}
 DefaultDirName={pf}\\#{project.name.gsub(/[^\w\s]/, '')}
 OutputDir=#{File.dirname output_file}

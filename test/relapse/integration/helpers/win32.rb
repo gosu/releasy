@@ -4,13 +4,16 @@ def win32_project
   project.version = "0.1"
   project.files = source_files
   project.exposed_files = %w[README.txt LICENSE.txt]
-  project.add_link "http://www.website.com", "Website"
+  project.add_link "http://spooner.github.com/libraries/relapse/", "Relapse website"
 
   project
 end
 
 def link_file
-  "[InternetShortcut]\nURL=http://www.website.com\n"
+  <<END
+[InternetShortcut]
+URL=http://spooner.github.com/libraries/relapse/
+END
 end
 
 # Hack to allow test to work using a different gemfile than Relapse's.

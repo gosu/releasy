@@ -12,9 +12,11 @@ context "win32 installer as zip" do
   hookup do
     Dir.chdir project_path
     topic.add_output :win32_installer do |o|
-      o.start_menu_group = "Test Apps"
+      o.start_menu_group = "Relapse Test Apps"
       o.ocra_parameters = "--no-enc"
       o.icon = "test_app.ico"
+      o.license = "LICENSE.txt"
+      o.readme = "README.txt"
       o.executable_type = :console
     end
     topic.add_archive_format :zip
@@ -50,7 +52,7 @@ context "win32 installer as zip" do
 
         asserts("readme copied to folder") { File.read("pkg/test_app_0_1_WIN32_INSTALLER/README.txt") == File.read("README.txt") }
         asserts("license copied to folder") { File.read("pkg/test_app_0_1_WIN32_INSTALLER/LICENSE.txt") == File.read("LICENSE.txt") }
-        asserts("folder includes links") { File.read("pkg/test_app_0_1_WIN32_INSTALLER/Website.url") == link_file }
+        asserts("folder includes link") {  File.read("pkg/test_app_0_1_WIN32_INSTALLER/Relapse website.url") == link_file }
         asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_app_0_1_WIN32_INSTALLER/test_app_setup.exe") > 2**20 }
         asserts("archive created") { File.exists? "pkg/test_app_0_1_WIN32_INSTALLER.zip" }
         asserts("archive contains expected files") { `7z l pkg/test_app_0_1_WIN32_INSTALLER.zip` =~ /4 files, 1 folders/m }

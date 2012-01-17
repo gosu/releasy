@@ -48,7 +48,7 @@ context "win32 folder as zip" do
         end
 
         asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_app_0_1_WIN32/src/#{f}") == File.read(f) } }
-        asserts("folder includes links") { File.read("pkg/test_app_0_1_WIN32/Website.url") == link_file }
+        asserts("folder includes link") { File.read("pkg/test_app_0_1_WIN32/Relapse website.url") == link_file }
         asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_app_0_1_WIN32/test_app.exe") > 0 }
         asserts("archive created and of reasonable size") { File.size("pkg/test_app_0_1_WIN32.zip") > 2**20 }
         asserts("uninstaller files have been removed") { FileList["pkg/test_app_0_1_WIN32/unins000.*"].empty? }
