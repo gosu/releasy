@@ -41,14 +41,12 @@ module Relapse
     attr_accessor :name
     # @return [Array<String>] List of files to include in package.
     attr_accessor :files
+    # @return [Array<String>] Files which should always be copied into the archive folder root, so they are always visible to the user. e.g readme, change-log and/or license files.
+    attr_accessor :exposed_files
     # @return [String] Version number as a string (for example, "1.2.0").
     attr_accessor :version
     # @return [String] Folder to output to (defaults to 'pkg/')
     attr_accessor :output_path
-    # @return [String] File name of readme file - End user will have the option to view this after the win32 installer has installed, but must be .txt/.rtf.
-    attr_accessor :readme
-    # @return [String] Filename of license file - Must be text or rtf file, which will be shown to user who will be requested to accept it (win32 installer only).
-    attr_accessor :license
 
     # Verbosity of the console output.
     # @return [Boolean] True to make the tasks output more information.
@@ -101,11 +99,12 @@ module Relapse
       @builders = []
       @links = {}
       @files = []
+      @exposed_files = []
       @output_path = DEFAULT_PACKAGE_FOLDER
       @verbose = true
 
       @name = @underscored_name = @underscored_version = nil
-      @version = @readme =  @executable = @license = nil
+      @version = @executable = nil
 
       if block_given?
         yield self

@@ -93,14 +93,14 @@ END
             file.puts "DefaultGroupName=#{project.name}"
           end
 
-          file.puts "LicenseFile=#{project.license}" if project.license # User must accept license.
+          file.puts "LicenseFile=#{license}" if license # User must accept license.
           file.puts "SetupIconFile=#{icon}" if icon
           file.puts
 
           file.puts "[Files]"
 
-          file.puts %[Source: "#{project.license}"; DestDir: "{app}"] if project.license
-          file.puts %[Source: "#{project.readme}";  DestDir: "{app}"; Flags: isreadme] if project.readme
+          file.puts %[Source: "#{license}"; DestDir: "{app}"] if license
+          file.puts %[Source: "#{readme}";  DestDir: "{app}"; Flags: isreadme] if readme
 
           dir = File.dirname(output_file).tr("/", "\\")
           project.send(:links).each_value do |title|

@@ -21,10 +21,9 @@ context Relapse::Project do
     asserts(:underscored_name).nil
     asserts(:version).nil
     asserts(:executable).nil
-    asserts(:license).nil
     asserts(:files).empty
+    asserts(:exposed_files).empty
     asserts(:verbose?).equals true
-    asserts(:readme).nil
     asserts(:links).equals Hash.new
     asserts(:to_s).equals "<Relapse::Project>"
 

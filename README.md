@@ -46,8 +46,7 @@ Example
       p.version = AlphaChannel::VERSION
       p.executable = "bin/alpha_channel.rbw"
       p.files = `git ls-files`.split("\n").reject {|f| f[0] == '.' }
-      p.readme = "README.html"
-
+      o.exposed_files = ["README.html"]
       p.add_link "http://spooner.github.com/games/alpha_channel", "Alpha Channel website"
 
       # Create a variety of releases, for all platforms.
@@ -68,6 +67,7 @@ Example
         o.icon = "media/icon.ico"
         o.ocra_parameters = "--no-enc"
         o.start_menu_group = "Spooner Games"
+        o.readme = "README.html" # User asked if they want to view it after install.
       end
 
       o.add_archive_format :zip # All outputs given this archive format.

@@ -15,6 +15,7 @@ module Relapse
 
         file folder => project.files do
           create_link_files folder
+          project.exposed_files.each {|file| cp file, folder }
 
           create_installer installer_name, :links => false
 

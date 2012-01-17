@@ -6,8 +6,6 @@ context "Source in all formats" do
       p.name = "Test App"
       p.version = "0.1"
       p.files = source_files
-      p.readme = "README.txt"
-      p.license = "LICENSE.txt"
 
       p.add_output :source do |o|
         o.add_archive_format :exe

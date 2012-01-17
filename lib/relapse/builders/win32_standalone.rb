@@ -12,8 +12,7 @@ module Relapse
         directory folder
 
         file folder => project.files do
-          cp project.readme, folder if project.readme
-          cp project.license, folder if project.license
+          project.exposed_files.each {|file| cp file, folder }
 
           create_link_files folder
 

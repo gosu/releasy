@@ -3,8 +3,7 @@ def win32_project
   project.name = "Test App"
   project.version = "0.1"
   project.files = source_files
-  project.readme = "README.txt"
-  project.license = "LICENSE.txt"
+  project.exposed_files = %w[README.txt LICENSE.txt]
   project.add_link "http://www.website.com", "Website"
 
   project

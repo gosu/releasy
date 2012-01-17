@@ -14,8 +14,7 @@ context "OS X app as tar.gz" do
     topic.name = "Test App"
     topic.version = "0.1"
     topic.files = source_files
-    topic.readme = "README.txt"
-    topic.license = "LICENSE.txt"
+    topic.exposed_files = %w[README.txt LICENSE.txt]
     topic.add_archive_format :tar_gz
     topic.add_output :osx_app do |o|
       o.url = "org.frog.fish"

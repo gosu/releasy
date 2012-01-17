@@ -48,8 +48,7 @@ module Relapse
           copy_files_relative project.files, "#{new_app}/Contents/Resources/application"
 
           # Copy accompanying files.
-          cp project.readme, folder if project.readme
-          cp project.license, folder if project.license
+          project.exposed_files.each {|file| cp file, folder }
 
           copy_gems new_app
           create_main new_app
