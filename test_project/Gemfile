@@ -1,0 +1,8 @@
+# Hacky gemfile to ensure that we can generate output in tests from this sub-project.
+# That is, so we can avoid using the Relapse gemfile.
+
+source :rubygems
+
+gem "riot"
+gem "rr"
+gem "ocra"

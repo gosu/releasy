@@ -13,6 +13,7 @@ context "win32 standalone as 7z" do
     Dir.chdir project_path
     topic.add_output :win32_standalone do |o|
       o.ocra_parameters = "--no-enc"
+      o.executable_type = :console
       o.icon = "test_app.ico"
     end
     topic.add_archive_format :"7z"
@@ -42,7 +43,9 @@ context "win32 standalone as 7z" do
       test_tasks tasks
 
       context "generate folder + 7z" do
-        hookup { Rake::Task["package:win32:standalone:7z"].invoke }
+        hookup do
+          redirect_bundler_gemfile { Rake::Task["package:win32:standalone:7z"].invoke }
+        end
 
         asserts("readme copied to folder") { File.read("pkg/test_app_0_1_WIN32_EXE/README.txt") == File.read("README.txt") }
         asserts("license copied to folder") { File.read("pkg/test_app_0_1_WIN32_EXE/LICENSE.txt") == File.read("LICENSE.txt") }

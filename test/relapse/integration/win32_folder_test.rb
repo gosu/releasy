@@ -15,6 +15,7 @@ context "win32 folder as zip" do
       o.add_archive_format :zip
       o.ocra_parameters = "--no-enc"
       o.icon = "test_app.ico"
+      o.executable_type = :console
     end
   end
 
@@ -42,9 +43,11 @@ context "win32 folder as zip" do
       test_tasks tasks
 
       context "generate folder + zip" do
-        hookup { begin; Rake::Task["package:win32:folder:zip"].invoke; rescue; end }
+        hookup do
+          redirect_bundler_gemfile { Rake::Task["package:win32:folder:zip"].invoke }
+        end
 
-        asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_app_0_1_WIN32/#{f}") == File.read(f) } }
+        asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_app_0_1_WIN32/src/#{f}") == File.read(f) } }
         asserts("folder includes links") { File.read("pkg/test_app_0_1_WIN32/Website.url") == link_file }
         asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_app_0_1_WIN32/test_app.exe") > 0 }
         asserts("archive created and of reasonable size") { File.size("pkg/test_app_0_1_WIN32.zip") > 2**20 }

@@ -15,6 +15,7 @@ context "win32 installer as zip" do
       o.start_menu_group = "Test Apps"
       o.ocra_parameters = "--no-enc"
       o.icon = "test_app.ico"
+      o.executable_type = :console
     end
     topic.add_archive_format :zip
   end
@@ -43,7 +44,9 @@ context "win32 installer as zip" do
       test_tasks tasks
 
       context "generate folder + zip" do
-        hookup { Rake::Task["package:win32:installer:zip"].invoke }
+        hookup do
+          redirect_bundler_gemfile { Rake::Task["package:win32:installer:zip"].invoke }
+        end
 
         asserts("readme copied to folder") { File.read("pkg/test_app_0_1_WIN32_INSTALLER/README.txt") == File.read("README.txt") }
         asserts("license copied to folder") { File.read("pkg/test_app_0_1_WIN32_INSTALLER/LICENSE.txt") == File.read("LICENSE.txt") }

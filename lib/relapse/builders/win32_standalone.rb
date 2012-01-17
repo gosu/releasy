@@ -19,6 +19,7 @@ module Relapse
 
           command = %[#{ocra_command} --output "#{folder}/#{executable_name}"]
           puts command if project.verbose?
+
           system command
         end
 

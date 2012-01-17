@@ -7,9 +7,13 @@ module Relapse
   class Win32Builder < Builder
     OCRA_COMMAND = "ocra"
     ICON_EXTENSION = ".ico"
+    EXECUTABLE_TYPES = [:auto, :windows, :console]
 
     # @return [String] Extra options to send to Ocra (win32 outputs only).
     attr_accessor :ocra_parameters
+
+    # @return [:auto, :windows, :console] Type of ruby to run executable with: :console means run with `ruby`, :windows means run with `rubyw`,  :auto means determine type from executable extension (.rb => :console or .rbw => :windows).
+    attr_accessor :executable_type
 
     def valid_for_platform?; RUBY_PLATFORM =~ /win32|mingw/; end
 
@@ -24,11 +28,18 @@ module Relapse
     def setup
       @icon = nil
       @ocra_parameters = ""
+      @executable_type = :auto
     end
 
     protected
     def ocra_command
-      command = %[#{OCRA_COMMAND} "#{project.executable}" #{ocra_parameters} ]
+      if executable_type == :auto and not %w[.rbw .rb].include? File.extname(project.executable)
+        raise ConfigError,"Unless the executable file extension is .rbw or .rb, then #executable_type must be explicitly :windows or :console"
+      end
+
+      command = %[#{OCRA_COMMAND} "#{project.executable}" ]
+      command += "--#{executable_type} " unless executable_type == :auto
+      command += "#{ocra_parameters} " if ocra_parameters
       command += %[--icon "#{icon}" ] if icon
       command += (project.files - [project.executable]).map {|f| %["#{f}"]}.join(" ")
       command
