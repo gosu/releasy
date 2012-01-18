@@ -1,29 +1,9 @@
-%w[osx_app source win32_folder win32_folder_from_wrapper win32_installer win32_standalone].each do |builder|
-  require "relapse/builders/#{builder}"
-end
-
-%w[exe seven_zip tar_bzip2 tar_gzip zip].each do |archiver|
-  require "relapse/archivers/#{archiver}"
-end
-
+require 'relapse/builders'
+require 'relapse/archivers'
 require "relapse/mixins/has_archivers"
 
 module Relapse
   DEFAULT_PACKAGE_FOLDER = "pkg"
-
-  # Builder type => Builder class
-  BUILDERS = {}
-  Builders.constants.each do |constant|
-    builder = Builders.const_get constant
-    BUILDERS[builder.type] = builder if builder.ancestors.include? Builder
-  end
-
-  # Archiver type => Archiver class
-  ARCHIVERS = {}
-  Archivers.constants.each do |constant|
-    archiver = Archivers.const_get constant
-    ARCHIVERS[archiver.type] = archiver if archiver.ancestors.include? Archiver
-  end
 
   # @attr underscored_name [String] Project name underscored (as used in file names), which will be derived from {#name}, but can be manually set.
   # @attr underscored_version [String] Version number, underscored so it can be used in file names, which will be derived from {#version}, but can be manually set.
@@ -31,7 +11,7 @@ module Relapse
   # @attr_reader folder_base [String] The path to the folder to create - All variations of output will be based on extending this path.
   class Project
     include Rake::DSL
-    include HasArchivers
+    include Mixins::HasArchivers
 
     attr_writer :underscored_name, :underscored_version, :executable
 
@@ -116,13 +96,13 @@ module Relapse
 
     # Add a type of output to produce. Must define at least one of these.
     #
-    # @param [Symbol]
+    # @param type [:osx_app, :source, :win32_folder, :win32_folder_from_wrapper, :win32_installer, :win32_standalone]
     # @return [Project] self
     def add_output(type, &block)
-      raise ArgumentError, "Unsupported output type #{type}" unless BUILDERS.has_key? type
+      raise ArgumentError, "Unsupported output type #{type}" unless Builders.has_type? type
       raise ConfigError, "Already have output #{type.inspect}" if @builders.any? {|b| b.type == type }
 
-      builder = BUILDERS[type].new(self)
+      builder = Builders[type].new(self)
       @builders << builder
 
       yield builder if block_given?

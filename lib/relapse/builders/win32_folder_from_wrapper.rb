@@ -5,7 +5,9 @@ module Relapse
   module Builders
     # Wraps up application in a pre-made wrapper. If building on Windows, use :win32_folder instead, since it will be much smaller.
     class Win32FolderFromWrapper < Win32Builder
-      include HasGemspecs
+      include Mixins::HasGemspecs
+
+      Builders.register self
 
       BINARY_GEMS = %w[gosu texplay chipmunk ray]
 

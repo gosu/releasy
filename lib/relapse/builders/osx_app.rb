@@ -1,11 +1,13 @@
-require "relapse/builder"
+require "relapse/builders/builder"
 require "relapse/mixins/has_gemspecs"
 
 module Relapse
   module Builders
     # @attr icon [String] Optional filename of icon to show on executable/installer (.icns).
     class OsxApp < Builder
-      include HasGemspecs
+      include Mixins::HasGemspecs
+
+      Builders.register self
 
       def self.folder_suffix; "OSX"; end
 

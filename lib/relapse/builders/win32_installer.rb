@@ -4,6 +4,8 @@ module Relapse
   module Builders
     # Builds a win32 installer for the application.
     class Win32Installer < Win32Builder
+      Builders.register self
+
       INSTALLER_SCRIPT = "win32_installer.iss"
 
       # @return [String] Optional start-menu grouping of the application when installed (if name == "app" and installer_group == "frog", then it will get put into 'frog/app' in the start menu).

@@ -1,4 +1,5 @@
 module Relapse
+module Mixins
   module HasGemspecs
     # @return [Array<Gem>] List of gemspecs used by the application, which should usually be: Bundler.definition.gems_for([:default])
     attr_accessor :gemspecs
@@ -25,4 +26,5 @@ module Relapse
       end
     end
   end
+end
 end

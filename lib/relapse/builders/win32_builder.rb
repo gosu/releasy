@@ -1,6 +1,7 @@
-require "relapse/builder"
+require "relapse/builders/builder"
 
 module Relapse
+module Builders
   # General functionality for win32 builders.
   # @abstract
   # @attr icon [String] Optional filename of icon to show on executable/installer (.ico).
@@ -78,8 +79,8 @@ module Relapse
 [InternetShortcut]
 URL=#{url}
 END
-      end
     end
+  end
 
     # Generate innosetup script to build installer.
     protected
@@ -138,4 +139,5 @@ END
       end
     end
   end
+end
 end

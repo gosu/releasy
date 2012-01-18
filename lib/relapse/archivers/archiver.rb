@@ -1,4 +1,5 @@
 module Relapse
+module Archivers
   # @abstract
   class Archiver
     include Rake::DSL
@@ -45,4 +46,5 @@ module Relapse
       %[7z a -mmt -bd -t#{type} "#{package(folder)}" "#{folder}"]
     end
   end
+end
 end

@@ -1,8 +1,10 @@
-require "relapse/archiver"
+require "relapse/archivers/archiver"
 
 module Relapse
   module Archivers
     class Exe < Archiver
+      Archivers.register self
+
       SFX_NAME = "7z.sfx"
       SFX_FILE = File.expand_path("../../../../bin/#{SFX_NAME}", __FILE__)
       SFX_FOLDER = "/usr/lib/p7zip"

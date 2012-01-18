@@ -1,4 +1,5 @@
 module Relapse
+module Mixins
   module HasArchivers
     def initialize
       @archivers = []
@@ -9,10 +10,10 @@ module Relapse
     # @param type [:exe, :"7z", :tar_bz2, :tar_gz, :zip]
     # @return [Project] self
     def add_archive_format(type, &block)
-      raise ArgumentError, "Unsupported archive format #{type}" unless ARCHIVERS.has_key? type
+      raise ArgumentError, "Unsupported archive format #{type.inspect}" unless Archivers.has_type? type
       raise ConfigError, "Already have archive format #{type.inspect}" if @archivers.any? {|a| a.type == type }
 
-      archiver = ARCHIVERS[type].new(respond_to?(:project) ? project : self)
+      archiver = Archivers[type].new(respond_to?(:project) ? project : self)
       @archivers << archiver
 
       yield archiver if block_given?
@@ -26,4 +27,5 @@ module Relapse
       @archivers
     end
   end
+end
 end

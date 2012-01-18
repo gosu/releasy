@@ -4,6 +4,7 @@ module Relapse
   module Builders
     # Creates a completely standalone (self-extracting when run) win32 executable.
     class Win32Standalone < Win32Builder
+      Builders.register self
 
       def self.folder_suffix; "WIN32_EXE"; end
 
