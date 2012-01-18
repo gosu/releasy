@@ -99,23 +99,28 @@ Note: The _win32_ tasks will not be created unless running on Windows.
     rake package:win32:installer       # Package all win32_installer
     rake package:win32:installer:zip   # Create pkg/alpha_channel_1_4_0_WIN32_I...
 
-External Requirements
----------------------
+External Requirements (Optional)
+--------------------------------
 
-* To create package archives (optional), [7z](http://www.7-zip.org) must be installed.
+### To create package archives
+
+[7z](http://www.7-zip.org) must be installed.
+
   - Installing on OS X homebrew:
 
-    `brew install p7zip`
+    <pre>brew install p7zip</pre>
 
   - Installing on Ubuntu/Debian:
 
-    `sudo apt-get install p7zip-full`
+    <pre>sudo apt-get install p7zip-full</pre>
 
-  - Installing on win32 (or other OS):
+  - Installing on win32 (or other OS)
 
-    [7z downloads](http://www.7-zip.org/download.html)
+    * [Download from 7z](http://www.7-zip.org/download.html)
 
-* To create `:win32_folder` and `:win32_installer` outputs, [InnoSetup](http://www.jrsoftware.org/isdl.php) must be installed.
+### To create `:win32_folder` and `:win32_installer` outputs
+
+[InnoSetup](http://www.jrsoftware.org/isdl.php) must be installed.
 
 Credits
 -------
