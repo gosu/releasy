@@ -43,6 +43,7 @@ context Relapse::Builders::OsxApp do
       topic.url = "org.frog.fish"
       topic.wrapper = app_wrapper
       topic.icon = "test_app.icns"
+      topic.gemspecs = Bundler.definition.specs_for([:development])
       topic.generate_tasks
     end
 
@@ -50,6 +51,7 @@ context Relapse::Builders::OsxApp do
     asserts(:app_name).equals "Test App.app"
     asserts(:url).equals "org.frog.fish"
     asserts(:wrapper).equals app_wrapper
+    asserts(:gemspecs).equals Bundler.definition.specs_for([:development])
 
     context "tasks" do
       tasks = [
@@ -59,6 +61,28 @@ context Relapse::Builders::OsxApp do
       ]
 
       test_tasks tasks
+    end
+
+    context "generate" do
+      hookup { Rake::Task["build:osx:app"].invoke }
+
+      asserts("files copied inside app") { source_files.all? {|f| File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/application/#{f}") == File.read(f) } }
+      asserts("readme copied to folder") { File.read("pkg/test_app_0_1_OSX/README.txt") == File.read("README.txt") }
+      asserts("license copied to folder") { File.read("pkg/test_app_0_1_OSX/LICENSE.txt") == File.read("LICENSE.txt") }
+
+      asserts("executable renamed") { File.exists?("pkg/test_app_0_1_OSX/Test App.app/Contents/MacOS/Test App") }
+      asserts("app is an executable (will fail in Windows)") { File.executable?("pkg/test_app_0_1_OSX/Test App.app/Contents/MacOS/Test App") }
+
+      asserts("Gosu icon deleted") { not File.exists? "pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/Gosu.icns" }
+      asserts("icon is copied to correct location") { File.exists? "pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/test_app.icns" }
+      asserts("Main.rb is correct") { File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/Main.rb").strip == File.read(data_file("Main.rb")).strip }
+      asserts("Info.plist is correct") { File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Info.plist").strip == File.read(data_file("Info.plist")).strip }
+
+      %w[bundler rr riot yard].each do |gem|
+        asserts("#{gem} gem folder copied") { File.exists?("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/vendor/gems/#{gem}") }
+      end
+
+      denies("default chingu gem left in app")  { File.exists?("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/lib/chingu") }
     end
   end
 end

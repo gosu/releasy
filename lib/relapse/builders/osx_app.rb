@@ -1,9 +1,12 @@
 require "relapse/builder"
+require "relapse/mixins/has_gemspecs"
 
 module Relapse
   module Builders
     # @attr icon [String] Optional filename of icon to show on executable/installer (.icns).
     class OsxApp < Builder
+      include HasGemspecs
+
       def self.folder_suffix; "OSX"; end
 
       # Binary gems included in app.
@@ -17,8 +20,6 @@ module Relapse
       attr_accessor :wrapper
       # @return [String] Inverse url of application (e.g. 'org.supergames.blasterbotsfrommars')
       attr_accessor :url
-      # @return [Array<Gem>] List of gems used by the application, which should usually be: Bundler.definition.gems_for([:default])
-      attr_accessor :gems
 
       # @return [String] Optional filename of icon to show on app (.icns).
       attr_reader :icon
@@ -33,7 +34,7 @@ module Relapse
         raise ConfigError, "#wrapper not set" unless wrapper
         raise ConfigError, "#wrapper not valid .app folder" unless File.extname(wrapper) == ".app" and File.directory? wrapper
 
-        new_app = "#{folder}/#{app_name}"
+        new_app = File.join folder, app_name
 
         directory folder
 
@@ -45,12 +46,12 @@ module Relapse
           cp_r wrapper, new_app
 
           ## Copy my source files.
-          copy_files_relative project.files, "#{new_app}/Contents/Resources/application"
+          copy_files_relative project.files, File.join(new_app, 'Contents/Resources/application')
 
           # Copy accompanying files.
           project.exposed_files.each {|file| cp file, folder }
 
-          copy_gems new_app
+          copy_gems vendored_gem_names(BINARY_GEMS), File.join(new_app, 'Contents/Resources/vendor/gems')
           create_main new_app
           edit_init new_app
           remove_gems new_app
@@ -64,33 +65,16 @@ module Relapse
         @icon = nil
         @url = nil
         @wrapper = nil
-        @gems = []
       end
 
       protected
       def app_name; "#{project.name}.app"; end
 
       protected
-      # Don't include binary gems already in the .app or bundler, since it will get confused.
-      def vendored_gem_names; (gems.map(&:name) - %w[bundler] - BINARY_GEMS).sort; end
-
-      protected
       def rename_executable(app)
         new_executable = "#{app}/Contents/MacOS/#{project.name}"
         mv "#{app}/Contents/MacOS/RubyGosu App" , new_executable
         chmod 0755, new_executable
-      end
-
-      protected
-      def copy_gems(app)
-
-        puts "Copying gems into app" if project.verbose?
-        mkdir_p "#{app}/Contents/Resources/vendor/gems"
-        vendored_gem_names.each do |gem|
-          gem_path = gems.find {|g| g.name == gem }.full_gem_path
-          puts "Copying gem: #{File.basename gem_path}" if project.verbose?
-          cp_r gem_path, "#{app}/Contents/Resources/vendor/gems/#{gem}"
-        end
       end
 
       protected
@@ -115,7 +99,7 @@ module Relapse
         puts "--- Creating Main.rb"
         File.open("#{app}/Contents/Resources/Main.rb", "w") do |file|
           file.puts <<END_TEXT
-#{vendored_gem_names.inspect}.each do |gem|
+#{vendored_gem_names(BINARY_GEMS).inspect}.each do |gem|
   $LOAD_PATH.unshift File.expand_path("../vendor/gems/\#{gem}/lib", __FILE__)
 end
 

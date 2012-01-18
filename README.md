@@ -54,7 +54,7 @@ Example
         o.add_archive_format :tar_gz
         o.url = "com.github.spooner.games.alpha_channel"
         o.wrapper = "../osx_app/RubyGosu App.app"
-        o.gems = Bundler.definition.specs_for([:default]) # Don't want :development gems.
+        o.gemspecs = Bundler.definition.specs_for([:default]) # Don't want :development gems.
         o.icon = "media/icon.icns"
       end
       p.add_output :source

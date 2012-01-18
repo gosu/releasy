@@ -59,7 +59,7 @@ context Relapse::Project do
           o.add_archive_format :tar_gz
           o.wrapper = app_wrapper
           o.url = "org.url.app"
-          o.gems = Bundler.setup.gems
+          o.gemspecs = Bundler.setup.gems
         end
         p.add_output :win32_standalone do |o|
           o.ocra_parameters = "--no-enc"
