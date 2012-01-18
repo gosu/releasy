@@ -82,10 +82,10 @@ context Relapse::Project do
     asserts(:folder_base).equals "pkg/test_project_2a_v0_1_5"
     asserts(:links).equals "www.frog.com" => "Frog", "www2.fish.com" => "Fish"
 
-    asserts(:active_builders).size(windows? ? 3 : 2)
+    asserts(:active_builders).size(Gem.win_platform? ? 3 : 2)
     asserts("source active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).find {|b| b.type == :source }) }.size 2
     asserts("osx app active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).find {|b| b.type == :osx_app }) }.size 3
-    if windows?
+    if Gem.win_platform?
       asserts("win32 standalone active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).find {|b| b.type == :win32_standalone }) }.size 2
     end
 

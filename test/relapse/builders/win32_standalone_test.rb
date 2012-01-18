@@ -17,7 +17,7 @@ context Relapse::Builders::Win32Standalone do
   asserts(:icon=, "test_app.icns").raises Relapse::ConfigError, /icon must be a .ico file/
 
   context "valid" do
-    if windows?
+    if Gem.win_platform?
       context "on Windows" do
         hookup { topic.generate_tasks }
 

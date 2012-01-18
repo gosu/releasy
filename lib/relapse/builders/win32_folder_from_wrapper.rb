@@ -12,7 +12,7 @@ module Relapse
       # @return [String] Name of win32 directory used as the framework for release.
       attr_accessor :wrapper
 
-      def valid_for_platform?; not windows?; end
+      def valid_for_platform?; not Relapse.win_platform?; end
 
       def self.folder_suffix; "WIN32_FROM_WRAPPER"; end
 

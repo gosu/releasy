@@ -23,7 +23,7 @@ context "win32 standalone as 7z" do
 
   active_builders_valid
 
-  if windows?
+  if Gem.win_platform?
     context "on Windows" do
       hookup { topic.generate_tasks }
 

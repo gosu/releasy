@@ -1,56 +1,51 @@
-# Load ocra binary, but only once.
-def require_ocra
-  return if @ocra_loaded
-  @ocra_loaded = true
-
+namespace :win32_wrapper do
   load Gem.bin_path('ocra', 'ocra', Bundler.definition.specs_for([:default]).find {|g| g.name == "ocra" }.version)
-
-  Ocra.find_stubs
 
   # Need to disable this method so we get the right output.
   Ocra::OcraBuilder.class_eval do
     def createinstdir(*args); end
   end
-end
 
-# TODO: Need to pull in some binary gems, via a bundle?
-# TODO: Rakify all this with dependencies.
-# TODO: Add tests.
-desc "Create win32 wrapper"
-task :win32_wrapper do
-  require_ocra
+  options = Ocra.instance_variable_get(:@options)
+  options[:lzma_mode] = false
+  options[:chdir_first] = true
+  options[:icon_filename] = "test_project/test_app.ico"
 
-  output_folder = "win32_wrapper"
-  wrapper = "ruby_win32_wrapper"
-  rm_r output_folder if File.exists? output_folder
-  mkdir_p output_folder
+  output_dir = "win32_wrapper"
+  wrapper_name = "ruby_win32_wrapper"
+  wrapper_dir = File.join(output_dir, wrapper_name)
+  bin_dir = "#{wrapper_dir}/bin"
+  gems_dir = "#{wrapper_dir}/gemhome/gems"
+  specs_dir = "#{wrapper_dir}/gemhome/specifications"
+  runner_file = "#{wrapper_dir}/relapse_runner.rb"
 
-  Dir.chdir output_folder do
-    bin_dir = "#{wrapper}/bin"
-    gems_dir = "#{wrapper}/gemhome/gems"
-    specs_dir = "#{wrapper}/gemhome/specifications"
+  task :read_ocra_stubs do
+    Ocra.find_stubs
+  end
 
-    ENV['BUNDLE_GEMFILE'] = File.expand_path("../test_project/Gemfile", __FILE__)
-    File.open("#{wrapper}.rb", "w") {|f| f.puts "# nothing" }
-    command = %[bundle exec ocra #{wrapper}.rb --debug-extract --no-dep-run --add-all-core]
-    puts command
-    system command
+  directory output_dir
 
-    rm "#{wrapper}.rb"
+  desc "Create win32 wrapper"
+  task :build => [wrapper_dir, runner_file, 'win32_wrapper:executables']
+
+  file wrapper_dir do
+    File.open("#{wrapper_dir}.rb", "w") {|f| f.puts "# nothing" }
+
+    Dir.chdir output_dir do
+      ENV['BUNDLE_GEMFILE'] = File.expand_path("../Gemfile", __FILE__)
+      command = %[bundle exec ocra #{wrapper_name}.rb --debug-extract --no-dep-run --add-all-core]
+      puts command
+      system command
+    end
+
+    rm "#{wrapper_dir}.rb"
 
     # Extract the files from the executable.
-    system "#{wrapper}.exe"
-    rm "#{wrapper}.exe"
+    system "#{wrapper_dir}.exe"
+    rm "#{wrapper_dir}.exe"
 
-    mv Dir["ocr*\.tmp"].first, wrapper
-    rm "#{wrapper}/src/#{wrapper}.rb"
-    File.open("#{wrapper}/relapse_runner.rb", "w") do |file|
-      file.puts <<END
-# Replace this 'puts' command with something like this (you must put your application in the 'src' directory):
-# require 'lib/application.rb'
-puts "Relapse runner has run!"
-END
-    end
+    mv Dir["#{output_dir}/ocr*\.tmp"].first, wrapper_dir
+    rm "#{wrapper_dir}/src/#{wrapper_name}.rb"
 
     # Copy rubyw + dlls (ruby is already included for us)
     cp "#{Ocra::Host.bindir}/#{Ocra::Host.rubyw_exe}", bin_dir
@@ -70,30 +65,38 @@ END
       gem_spec = File.expand_path("../../specifications/#{File.basename gem_dir}.gemspec", gem_dir)
       cp_r gem_spec, specs_dir
     end
-
-    create_stubs(wrapper)
   end
-end
 
-def create_stubs(folder)
-  options = Ocra.instance_variable_get(:@options)
-  options[:lzma_mode] = false
-  options[:chdir_first] = true
-  options[:icon_filename] = "../test_project/test_app.ico"
+  # Redirection file. Is replaced by automated build.
+  file runner_file => wrapper_dir do
+    File.open(runner_file, "w") do |file|
+      file.puts <<END
+# Replace this 'puts' command with something like this (you must put your application in the 'src' directory):
+# require 'lib/application.rb'
+puts "Relapse runner has run!"
+END
+    end
+  end
 
-  [
-      ["#{folder}/console.exe", false, Ocra::Host.ruby_exe],
-      ["#{folder}/windows.exe", true, Ocra::Host.rubyw_exe],
-  ].each do |path, windowed, ruby_exe|
-    Ocra::OcraBuilder.new(path, windowed) do |sb|
-      sb.setenv('RUBYOPT', '') #'$RUBYOPT$')
-      sb.setenv('RUBYLIB', '')
-      sb.setenv('GEM_PATH', (Ocra.Pathname(Ocra::TEMPDIR_ROOT) / Ocra::GEMHOMEDIR).to_native)
+  stubs = [
+      ["#{wrapper_dir}/console.exe", false, Ocra::Host.ruby_exe],
+      ["#{wrapper_dir}/windows.exe", true, Ocra::Host.rubyw_exe],
+  ]
 
-      exe = Ocra.Pathname(Ocra::TEMPDIR_ROOT) / 'bin' / ruby_exe
-      script = (Ocra.Pathname(Ocra::TEMPDIR_ROOT) / 'relapse_runner.rb').to_native
+  task :executables => stubs.map {|d| d.first }
 
-      sb.postcreateprocess(exe, "#{ruby_exe} \"#{script}\"")
+  stubs.each do |executable, windowed, ruby_exe|
+    file executable => ['win32_wrapper:read_ocra_stubs', wrapper_dir] do
+      Ocra::OcraBuilder.new(executable, windowed) do |sb|
+        sb.setenv('RUBYOPT', '') #'$RUBYOPT$')
+        sb.setenv('RUBYLIB', '')
+        sb.setenv('GEM_PATH', (Ocra.Pathname(Ocra::TEMPDIR_ROOT) / Ocra::GEMHOMEDIR).to_native)
+
+        exe = Ocra.Pathname(Ocra::TEMPDIR_ROOT) / 'bin' / ruby_exe
+        script = (Ocra.Pathname(Ocra::TEMPDIR_ROOT) / 'relapse_runner.rb').to_native
+
+        sb.postcreateprocess(exe, "#{ruby_exe} \"#{script}\"")
+      end
     end
   end
 end

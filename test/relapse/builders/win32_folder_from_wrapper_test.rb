@@ -16,7 +16,7 @@ context Relapse::Builders::Win32FolderFromWrapper do
   end
 
   asserts(:generate_tasks).raises Relapse::ConfigError, /wrapper not set/
-  if windows?
+  if Gem.win_platform?
     denies(:valid_for_platform?)
   else
     asserts(:valid_for_platform?)

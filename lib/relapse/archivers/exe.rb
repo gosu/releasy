@@ -9,7 +9,7 @@ module Relapse
 
       protected
       def self_extractor
-        if windows?
+        if Relapse.win_platform?
           SFX_NAME
         elsif File.exists? SFX_FOLDER
           if File.exists? "#{SFX_FOLDER}/#{SFX_NAME}"

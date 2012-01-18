@@ -19,7 +19,7 @@ context Relapse::Builders::Win32Folder do
   asserts(:icon=, "test_app.icns").raises Relapse::ConfigError, /icon must be a .ico file/
 
   context "valid" do
-    if windows?
+    if Gem.win_platform?
       asserts(:valid_for_platform?)
 
       context "on Windows" do

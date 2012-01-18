@@ -26,7 +26,7 @@ context "win32 installer as zip" do
 
   active_builders_valid
 
-  if windows?
+  if Gem.win_platform?
     context "on Windows" do
       hookup { topic.generate_tasks }
 

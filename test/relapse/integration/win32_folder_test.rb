@@ -23,7 +23,7 @@ context "win32 folder as zip" do
 
   active_builders_valid
 
-  if RUBY_PLATFORM =~ /win32|mingw/
+  if Gem.win_platform?
     context "on Windows" do
       hookup { topic.generate_tasks }
 

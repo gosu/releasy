@@ -28,10 +28,6 @@ def active_builders_valid
   asserts("#active_builders are valid") { topic.send(:active_builders).all?(&:valid_for_platform?) }
 end
 
-def windows?
-  RUBY_PLATFORM =~ /mingw|win32/
-end
-
 def osx_app_wrapper; "../../osx_app/RubyGosu App.app"; end
 
 def win32_folder_wrapper; '../win32_wrapper/ruby_win32_wrapper'; end

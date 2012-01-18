@@ -15,7 +15,7 @@ module Relapse
     # @return [:auto, :windows, :console] Type of ruby to run executable with: :console means run with `ruby`, :windows means run with `rubyw`,  :auto means determine type from executable extension (.rb => :console or .rbw => :windows).
     attr_accessor :executable_type
 
-    def valid_for_platform?; windows?; end
+    def valid_for_platform?; Relapse.win_platform?; end
 
     attr_reader :icon
 
