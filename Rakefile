@@ -46,53 +46,74 @@ if RUBY_PLATFORM =~ /mingw|win32/
   task :win32_wrapper do
     require_ocra
 
-    rm_r "win32_wrapper" if File.exists? "win32_wrapper"
-    mkdir_p "win32_wrapper"
+    output_folder = "win32_wrapper"
+    wrapper = "ruby_win32_wrapper"
+    rm_r output_folder if File.exists? output_folder
+    mkdir_p output_folder
 
-    Dir.chdir "win32_wrapper" do
+    Dir.chdir output_folder do
+      bin_dir = "#{wrapper}/bin"
+      gems_dir = "#{wrapper}/gemhome/gems"
+      specs_dir = "#{wrapper}/gemhome/specifications"
+
       ENV['BUNDLE_GEMFILE'] = File.expand_path("../test_project/Gemfile", __FILE__)
-      File.open("win32_wrapper.rb", "w") {|f| f.puts "# nothing" }
-      command = %[bundle exec ocra win32_wrapper.rb --no-lzma --debug-extract --no-dep-run --add-all-core]
+      File.open("#{wrapper}.rb", "w") {|f| f.puts "# nothing" }
+      command = %[bundle exec ocra #{wrapper}.rb --debug-extract --no-dep-run --add-all-core]
       puts command
       system command
 
-      rm "win32_wrapper.rb"
+      rm "#{wrapper}.rb"
 
       # Extract the files from the executable.
-      system "win32_wrapper.exe"
-      rm "win32_wrapper.exe"
+      system "#{wrapper}.exe"
+      rm "#{wrapper}.exe"
 
-      mv Dir["ocr*\.tmp"].first, "win32_wrapper"
-      rm "win32_wrapper/src/win32_wrapper.rb"
-      File.open("win32_wrapper/relapse_runner.rb", "w") do |file|
+      mv Dir["ocr*\.tmp"].first, wrapper
+      rm "#{wrapper}/src/#{wrapper}.rb"
+      File.open("#{wrapper}/relapse_runner.rb", "w") do |file|
         file.puts <<END
-puts "Relapse runner has run in #{Dir.pwd}"
+# Replace this 'puts' command with something like this (you must put your application in the 'src' directory):
+# require 'lib/application.rb'
+puts "Relapse runner has run!"
 END
       end
 
       # Copy rubyw + dlls (ruby is already included for us)
-      cp "#{Ocra::Host.bindir}/#{Ocra::Host.rubyw_exe}", "win32_wrapper/bin"
+      cp "#{Ocra::Host.bindir}/#{Ocra::Host.rubyw_exe}", bin_dir
       Dir["#{Ocra::Host.bindir}/*.dll"].each do |file|
-        cp file, "win32_wrapper/bin" unless File.exists? "win32_wrapper/bin/#{File.basename(file)}"
+        cp file, bin_dir unless File.exists? "#{bin_dir}/#{File.basename(file)}"
       end
 
-      create_stubs
+      # Copy some binary gems.
+      mkdir_p gems_dir
+      mkdir_p specs_dir
+
+      %w[chipmunk gosu ray texplay].each do |gem|
+        gem_rb = %x[gem which #{gem}].strip
+        raise if gem_rb.empty?
+        gem_dir = File.expand_path("../..", gem_rb)
+        cp_r gem_dir, gems_dir
+        gem_spec = File.expand_path("../../specifications/#{File.basename gem_dir}.gemspec", gem_dir)
+        cp_r gem_spec, specs_dir
+      end
+
+      create_stubs(wrapper)
     end
   end
 
-  def create_stubs
+  def create_stubs(folder)
     options = Ocra.instance_variable_get(:@options)
     options[:lzma_mode] = false
     options[:chdir_first] = true
     options[:icon_filename] = "../test_project/test_app.ico"
 
     [
-        ["win32_wrapper/console.exe", false, Ocra::Host.ruby_exe],
-        ["win32_wrapper/windows.exe", true, Ocra::Host.rubyw_exe],
+        ["#{folder}/console.exe", false, Ocra::Host.ruby_exe],
+        ["#{folder}/windows.exe", true, Ocra::Host.rubyw_exe],
     ].each do |path, windowed, ruby_exe|
       Ocra::OcraBuilder.new(path, windowed) do |sb|
         sb.setenv('RUBYOPT', '') #'$RUBYOPT$')
-        sb.setenv('RUBYLIB', '') #'$RUBYLIB$')
+        sb.setenv('RUBYLIB', '')
         sb.setenv('GEM_PATH', (Ocra.Pathname(Ocra::TEMPDIR_ROOT) / Ocra::GEMHOMEDIR).to_native)
 
         exe = Ocra.Pathname(Ocra::TEMPDIR_ROOT) / 'bin' / ruby_exe

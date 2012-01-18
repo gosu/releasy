@@ -7,6 +7,8 @@ module Relapse
     class Win32FolderFromWrapper < Win32Builder
       include HasGemspecs
 
+      BINARY_GEMS = %w[gosu texplay chipmunk ray]
+
       # @return [String] Name of win32 directory used as the framework for release.
       attr_accessor :wrapper
 
@@ -31,7 +33,7 @@ module Relapse
 
           create_runner
 
-          copy_gems vendored_gem_names([]), File.join(folder, 'vendor/gems')
+          copy_gems vendored_gem_names(BINARY_GEMS), File.join(folder, 'gemhome')
         end
 
         desc "Build source/exe folder #{project.version} from wrapper"
@@ -58,16 +60,31 @@ module Relapse
           mv File.join(folder, 'console.exe'), File.join(folder, executable_name)
         end
       end
+
+      protected
+      def copy_gems(gems, destination)
+        puts "Copying gems into app" if project.verbose?
+        gems_dir = "#{destination}/gems"
+        specs_dir = "#{destination}/specifications"
+        mkdir_p gems_dir
+        mkdir_p specs_dir
+
+        gems.each do |gem|
+          gemspec = gemspecs.find {|g| g.name == gem }
+          gem_dir = gemspec.full_gem_path
+          puts "Copying gem: #{File.basename gem_dir}" if project.verbose?
+          cp_r gem_dir, gems_dir
+          gem_spec = File.expand_path("../../specifications/#{File.basename gem_dir}.gemspec", gem_dir)
+          cp_r gem_spec, specs_dir
+        end
+      end
+
       protected
       def create_runner
         # Something for the .app to run -> just a little redirection file.
         puts "--- Creating relapse_runner.rb"
         File.open("#{folder}/relapse_runner.rb", "w") do |file|
           file.puts <<END_TEXT
-#{vendored_gem_names([]).inspect}.each do |gem|
-  $LOAD_PATH.unshift File.expand_path("../vendor/gems/\#{gem}/lib", __FILE__)
-end
-
 load '#{project.executable}'
 END_TEXT
         end

@@ -20,6 +20,7 @@ end
 def redirect_bundler_gemfile
   bundle_gemfile = ENV['BUNDLE_GEMFILE']
   ENV['BUNDLE_GEMFILE'] = File.expand_path("test_project/Gemfile", $original_path)
-  yield
+  ret_val = yield
   ENV['BUNDLE_GEMFILE'] = bundle_gemfile
+  ret_val
 end

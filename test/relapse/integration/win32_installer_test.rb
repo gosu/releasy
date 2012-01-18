@@ -1,6 +1,8 @@
 require File.expand_path("../../teststrap", File.dirname(__FILE__))
 require File.expand_path("helpers/win32", File.dirname(__FILE__))
 
+folder = 'pkg/test_app_0_1_WIN32_INSTALLER'
+
 context "win32 installer as zip" do
   setup { win32_project }
 
@@ -32,15 +34,15 @@ context "win32 installer as zip" do
           [ :Task, "package", %w[package:win32] ],
           [ :Task, "package:win32", %w[package:win32:installer] ],
           [ :Task, "package:win32:installer", %w[package:win32:installer:zip] ],
-          [ :Task, "package:win32:installer:zip", %w[pkg/test_app_0_1_WIN32_INSTALLER.zip] ],
+          [ :Task, "package:win32:installer:zip", ["#{folder}.zip"] ],
 
           [ :Task, "build", %w[build:win32] ],
           [ :Task, "build:win32", %w[build:win32:installer] ],
-          [ :Task, "build:win32:installer", %w[pkg/test_app_0_1_WIN32_INSTALLER] ],
+          [ :Task, "build:win32:installer", [folder] ],
 
           [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
-          [ :FileCreationTask, "pkg/test_app_0_1_WIN32_INSTALLER", source_files ],
-          [ :FileTask, "pkg/test_app_0_1_WIN32_INSTALLER.zip", %w[pkg/test_app_0_1_WIN32_INSTALLER] ],
+          [ :FileCreationTask, folder, source_files ],
+          [ :FileTask, "#{folder}.zip", [folder] ],
       ]
 
       test_tasks tasks
@@ -50,10 +52,10 @@ context "win32 installer as zip" do
           redirect_bundler_gemfile { Rake::Task["build:win32:installer"].invoke }
         end
 
-        asserts("readme copied to folder") { File.read("pkg/test_app_0_1_WIN32_INSTALLER/README.txt") == File.read("README.txt") }
-        asserts("license copied to folder") { File.read("pkg/test_app_0_1_WIN32_INSTALLER/LICENSE.txt") == File.read("LICENSE.txt") }
-        asserts("folder includes link") {  File.read("pkg/test_app_0_1_WIN32_INSTALLER/Relapse website.url") == link_file }
-        asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_app_0_1_WIN32_INSTALLER/test_app_setup.exe") > 2**20 }
+        asserts("readme copied to folder") { File.read("#{folder}/README.txt") == File.read("README.txt") }
+        asserts("license copied to folder") { File.read("#{folder}/LICENSE.txt") == File.read("LICENSE.txt") }
+        asserts("folder includes link") {  File.read("#{folder}/Relapse website.url") == link_file }
+        asserts("executable created in folder and is of reasonable size") { File.size("#{folder}/test_app_setup.exe") > 2**20 }
       end
     end
   else

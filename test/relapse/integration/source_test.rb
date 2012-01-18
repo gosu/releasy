@@ -1,5 +1,7 @@
 require File.expand_path("../../teststrap", File.dirname(__FILE__))
 
+folder = 'pkg/test_app_0_1_SOURCE'
+
 context "Source in all formats" do
   setup do
     Relapse::Project.new do |p|
@@ -32,22 +34,22 @@ context "Source in all formats" do
     tasks = [
         [ :Task, "package", %w[package:source] ],
         [ :Task, "package:source", %w[package:source:7z package:source:exe package:source:tar_gz package:source:tar_bz2 package:source:zip] ],
-        [ :Task, "package:source:7z", %w[pkg/test_app_0_1_SOURCE.7z] ],
-        [ :Task, "package:source:exe", %w[pkg/test_app_0_1_SOURCE.exe] ],
-        [ :Task, "package:source:tar_gz", %w[pkg/test_app_0_1_SOURCE.tar.gz] ],
-        [ :Task, "package:source:tar_bz2", %w[pkg/test_app_0_1_SOURCE.tar.bz2] ],
-        [ :Task, "package:source:zip", %w[pkg/test_app_0_1_SOURCE.zip] ],
+        [ :Task, "package:source:7z", ["#{folder}.7z"] ],
+        [ :Task, "package:source:exe", ["#{folder}.exe"] ],
+        [ :Task, "package:source:tar_gz", ["#{folder}.tar.gz"] ],
+        [ :Task, "package:source:tar_bz2", ["#{folder}.tar.bz2"] ],
+        [ :Task, "package:source:zip", ["#{folder}.zip"] ],
 
         [ :Task, "build", %w[build:source] ],
-        [ :Task, "build:source", %w[pkg/test_app_0_1_SOURCE] ],
+        [ :Task, "build:source", [folder] ],
 
         [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
-        [ :FileCreationTask, "pkg/test_app_0_1_SOURCE", source_files ],
-        [ :FileTask, "pkg/test_app_0_1_SOURCE.7z", %w[pkg/test_app_0_1_SOURCE] ],
-        [ :FileTask, "pkg/test_app_0_1_SOURCE.exe", %w[pkg/test_app_0_1_SOURCE] ],
-        [ :FileTask, "pkg/test_app_0_1_SOURCE.tar.gz", %w[pkg/test_app_0_1_SOURCE] ],
-        [ :FileTask, "pkg/test_app_0_1_SOURCE.tar.bz2", %w[pkg/test_app_0_1_SOURCE] ],
-        [ :FileTask, "pkg/test_app_0_1_SOURCE.zip", %w[pkg/test_app_0_1_SOURCE] ],
+        [ :FileCreationTask, folder, source_files ],
+        [ :FileTask, "#{folder}.7z", [folder] ],
+        [ :FileTask, "#{folder}.exe", [folder] ],
+        [ :FileTask, "#{folder}.tar.gz", [folder] ],
+        [ :FileTask, "#{folder}.tar.bz2", [folder] ],
+        [ :FileTask, "#{folder}.zip", [folder] ],
     ]
 
     test_tasks tasks
@@ -56,40 +58,41 @@ context "Source in all formats" do
   context "build source" do
     hookup { Rake::Task["build:source"].invoke }
 
-    asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_app_0_1_SOURCE/#{f}") == File.read(f) } }
+    asserts("files copied to folder") { source_files.all? {|f| File.read("#{folder}/#{f}") == File.read(f) } }
+    asserts("program output") { %x[ruby "#{folder}/bin/test_app"] }.equals "test run!\n"
   end
 
   context "exe" do
     hookup { Rake::Task["package:source:exe"].invoke }
 
-    asserts("archive created") { File.size("pkg/test_app_0_1_SOURCE.exe") > 0}
+    asserts("archive created") { File.size("#{folder}.exe") > 0}
   end
 
   context "tar.gz" do
     hookup { Rake::Task["package:source:tar_gz"].invoke }
 
-    asserts("archive created") { File.size("pkg/test_app_0_1_SOURCE.tar.gz") > 0}
-    asserts("archive contains expected files") { `7z x -so -bd -tgzip pkg/test_app_0_1_SOURCE.tar.gz | 7z l -si -bd -ttar` =~ /5 files, 4 folders/m }
+    asserts("archive created") { File.size("#{folder}.tar.gz") > 0}
+    asserts("archive contains expected files") { `7z x -so -bd -tgzip #{folder}.tar.gz | 7z l -si -bd -ttar` =~ /5 files, 4 folders/m }
   end
 
   context "tar.bz2" do
     hookup { Rake::Task["package:source:tar_bz2"].invoke }
 
-    asserts("archive created") { File.size("pkg/test_app_0_1_SOURCE.tar.bz2") > 0}
-    asserts("archive contains expected files") { `7z x -so -bd -tbzip2 pkg/test_app_0_1_SOURCE.tar.bz2 | 7z l -si -bd -ttar` =~ /5 files, 4 folders/m }
+    asserts("archive created") { File.size("#{folder}.tar.bz2") > 0}
+    asserts("archive contains expected files") { `7z x -so -bd -tbzip2 #{folder}.tar.bz2 | 7z l -si -bd -ttar` =~ /5 files, 4 folders/m }
   end
 
   context "zip" do
     hookup { Rake::Task["package:source:zip"].invoke }
 
-    asserts("archive created") { File.size("pkg/test_app_0_1_SOURCE.zip") > 0}
-    asserts("archive contains expected files") { `7z l -bd -tzip pkg/test_app_0_1_SOURCE.zip` =~ /5 files, 4 folders/m }
+    asserts("archive created") { File.size("#{folder}.zip") > 0}
+    asserts("archive contains expected files") { `7z l -bd -tzip #{folder}.zip` =~ /5 files, 4 folders/m }
   end
 
   context "7z" do
     hookup { Rake::Task["package:source:7z"].invoke }
 
-    asserts("archive created") { File.size("pkg/test_app_0_1_SOURCE.7z") > 0}
-    asserts("archive contains expected files") { `7z l -bd -t7z pkg/test_app_0_1_SOURCE.7z` =~ /5 files, 4 folders/m }
+    asserts("archive created") { File.size("#{folder}.7z") > 0}
+    asserts("archive contains expected files") { `7z l -bd -t7z #{folder}.7z` =~ /5 files, 4 folders/m }
   end
 end

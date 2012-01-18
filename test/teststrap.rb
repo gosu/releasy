@@ -34,7 +34,7 @@ end
 
 def osx_app_wrapper; "../../osx_app/RubyGosu App.app"; end
 
-def win32_folder_wrapper; '../win32_wrapper/win32_wrapper'; end
+def win32_folder_wrapper; '../win32_wrapper/ruby_win32_wrapper'; end
 
 $original_path = Dir.pwd
 

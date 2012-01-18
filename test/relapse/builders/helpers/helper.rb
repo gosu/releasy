@@ -5,6 +5,7 @@ def new_project
   project.files = source_files
   project.exposed_files = %w[README.txt LICENSE.txt]
   project.add_link "http://spooner.github.com/libraries/relapse/", "Relapse website"
+  project.verbose = false
 
   project
 end

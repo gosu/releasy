@@ -51,7 +51,6 @@ context Relapse::Builders::OsxApp do
     asserts(:app_name).equals "Test App.app"
     asserts(:url).equals "org.frog.fish"
     asserts(:wrapper).equals osx_app_wrapper
-    asserts(:gemspecs).equals Bundler.definition.specs_for([:development])
 
     context "tasks" do
       tasks = [

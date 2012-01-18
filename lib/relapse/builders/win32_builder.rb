@@ -32,7 +32,7 @@ module Relapse
           when '.rb'
             :console
           else
-            raise ConfigError,"Unless the executable file extension is .rbw or .rb, then #executable_type must be explicitly :windows or :console"
+            raise ConfigError, "Unless the executable file extension is .rbw or .rb, then #executable_type must be explicitly :windows or :console"
         end
       else
         executable_type
@@ -49,7 +49,7 @@ module Relapse
     protected
     def ocra_command
       command = %[#{OCRA_COMMAND} "#{project.executable}" ]
-      command += "--#{effective_executable_type} " unless executable_type == :auto
+      command += "--#{effective_executable_type} "
       command += "#{ocra_parameters} " if ocra_parameters
       command += %[--icon "#{icon}" ] if icon
       command += (project.files - [project.executable]).map {|f| %["#{f}"]}.join(" ")
