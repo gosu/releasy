@@ -54,7 +54,7 @@ context "OS X app as tar.gz" do
   end
 
   context "generate folder + tar.gz" do
-    hookup { Rake::Task["package:osx:app:tar_gz"].invoke }
+    hookup { Rake::Task["build:osx:app"].invoke }
 
     asserts("files copied inside app") { source_files.all? {|f| File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/application/#{f}") == File.read(f) } }
     asserts("readme copied to folder") { File.read("pkg/test_app_0_1_OSX/README.txt") == File.read("README.txt") }
@@ -76,6 +76,5 @@ context "OS X app as tar.gz" do
 
     denies("default chingu gem left in app")  { File.exists?("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/lib/chingu") }
     denies("bundler gem folder copied")  { File.exists?("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/vendor/gems/bundler") }
-    denies("archive is empty") { (`7z x -so -bd -tgzip pkg/test_app_0_1_OSX.tar.gz | 7z l -si -bd -ttar` =~ /(\d+) files, (\d+) folders/m) == nil or $1 == 0 or $2 == 0 }
   end
 end

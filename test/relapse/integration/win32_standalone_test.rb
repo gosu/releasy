@@ -44,15 +44,13 @@ context "win32 standalone as 7z" do
 
       context "generate folder + 7z" do
         hookup do
-          redirect_bundler_gemfile { Rake::Task["package:win32:standalone:7z"].invoke }
+          redirect_bundler_gemfile { Rake::Task["build:win32:standalone"].invoke }
         end
 
         asserts("readme copied to folder") { File.read("pkg/test_app_0_1_WIN32_EXE/README.txt") == File.read("README.txt") }
         asserts("license copied to folder") { File.read("pkg/test_app_0_1_WIN32_EXE/LICENSE.txt") == File.read("LICENSE.txt") }
         asserts("folder includes link") { File.read("pkg/test_app_0_1_WIN32_EXE/Relapse website.url") == link_file }
         asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_app_0_1_WIN32_EXE/test_app.exe") > 2**20 }
-        asserts("archive created") { File.exists? "pkg/test_app_0_1_WIN32_EXE.7z" }
-        asserts("archive contains expected files") { `7z l pkg/test_app_0_1_WIN32_EXE.7z` =~ /4 files, 1 folders/m }
       end
     end
   else

@@ -47,15 +47,13 @@ context "win32 installer as zip" do
 
       context "generate folder + zip" do
         hookup do
-          redirect_bundler_gemfile { Rake::Task["package:win32:installer:zip"].invoke }
+          redirect_bundler_gemfile { Rake::Task["build:win32:installer"].invoke }
         end
 
         asserts("readme copied to folder") { File.read("pkg/test_app_0_1_WIN32_INSTALLER/README.txt") == File.read("README.txt") }
         asserts("license copied to folder") { File.read("pkg/test_app_0_1_WIN32_INSTALLER/LICENSE.txt") == File.read("LICENSE.txt") }
         asserts("folder includes link") {  File.read("pkg/test_app_0_1_WIN32_INSTALLER/Relapse website.url") == link_file }
         asserts("executable created in folder and is of reasonable size") { File.size("pkg/test_app_0_1_WIN32_INSTALLER/test_app_setup.exe") > 2**20 }
-        asserts("archive created") { File.exists? "pkg/test_app_0_1_WIN32_INSTALLER.zip" }
-        asserts("archive contains expected files") { `7z l pkg/test_app_0_1_WIN32_INSTALLER.zip` =~ /4 files, 1 folders/m }
       end
     end
   else

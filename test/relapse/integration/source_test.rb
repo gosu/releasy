@@ -53,25 +53,43 @@ context "Source in all formats" do
     test_tasks tasks
   end
 
-  context "generate folder + exe" do
-    hookup {Rake::Task["package:source:exe"].invoke }
+  context "build source" do
+    hookup { Rake::Task["build:source"].invoke }
+
+    asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_app_0_1_SOURCE/#{f}") == File.read(f) } }
+  end
+
+  context "exe" do
+    hookup { Rake::Task["package:source:exe"].invoke }
 
     asserts("archive created") { File.size("pkg/test_app_0_1_SOURCE.exe") > 0}
   end
 
-  context "generate folder + tar.gz" do
-    hookup {Rake::Task["package:source:tar_gz"].invoke }
+  context "tar.gz" do
+    hookup { Rake::Task["package:source:tar_gz"].invoke }
 
-    asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_app_0_1_SOURCE/#{f}") == File.read(f) } }
     asserts("archive created") { File.size("pkg/test_app_0_1_SOURCE.tar.gz") > 0}
     asserts("archive contains expected files") { `7z x -so -bd -tgzip pkg/test_app_0_1_SOURCE.tar.gz | 7z l -si -bd -ttar` =~ /5 files, 4 folders/m }
   end
 
-  context "generate folder + tar.bz2" do
-    hookup {Rake::Task["package:source:tar_bz2"].invoke }
+  context "tar.bz2" do
+    hookup { Rake::Task["package:source:tar_bz2"].invoke }
 
-    asserts("files copied to folder") { source_files.all? {|f| File.read("pkg/test_app_0_1_SOURCE/#{f}") == File.read(f) } }
     asserts("archive created") { File.size("pkg/test_app_0_1_SOURCE.tar.bz2") > 0}
     asserts("archive contains expected files") { `7z x -so -bd -tbzip2 pkg/test_app_0_1_SOURCE.tar.bz2 | 7z l -si -bd -ttar` =~ /5 files, 4 folders/m }
+  end
+
+  context "zip" do
+    hookup { Rake::Task["package:source:zip"].invoke }
+
+    asserts("archive created") { File.size("pkg/test_app_0_1_SOURCE.zip") > 0}
+    asserts("archive contains expected files") { `7z l -bd -tzip pkg/test_app_0_1_SOURCE.zip` =~ /5 files, 4 folders/m }
+  end
+
+  context "7z" do
+    hookup { Rake::Task["package:source:7z"].invoke }
+
+    asserts("archive created") { File.size("pkg/test_app_0_1_SOURCE.7z") > 0}
+    asserts("archive contains expected files") { `7z l -bd -t7z pkg/test_app_0_1_SOURCE.7z` =~ /5 files, 4 folders/m }
   end
 end
