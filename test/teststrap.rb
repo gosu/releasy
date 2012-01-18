@@ -32,9 +32,9 @@ def windows?
   RUBY_PLATFORM =~ /mingw|win32/
 end
 
-def app_wrapper
-  "../../osx_app/RubyGosu App.app"
-end
+def osx_app_wrapper; "../../osx_app/RubyGosu App.app"; end
+
+def win32_folder_wrapper; '../win32_wrapper/win32_wrapper'; end
 
 $original_path = Dir.pwd
 

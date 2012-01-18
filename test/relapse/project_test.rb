@@ -57,7 +57,7 @@ context Relapse::Project do
         p.add_output :source
         p.add_output :osx_app do |o|
           o.add_archive_format :tar_gz
-          o.wrapper = app_wrapper
+          o.wrapper = osx_app_wrapper
           o.url = "org.url.app"
           o.gemspecs = Bundler.setup.gems
         end

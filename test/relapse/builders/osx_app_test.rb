@@ -33,7 +33,7 @@ context Relapse::Builders::OsxApp do
 
   context "no url" do
     hookup do
-      topic.wrapper = app_wrapper
+      topic.wrapper = osx_app_wrapper
     end
     asserts(:generate_tasks).raises Relapse::ConfigError, /url not set/
   end
@@ -41,7 +41,7 @@ context Relapse::Builders::OsxApp do
   context "valid" do
     hookup do
       topic.url = "org.frog.fish"
-      topic.wrapper = app_wrapper
+      topic.wrapper = osx_app_wrapper
       topic.icon = "test_app.icns"
       topic.gemspecs = Bundler.definition.specs_for([:development])
       topic.generate_tasks
@@ -50,14 +50,14 @@ context Relapse::Builders::OsxApp do
     asserts(:folder_suffix).equals "OSX"
     asserts(:app_name).equals "Test App.app"
     asserts(:url).equals "org.frog.fish"
-    asserts(:wrapper).equals app_wrapper
+    asserts(:wrapper).equals osx_app_wrapper
     asserts(:gemspecs).equals Bundler.definition.specs_for([:development])
 
     context "tasks" do
       tasks = [
           [ :Task, "build:osx:app", %w[pkg/test_app_0_1_OSX] ],
           [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
-          [ :FileCreationTask, "pkg/test_app_0_1_OSX", source_files + [app_wrapper]],
+          [ :FileCreationTask, "pkg/test_app_0_1_OSX", source_files + [osx_app_wrapper]],
       ]
 
       test_tasks tasks

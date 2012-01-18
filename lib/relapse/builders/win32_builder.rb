@@ -15,13 +15,28 @@ module Relapse
     # @return [:auto, :windows, :console] Type of ruby to run executable with: :console means run with `ruby`, :windows means run with `rubyw`,  :auto means determine type from executable extension (.rb => :console or .rbw => :windows).
     attr_accessor :executable_type
 
-    def valid_for_platform?; RUBY_PLATFORM =~ /win32|mingw/; end
+    def valid_for_platform?; windows?; end
 
     attr_reader :icon
 
     def icon=(icon)
       raise ConfigError, "icon must be a #{ICON_EXTENSION} file" unless File.extname(icon) == ICON_EXTENSION
       @icon = icon
+    end
+
+    def effective_executable_type
+      if executable_type == :auto
+        case File.extname(project.executable)
+          when '.rbw'
+            :windows
+          when '.rb'
+            :console
+          else
+            raise ConfigError,"Unless the executable file extension is .rbw or .rb, then #executable_type must be explicitly :windows or :console"
+        end
+      else
+        executable_type
+      end
     end
 
     protected
@@ -33,12 +48,8 @@ module Relapse
 
     protected
     def ocra_command
-      if executable_type == :auto and not %w[.rbw .rb].include? File.extname(project.executable)
-        raise ConfigError,"Unless the executable file extension is .rbw or .rb, then #executable_type must be explicitly :windows or :console"
-      end
-
       command = %[#{OCRA_COMMAND} "#{project.executable}" ]
-      command += "--#{executable_type} " unless executable_type == :auto
+      command += "--#{effective_executable_type} " unless executable_type == :auto
       command += "#{ocra_parameters} " if ocra_parameters
       command += %[--icon "#{icon}" ] if icon
       command += (project.files - [project.executable]).map {|f| %["#{f}"]}.join(" ")

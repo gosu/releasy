@@ -17,8 +17,9 @@ Output types supported
 The project can create one or more release folders:
 
 * `:source` - Plain source folder, which can be used by anyone with Ruby already installed.
-* `:osx_app` - OSX application bundle (.app) [won't be executable if generated on Windows, but otherwise will work. Note that this only contains binary gems for Gosu, TexPlay and Chipmunk, but will work with applications using any source gems].
+* `:osx_app` - OSX application bundle (.app) build, requiring a pre-made Ruby OS X wrapper [won't be executable if generated on Windows, but otherwise will work. Note that this only contains binary gems for Gosu, TexPlay and Chipmunk, but will work with applications using any source gems].
 * `:win32_folder` - A folder containing Ruby, application source files and an EXE to run them [creation on Windows only and requires InnoSetup to be installed]
+* `:win32_folder_from_wrapper` - A folder containing Ruby, application source files and an EXE to run them, requiring a pre-made Ruby win32 wrapper [creation on Linux/OS X]
 * `:win32_installer` - A regular Windows installer [creation on Windows only and requires InnoSetup to be installed]
 * `:win32_standalone` - Standalone EXE file that self-extracts to a temporary directory - slower startup than the other win32 options [creation on Windows only]
 
