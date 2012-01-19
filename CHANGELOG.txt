@@ -7,6 +7,7 @@
   * Added :win32_folder_from_wrapper output (win32 folder made from a pre-made wrapper, made on OSX/Linux).
   * Can create an "empty" win32 wrapper (created on win32 to be used to generate the :win32_folder_from_wrapper on non-win32 OSes).
   * Allowed project and outputs to have archive formats (called on Project, affects all outputs).
+  * No longer require Innosetup installed to create :win32_folder output
 
 = v0.1.0
 

@@ -18,7 +18,7 @@ The project can create one or more release folders:
 
 * `:source` - Plain source folder, which can be used by anyone with Ruby already installed.
 * `:osx_app` - OSX application bundle (.app) build, requiring a pre-made Ruby OS X wrapper [won't be executable if generated on Windows, but otherwise will work. Note that this only contains binary gems for Gosu, TexPlay and Chipmunk, but will work with applications using any source gems].
-* `:win32_folder` - A folder containing Ruby, application source files and an EXE to run them [creation on Windows only and requires InnoSetup to be installed]
+* `:win32_folder` - A folder containing Ruby, application source files and an EXE to run them [creation on Windows only]
 * `:win32_folder_from_wrapper` - A folder containing Ruby, application source files and an EXE to run them, requiring a pre-made Ruby win32 wrapper [creation on Linux/OS X]
 * `:win32_installer` - A regular Windows installer [creation on Windows only and requires InnoSetup to be installed]
 * `:win32_standalone` - Standalone EXE file that self-extracts to a temporary directory - slower startup than the other win32 options [creation on Windows only]
@@ -76,14 +76,15 @@ Example
 
 ### Tasks created
 
-Note: The _win32_ tasks will not be created unless running on Windows.
+Note: The _win32_ tasks (except _win32:folder_from_wrapper_) will not be created unless running on Windows.
+Note: The _win32:folder_from_wrapper_ task not be created if running on Windows.
 
     rake build                         # Build all outputs
     rake build:osx                     # Build all osx outputs
     rake build:osx:app                 # Build OS X app
     rake build:source                  # Build source folder
     rake build:win32                   # Build all win32 outputs
-    rake build:win32:folder            # Build source/exe folder 1.4.0 [Innosetup]
+    rake build:win32:folder            # Build source/exe folder 1.4.0
     rake build:win32:installer         # Build installer 1.4.0 [Innosetup]
     rake package                       # Package all
     rake package:osx                   # Package all osx
@@ -118,7 +119,7 @@ External Requirements (Optional)
 
     * [Download from 7z](http://www.7-zip.org/download.html)
 
-### To create `:win32_folder` and `:win32_installer` outputs
+### To create `:win32_installer` output
 
 [InnoSetup](http://www.jrsoftware.org/isdl.php) must be installed.
 

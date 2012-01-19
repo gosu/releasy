@@ -19,7 +19,7 @@ END
   s.rubyforge_project = "relapse"
 
   s.requirements << '7z (optional; used to generate archives)'
-  s.requirements << 'InnoSetup (optional; used to make Win32 installer)'
+  s.requirements << 'InnoSetup (optional on Windows; used to make Win32 installer)'
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = Dir["test/**/*_test.rb"]
