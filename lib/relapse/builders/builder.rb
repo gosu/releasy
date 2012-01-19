@@ -1,10 +1,12 @@
 require "relapse/mixins/has_archivers"
+require "relapse/mixins/exec"
 
 module Relapse
 module Builders
   class Builder
     include Rake::DSL
     include Mixins::HasArchivers
+    include Mixins::Exec
 
     attr_reader :project
 

@@ -20,9 +20,7 @@ namespace :win32_wrapper do
 
     Dir.chdir output_dir do
       ENV['BUNDLE_GEMFILE'] = File.expand_path("../Gemfile", __FILE__)
-      command = %[bundle exec ocra #{wrapper_name}.rb --debug-extract --no-dep-run --add-all-core]
-      puts command
-      system command
+      %x[bundle exec ocra #{wrapper_name}.rb --debug-extract --no-dep-run --add-all-core]
     end
 
     rm "#{wrapper_dir}.rb"

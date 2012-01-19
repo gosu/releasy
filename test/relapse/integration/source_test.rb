@@ -8,6 +8,7 @@ context "Source in all formats" do
       p.name = "Test App"
       p.version = "0.1"
       p.files = source_files
+      p.verbose = false
 
       p.add_output :source do |o|
         o.add_archive_format :exe

@@ -23,6 +23,8 @@ module Relapse
         directory folder
 
         file folder => project.files do
+          Rake::FileUtilsExt.verbose project.verbose?
+
           create_link_files folder
           project.exposed_files.each {|file| cp file, folder }
 
@@ -50,9 +52,7 @@ module Relapse
       protected
       def create_installer(file, options = {})
         generate_installer_script file, options
-        command = %[#{ocra_command} --chdir-first --no-lzma --innosetup "#{temp_installer_script}"]
-        puts command if project.verbose?
-        system command
+        exec %[#{ocra_command} --chdir-first --no-lzma --innosetup "#{temp_installer_script}"]
       end
 
       # Generate innosetup script to build installer.

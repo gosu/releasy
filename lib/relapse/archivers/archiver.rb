@@ -1,8 +1,11 @@
+require "relapse/mixins/exec"
+
 module Relapse
 module Archivers
   # @abstract
   class Archiver
     include Rake::DSL
+    include Mixins::Exec
 
     attr_reader :project
 
@@ -26,13 +29,12 @@ module Archivers
       task "package:#{output_task}:#{type}" => pkg
 
       file pkg => folder do
+        Rake::FileUtilsExt.verbose project.verbose?
+
         puts "Creating #{pkg}" if project.verbose?
         rm pkg if File.exist? pkg
         cd project.output_path do
-          command = command(File.basename folder)
-          puts command if project.verbose?
-          output = %x[#{command}]
-          puts output if project.verbose?
+          exec command(File.basename folder)
         end
       end
     end

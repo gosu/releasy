@@ -44,6 +44,8 @@ module Relapse
         task "build:osx:app" => folder
 
         file folder => project.files + [wrapper] do
+          Rake::FileUtilsExt.verbose project.verbose?
+
           # Copy the app files.
           cp_r wrapper, new_app
 
@@ -98,7 +100,7 @@ module Relapse
       protected
       def create_main(app)
         # Something for the .app to run -> just a little redirection file.
-        puts "--- Creating Main.rb"
+        puts "--- Creating Main.rb" if project.verbose?
         File.open("#{app}/Contents/Resources/Main.rb", "w") do |file|
           file.puts <<END_TEXT
 #{vendored_gem_names(BINARY_GEMS).inspect}.each do |gem|
@@ -121,7 +123,7 @@ END_TEXT
       def edit_init(app)
         file = "#{app}/Contents/Info.plist"
         # Edit the info file to be specific for my game.
-        puts "--- Editing init"
+        puts "--- Editing init" if project.verbose?
         info = File.read(file)
         info.sub!('<string>Gosu</string>', "<string>#{File.basename(icon).chomp(File.extname(icon))}</string>") if icon
         info.sub!('<string>RubyGosu App</string>', "<string>#{project.name}</string>")

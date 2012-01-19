@@ -24,6 +24,8 @@ module Relapse
         raise ConfigError, "#wrapper not valid" unless File.directory? wrapper
 
         file folder => project.files + [wrapper] do
+          Rake::FileUtilsExt.verbose project.verbose?
+
           cp_r wrapper, folder
 
           copy_files_relative project.files, File.join(folder, 'src')
@@ -84,7 +86,7 @@ module Relapse
       protected
       def create_runner
         # Something for the .app to run -> just a little redirection file.
-        puts "--- Creating relapse_runner.rb"
+        puts "--- Creating relapse_runner.rb" if project.verbose?
         File.open("#{folder}/relapse_runner.rb", "w") do |file|
           file.puts <<END_TEXT
 load '#{project.executable}'

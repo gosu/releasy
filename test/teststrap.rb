@@ -37,7 +37,7 @@ $original_path = Dir.pwd
 # Ensure that the pkg directory is clean before starting tests, but don't do it for every test.
 if File.directory? "test_project/pkg"
   puts "Deleting existing test outputs"
-  rm_r FileList["test_project/pkg/*"]
+  rm_r FileList["test_project/pkg/*"], :verbose => false
 end
 
 

@@ -12,11 +12,11 @@ module Relapse
       # FOLDER containing EXE, Ruby + source.
       def generate_tasks
         file folder => project.files do
+          Rake::FileUtilsExt.verbose project.verbose?
+
           tmp_ocra_executable = "#{folder}.exe"
 
-          command = %[#{ocra_command} --output "#{tmp_ocra_executable}" --debug-extract]
-          puts command
-          system command
+          exec %[#{ocra_command} --output "#{tmp_ocra_executable}" --debug-extract]
 
           # Extract the files from the executable.
           system tmp_ocra_executable
