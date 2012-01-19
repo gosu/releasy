@@ -1,8 +1,11 @@
 = v0.2.0
 
-  * Allowed outputs to be configured separately from the project (Warning: API changed significantly).
+  * Warning: API changed significantly from v0.1.0 because it was dreadful :D
+  * Allowed outputs to be configured separately from the project.
   * Included gems in osx-app more safely, so that no files will be missing.
   * Added :exe archive format (win32 self-extractor, made on any OS).
+  * Added :win32_folder_from_wrapper output (win32 folder made from a pre-made wrapper, made on OSX/Linux).
+  * Can create an "empty" win32 wrapper (created on win32 to be used to generate the :win32_folder_from_wrapper on non-win32 OSes).
   * Allowed project and outputs to have archive formats (called on Project, affects all outputs).
 
 = v0.1.0

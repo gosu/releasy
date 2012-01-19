@@ -12,15 +12,12 @@ if Gem.win_platform?
     end
 
     tasks = [
-        [:Task, 'win32_wrapper:read_ocra_stubs', []],
         [:Task, 'win32_wrapper:build', [folder, "#{folder}/relapse_runner.rb", 'win32_wrapper:executables']],
-        [:Task, 'win32_wrapper:executables', ["#{folder}/console.exe", "#{folder}/windows.exe"]],
+        [:Task, 'win32_wrapper:executables', []],
 
         [:FileCreationTask, 'win32_wrapper', []],
         [:FileTask, folder, []],
         [:FileTask, "#{folder}/relapse_runner.rb", [folder]],
-        [:FileTask, "#{folder}/console.exe", ['win32_wrapper:read_ocra_stubs', folder]],
-        [:FileTask, "#{folder}/windows.exe", ['win32_wrapper:read_ocra_stubs', folder]],
     ]
 
     test_tasks tasks
