@@ -61,7 +61,8 @@ module Relapse
 
     protected
     def load_ocra
-      load Gem.bin_path('ocra', 'ocra', Bundler.definition.specs_for([:default]).find {|g| g.name == "ocra" }.version)
+      spec = Gem.loaded_specs['ocra']
+      load spec.bin_file(spec.executable)
 
       # Need to disable this method so we get the right output.
       Ocra::OcraBuilder.class_eval do

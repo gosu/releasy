@@ -6,7 +6,7 @@ module Builders
   # @abstract
   # @attr icon [String] Optional filename of icon to show on executable/installer (.ico).
   class Win32Builder < Builder
-    OCRA_COMMAND = "bundle exec ocra"
+    OCRA_COMMAND = "ocra"
     ICON_EXTENSION = ".ico"
     EXECUTABLE_TYPES = [:auto, :windows, :console]
 
@@ -49,7 +49,8 @@ module Builders
 
     protected
     def ocra_command
-      command = %[#{OCRA_COMMAND} "#{project.executable}" ]
+      command = defined?(Bundler) ? 'bundle exec ' : ''
+      command += %[#{OCRA_COMMAND} "#{project.executable}" ]
       command += "--#{effective_executable_type} "
       command += "#{ocra_parameters} " if ocra_parameters
       command += %[--icon "#{icon}" ] if icon
