@@ -1,6 +1,4 @@
-require File.expand_path("../../teststrap", File.dirname(__FILE__))
 require File.expand_path("helpers/helper", File.dirname(__FILE__))
-require File.expand_path("helpers/win32", File.dirname(__FILE__))
 
 folder = "pkg/test_app_0_1_WIN32"
 
@@ -14,20 +12,19 @@ context Relapse::Builders::Win32Folder do
 
   hookup { Dir.chdir project_path }
 
-  asserts(:folder_suffix).equals "WIN32"
-  asserts(:executable_name).equals "test_app.exe"
-  asserts(:folder).equals folder
-  asserts(:icon=, "test_app.icns").raises Relapse::ConfigError, /icon must be a .ico file/
-
   context "valid" do
     if Gem.win_platform?
       context "on Windows" do
-        asserts(:valid_for_platform?)
-
         hookup do
           topic.executable_type = :console
           topic.generate_tasks
         end
+
+        asserts(:valid_for_platform?)
+        asserts(:folder_suffix).equals "WIN32"
+        asserts(:executable_name).equals "test_app.exe"
+        asserts(:folder).equals folder
+        asserts(:icon=, "test_app.icns").raises Relapse::ConfigError, /icon must be a .ico file/
 
         context "tasks" do
           tasks = [

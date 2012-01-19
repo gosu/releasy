@@ -1,5 +1,6 @@
-require File.expand_path("../../teststrap", File.dirname(__FILE__))
 require File.expand_path("helpers/helper", File.dirname(__FILE__))
+
+folder = "pkg/test_app_0_1_WIN32_EXE"
 
 context Relapse::Builders::Win32Standalone do
   setup { Relapse::Builders::Win32Standalone.new new_project }
@@ -11,26 +12,40 @@ context Relapse::Builders::Win32Standalone do
 
   hookup { Dir.chdir project_path }
 
-  asserts(:folder_suffix).equals "WIN32_EXE"
-  asserts(:executable_name).equals "test_app.exe"
-  asserts(:folder).equals "pkg/test_app_0_1_WIN32_EXE"
-  asserts(:icon=, "test_app.icns").raises Relapse::ConfigError, /icon must be a .ico file/
-
   context "valid" do
     if Gem.win_platform?
       context "on Windows" do
-        hookup { topic.generate_tasks }
+        hookup do
+          topic.ocra_parameters = "--no-enc"
+          topic.executable_type = :console
+          topic.icon = "test_app.ico"
+          topic.generate_tasks
+        end
 
         asserts(:valid_for_platform?)
+        asserts(:folder_suffix).equals "WIN32_EXE"
+        asserts(:executable_name).equals "test_app.exe"
+        asserts(:folder).equals folder
+        asserts(:icon=, "test_app.icns").raises Relapse::ConfigError, /icon must be a .ico file/
 
         context "tasks" do
           tasks = [
               [ :Task, "build:win32:standalone", %w[pkg/test_app_0_1_WIN32_EXE] ],
               [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
-              [ :FileCreationTask, "pkg/test_app_0_1_WIN32_EXE", source_files ],
+              [ :FileCreationTask, folder, source_files ],
           ]
 
           test_tasks tasks
+        end
+
+        context "generate folder" do
+          hookup { redirect_bundler_gemfile { Rake::Task["build:win32:standalone"].invoke } }
+
+          asserts("readme copied to folder") { File.read("#{folder}/README.txt") == File.read("README.txt") }
+          asserts("license copied to folder") { File.read("#{folder}/LICENSE.txt") == File.read("LICENSE.txt") }
+          asserts("folder includes link") { File.read("#{folder}/Relapse website.url") == link_file }
+          asserts("executable created in folder and is of reasonable size") { File.size("#{folder}/test_app.exe") > 2**20 }
+          asserts("program output") { redirect_bundler_gemfile { %x[#{folder}/test_app.exe] } }.equals "test run!\n"
         end
       end
     else

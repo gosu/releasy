@@ -1,4 +1,3 @@
-require File.expand_path("../../teststrap", File.dirname(__FILE__))
 require File.expand_path("helpers/helper", File.dirname(__FILE__))
 
 folder = 'pkg/test_app_0_1_WIN32_FROM_WRAPPER'

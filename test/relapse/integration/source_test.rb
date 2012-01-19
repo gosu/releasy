@@ -55,13 +55,6 @@ context "Source in all formats" do
     test_tasks tasks
   end
 
-  context "build source" do
-    hookup { Rake::Task["build:source"].invoke }
-
-    asserts("files copied to folder") { source_files.all? {|f| File.read("#{folder}/#{f}") == File.read(f) } }
-    asserts("program output") { %x[ruby "#{folder}/bin/test_app"] }.equals "test run!\n"
-  end
-
   context "exe" do
     hookup { Rake::Task["package:source:exe"].invoke }
 
