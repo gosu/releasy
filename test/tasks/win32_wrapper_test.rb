@@ -32,7 +32,7 @@ if Gem.win_platform?
 
       asserts("plenty of dlls copied") { Dir["#{folder}/bin/*.dll"].size >= 6 }
 
-      %w[chipmunk gosu ray texplay].each do |gem|
+      %w[ray].each do |gem|
         asserts("#{gem} gem specification copied") { not Dir["#{folder}/gemhome/specifications/#{gem}*.gemspec"].empty? }
         asserts("#{gem} gem folder copied") { not Dir["#{folder}/gemhome/gems/#{gem}*"].empty? }
       end

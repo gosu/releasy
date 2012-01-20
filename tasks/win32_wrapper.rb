@@ -43,7 +43,7 @@ namespace :win32_wrapper do
     mkdir_p gems_dir
     mkdir_p specs_dir
 
-    %w[chipmunk gosu ray texplay].each do |gem|
+    %w[ray].each do |gem|
       gem_rb = %x[gem which #{gem}].strip
       raise if gem_rb.empty?
       gem_dir = File.expand_path("../..", gem_rb)

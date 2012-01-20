@@ -11,6 +11,8 @@ module Relapse
 
       # FOLDER containing EXE, Ruby + source.
       def generate_tasks
+        directory project.output_path
+
         file folder => project.files do
           Rake::FileUtilsExt.verbose project.verbose?
 

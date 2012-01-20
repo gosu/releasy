@@ -9,7 +9,7 @@ module Relapse
 
       Builders.register self
 
-      BINARY_GEMS = %w[gosu texplay chipmunk ray]
+      INCLUDED_BINARY_GEMS = { 'ray' => '0.2.0' }
 
       # @return [String] Name of win32 directory used as the framework for release.
       attr_accessor :wrapper
@@ -22,6 +22,8 @@ module Relapse
       def generate_tasks
         raise ConfigError, "#wrapper not set" unless wrapper
         raise ConfigError, "#wrapper not valid" unless File.directory? wrapper
+
+        directory project.output_path
 
         file folder => project.files + [wrapper] do
           Rake::FileUtilsExt.verbose project.verbose?
@@ -37,7 +39,11 @@ module Relapse
 
           create_runner
 
-          copy_gems vendored_gem_names(BINARY_GEMS), File.join(folder, 'gemhome')
+          # Copy gems.
+          destination = File.join(folder, 'gemhome')
+          downloaded_binary_gems = install_binary_gems destination
+          copy_system_gems vendored_gem_names(INCLUDED_BINARY_GEMS.keys + downloaded_binary_gems), destination
+          delete_unnecessary_gems destination
         end
 
         desc "Build source/exe folder #{project.version} from wrapper"
@@ -47,6 +53,7 @@ module Relapse
       protected
       def setup
         @wrapper = nil
+        super
       end
 
       protected
@@ -66,20 +73,59 @@ module Relapse
       end
 
       protected
-      def copy_gems(gems, destination)
-        puts "Copying gems into app" if project.verbose?
+      def copy_system_gems(gems, destination)
+        puts "Copying source gems from system" if project.verbose?
         gems_dir = "#{destination}/gems"
         specs_dir = "#{destination}/specifications"
         mkdir_p gems_dir
         mkdir_p specs_dir
 
         gems.each do |gem|
-          gemspec = gemspecs.find {|g| g.name == gem }
-          gem_dir = gemspec.full_gem_path
-          puts "Copying gem: #{File.basename gem_dir}" if project.verbose?
+          spec = gemspecs.find {|g| g.name == gem }
+          gem_dir = spec.full_gem_path
+          puts "Copying gem: #{spec.name} #{spec.version}" if project.verbose?
           cp_r gem_dir, gems_dir
-          gem_spec = File.expand_path("../../specifications/#{File.basename gem_dir}.gemspec", gem_dir)
-          cp_r gem_spec, specs_dir
+          spec_file = File.expand_path("../../specifications/#{File.basename gem_dir}.gemspec", gem_dir)
+          cp_r spec_file, specs_dir
+        end
+      end
+
+      protected
+      def install_binary_gems(destination)
+        puts "Checking gems to see if any are binary" if project.verbose?
+        binary_gems = []
+        gemspecs.reject {|g| INCLUDED_BINARY_GEMS.include? g.name }.each do |spec|
+          puts "Checking gem #{spec.name} #{spec.version} to see if there is a win32 binary version" if project.verbose?
+          # Find out what versions are available and if the required version is available as a windows binary, download and install that.
+          versions = %x[gem list "#{spec.name}" --remote --all --prerelease]
+          if versions =~ /#{spec.name} \(([^\)]*)\)/m
+            version_string = $1
+            platforms = version_string.split(/,\s*/).find {|s| s =~ /^#{spec.version}/ }.split(/\s+/)
+            win32_platform = platforms.find {|p| p =~ /mingw|mswin/ }
+            raise "Gem #{spec.name} is binary, but #{spec.version} does not have a published binary" if version_string =~ /mingw|mswin/ and not win32_platform
+
+            if win32_platform
+              puts "Installing win32 version of binary gem #{spec.name} #{spec.version}"
+              # If we have a bundle file specified, then gem will _only_ install the version specified by it and not the one we request.
+              bundle_gemfile = ENV['BUNDLE_GEMFILE']
+              ENV['BUNDLE_GEMFILE'] = ''
+              exec %[gem install "#{spec.name}" --remote --no-rdoc --no-ri --force --ignore-dependencies --platform "#{win32_platform}" --version "#{spec.version}" --install-dir "#{destination}"]
+              ENV['BUNDLE_GEMFILE'] = bundle_gemfile
+              binary_gems << spec.name
+            end
+          end
+        end
+
+        binary_gems
+      end
+
+      protected
+      def delete_unnecessary_gems(destination)
+        (INCLUDED_BINARY_GEMS.keys - gemspecs.map(&:name)).each do |gem|
+          full_gem_name = "#{gem}-#{INCLUDED_BINARY_GEMS[gem]}"
+          puts "Deleting unused win32 binary gem from wrapper: #{full_gem_name}" if project.verbose?
+          rm_r "#{destination}/gems/#{full_gem_name}"
+          rm_r "#{destination}/specifications/#{full_gem_name}.gemspec"
         end
       end
 

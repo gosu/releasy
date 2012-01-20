@@ -14,7 +14,9 @@ context Relapse::Builders::Win32FolderFromWrapper do
     Dir.chdir project_path
   end
 
+  asserts(:gemspecs).empty
   asserts(:generate_tasks).raises Relapse::ConfigError, /wrapper not set/
+
   if Gem.win_platform?
     denies(:valid_for_platform?)
   else
@@ -34,12 +36,14 @@ context Relapse::Builders::Win32FolderFromWrapper do
       stub(topic).valid_for_platform?.returns(true) # Need to do this so we can test on all platforms.
       topic.wrapper = win32_folder_wrapper
       topic.icon = "test_app.ico"
+      topic.executable_type = :console
       topic.gemspecs = Bundler.definition.specs_for([:development])
       topic.generate_tasks
     end
 
     asserts(:folder_suffix).equals "WIN32_FROM_WRAPPER"
     asserts(:wrapper).equals win32_folder_wrapper
+    asserts(:gemspecs).kind_of Bundler::SpecSet
 
     context "tasks" do
       tasks = [
@@ -63,16 +67,21 @@ context Relapse::Builders::Win32FolderFromWrapper do
       denies("console.exe left in folder") { File.exists?("#{folder}/console.exe") }
       denies("windows.exe left in folder") { File.exists?("#{folder}/windows.exe") }
 
-      asserts("ruby.exe left in bin") { File.exists?("#{folder}/bin/ruby.exe") }
-      denies("rubyw.exe left in folder") { File.exists?("#{folder}/bin/rubyw.exe") }
+      asserts("ruby.exe left in bin/") { File.exists?("#{folder}/bin/ruby.exe") }
+      denies("rubyw.exe left in bin/") { File.exists?("#{folder}/bin/rubyw.exe") }
 
       asserts("plenty of dlls copied") { Dir["#{folder}/bin/*.dll"].size >= 6 }
 
       asserts("relapse_runner.rb is correct") { File.read("#{folder}/relapse_runner.rb").strip == File.read(data_file("relapse_runner.rb")).strip }
 
-      %w[bundler chipmunk gosu rr riot texplay yard].each do |gem|
+      %w[bundler rr riot yard].each do |gem|
         asserts("#{gem} gem specification copied") { not Dir["#{folder}/gemhome/specifications/#{gem}*.gemspec"].empty? }
         asserts("#{gem} gem folder copied") { not Dir["#{folder}/gemhome/gems/#{gem}*"].empty? }
+      end
+
+      %w[ray].each do |gem|
+        denies("#{gem} gem specification left (unused)") { not Dir["#{folder}/gemhome/specifications/#{gem}*.gemspec"].empty? }
+        denies("#{gem} gem folder left (unused)") { not Dir["#{folder}/gemhome/gems/#{gem}*"].empty? }
       end
 
       asserts("program output") { %x[#{folder}/test_app.exe] }.equals "test run!\n"

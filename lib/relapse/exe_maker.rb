@@ -1,3 +1,5 @@
+require 'ocra'
+
 module Relapse
   class ExeMaker
     class << self
@@ -61,6 +63,7 @@ module Relapse
 
     protected
     def load_ocra
+      Object.send(:remove_const, :Ocra) # remove the "class Ocra", so we can load the "module Ocra"
       spec = Gem.loaded_specs['ocra']
       load spec.bin_file(spec.executable)
 
