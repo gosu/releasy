@@ -1,5 +1,8 @@
 require File.expand_path("helpers/helper", File.dirname(__FILE__))
 
+folder = "pkg/test_app_0_1_OSX"
+app_folder = File.join(folder, "Test App.app")
+
 context Relapse::Builders::OsxApp do
   setup { Relapse::Builders::OsxApp.new new_project }
 
@@ -56,7 +59,7 @@ context Relapse::Builders::OsxApp do
       tasks = [
           [ :Task, "build:osx:app", %w[pkg/test_app_0_1_OSX] ],
           [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
-          [ :FileCreationTask, "pkg/test_app_0_1_OSX", source_files + [osx_app_wrapper]],
+          [ :FileCreationTask, folder, source_files + [osx_app_wrapper]],
       ]
 
       test_tasks tasks
@@ -65,23 +68,28 @@ context Relapse::Builders::OsxApp do
     context "generate" do
       hookup { Rake::Task["build:osx:app"].invoke }
 
-      asserts("files copied inside app") { source_files.all? {|f| File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/application/#{f}") == File.read(f) } }
-      asserts("readme copied to folder") { File.read("pkg/test_app_0_1_OSX/README.txt") == File.read("README.txt") }
-      asserts("license copied to folder") { File.read("pkg/test_app_0_1_OSX/LICENSE.txt") == File.read("LICENSE.txt") }
+      asserts("files copied inside app") { source_files.all? {|f| File.read("#{app_folder}/Contents/Resources/application/#{f}") == File.read(f) } }
+      asserts("readme copied to folder") { File.read("#{folder}/README.txt") == File.read("README.txt") }
+      asserts("license copied to folder") { File.read("#{folder}/LICENSE.txt") == File.read("LICENSE.txt") }
 
-      asserts("executable renamed") { File.exists?("pkg/test_app_0_1_OSX/Test App.app/Contents/MacOS/Test App") }
-      asserts("app is an executable (will fail in Windows)") { File.executable?("pkg/test_app_0_1_OSX/Test App.app/Contents/MacOS/Test App") }
-
-      asserts("Gosu icon deleted") { not File.exists? "pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/Gosu.icns" }
-      asserts("icon is copied to correct location") { File.exists? "pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/test_app.icns" }
-      asserts("Main.rb is correct") { File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/Main.rb").strip == File.read(data_file("Main.rb")).strip }
-      asserts("Info.plist is correct") { File.read("pkg/test_app_0_1_OSX/Test App.app/Contents/Info.plist").strip == File.read(data_file("Info.plist")).strip }
-
-      %w[bundler rr riot yard].each do |gem|
-        asserts("#{gem} gem folder copied") { File.exists?("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/vendor/gems/#{gem}") }
+      asserts("executable renamed") { File.exists?("#{app_folder}/Contents/MacOS/Test App") }
+      if Gem.win_platform?
+        asserts("set_app_executable.sh created") { File.read("#{folder}/set_app_executable.sh").strip == File.read(data_file("set_app_executable.sh")).strip }
+      else
+        asserts("app is an executable") { File.executable?("#{app_folder}/Contents/MacOS/Test App") }
+        denies("set_app_executable.sh created") { File.exists? "#{folder}/set_app_executable.sh" }
       end
 
-      denies("default chingu gem left in app")  { File.exists?("pkg/test_app_0_1_OSX/Test App.app/Contents/Resources/lib/chingu") }
+      asserts("Gosu icon deleted") { not File.exists? "#{app_folder}/Contents/Resources/Gosu.icns" }
+      asserts("icon is copied to correct location") { File.exists? "#{app_folder}/Contents/Resources/test_app.icns" }
+      asserts("Main.rb is correct") { File.read("#{app_folder}/Contents/Resources/Main.rb").strip == File.read(data_file("Main.rb")).strip }
+      asserts("Info.plist is correct") { File.read("#{app_folder}/Contents/Info.plist").strip == File.read(data_file("Info.plist")).strip }
+
+      %w[bundler rr riot yard].each do |gem|
+        asserts("#{gem} gem folder copied") { File.exists?("#{app_folder}/Contents/Resources/vendor/gems/#{gem}") }
+      end
+
+      denies("default chingu gem left in app")  { File.exists?("#{app_folder}/Contents/Resources/lib/chingu") }
     end
   end
 end

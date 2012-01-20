@@ -61,6 +61,7 @@ module Relapse
           remove_gems new_app
           rename_executable new_app
           update_icon new_app
+          create_executable_setter
         end
       end
 
@@ -73,6 +74,22 @@ module Relapse
 
       protected
       def app_name; "#{project.name}.app"; end
+      def executable_path; ; end
+
+      protected
+      def create_executable_setter
+        if Relapse.win_platform?
+          File.open(File.join(folder, "set_app_executable.sh"), "w") do |file|
+            file.puts <<END
+# Since this app bundle was created on Windows, it is not executable, so run this script to make it so.
+
+#!/bin/sh
+chmod a+x "./#{app_name}/Contents/MacOS/#{project.name}"
+END
+
+          end
+        end
+      end
 
       protected
       def rename_executable(app)
