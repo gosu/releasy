@@ -8,6 +8,7 @@ module Archivers
     include Mixins::Exec
 
     attr_reader :project
+    attr_accessor :extension
 
     def self.type
       id = name[/[a-z0-9]+$/i]
@@ -20,6 +21,7 @@ module Archivers
 
     def initialize(project)
       @project = project
+      @extension = ".#{type.to_s.tr("_", ".")}"
     end
 
     def generate_tasks(output_task, folder)
@@ -40,8 +42,7 @@ module Archivers
     end
 
     protected
-    def extension; ".#{type.to_s.tr("_", ".")}"; end
-    def package(folder); "#{folder}#{extension}"; end
+    def package(folder); "#{folder}#{extension[0] == '.' ? '' : '.'}#{extension}"; end
 
     protected
     def command(folder)

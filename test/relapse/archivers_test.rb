@@ -19,6 +19,20 @@ require File.expand_path("../teststrap", File.dirname(__FILE__))
     asserts(:command, "f").equals command
     asserts(:package, "f").equals "f#{extension}"
 
+    context "setting extension with a . changes package path" do
+      hookup { topic.extension = ".wobble" }
+
+      asserts(:extension).equals ".wobble"
+      asserts(:package, "f").equals "f.wobble"
+    end
+
+    context "setting extension without a . still adds one" do
+      hookup { topic.extension = "wobble" }
+
+      asserts(:extension).equals "wobble"
+      asserts(:package, "f").equals "f.wobble"
+    end
+
     context "generated tasks" do
       hookup { topic.generate_tasks "source", "frog" }
 
