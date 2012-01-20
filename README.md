@@ -5,6 +5,9 @@ _Relapse_ automates the release of Ruby applications (from: "release apps").
 It generates a number of Rake tasks for use when there is a need to release a new version of the
 application.
 
+* Author: Bil Bas (Spooner)
+* Licence: [MIT](http://www.opensource.org/licenses/mit-license.php)
+
 Project
 -------
 
@@ -47,7 +50,7 @@ Example
       p.version = AlphaChannel::VERSION
       p.executable = "bin/alpha_channel.rbw"
       p.files = `git ls-files`.split("\n").reject {|f| f[0] == '.' }
-      o.exposed_files = ["README.html"]
+      p.exposed_files = ["README.html"]
       p.add_link "http://spooner.github.com/games/alpha_channel", "Alpha Channel website"
 
       # Create a variety of releases, for all platforms.

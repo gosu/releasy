@@ -31,5 +31,6 @@ END
   s.add_runtime_dependency('cri', '~> 2.1.0')
   s.add_development_dependency('riot', '~> 0.12.5')
   s.add_development_dependency('rr', '~> 1.0.4')
-  s.add_development_dependency('yard')
+  s.add_development_dependency('yard', '~> 0.7.3')
+  s.add_development_dependency('redcarpet', '~> 2.0.1')
 end
