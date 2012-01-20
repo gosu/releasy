@@ -34,7 +34,7 @@ context Relapse::Builders::Source do
     context "generate folder" do
       hookup { Rake::Task["build:source"].invoke }
 
-      asserts("files copied to folder") { source_files.all? {|f| File.read("#{folder}/#{f}") == File.read(f) } }
+      asserts("files copied to folder") { source_files.all? {|f| same_contents? "#{folder}/#{f}", f } }
       asserts("program output") { %x[ruby "#{folder}/bin/test_app"] }.equals "test run!\n"
     end
   end

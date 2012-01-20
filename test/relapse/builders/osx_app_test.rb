@@ -68,13 +68,13 @@ context Relapse::Builders::OsxApp do
     context "generate" do
       hookup { Rake::Task["build:osx:app"].invoke }
 
-      asserts("files copied inside app") { source_files.all? {|f| File.read("#{app_folder}/Contents/Resources/application/#{f}") == File.read(f) } }
-      asserts("readme copied to folder") { File.read("#{folder}/README.txt") == File.read("README.txt") }
-      asserts("license copied to folder") { File.read("#{folder}/LICENSE.txt") == File.read("LICENSE.txt") }
+      asserts("files copied inside app") { source_files.all? {|f| same_contents? "#{app_folder}/Contents/Resources/application/#{f}", f } }
+      asserts("readme copied to folder") { same_contents? "#{folder}/README.txt", "README.txt" }
+      asserts("license copied to folder") { same_contents? "#{folder}/LICENSE.txt", "LICENSE.txt" }
 
       asserts("executable renamed") { File.exists?("#{app_folder}/Contents/MacOS/Test App") }
       if Gem.win_platform?
-        asserts("set_app_executable.sh created") { File.read("#{folder}/set_app_executable.sh").strip == File.read(data_file("set_app_executable.sh")).strip }
+        asserts("set_app_executable.sh created") { same_contents? "#{folder}/set_app_executable.sh", data_file("set_app_executable.sh") }
       else
         asserts("app is an executable") { File.executable?("#{app_folder}/Contents/MacOS/Test App") }
         denies("set_app_executable.sh created") { File.exists? "#{folder}/set_app_executable.sh" }
@@ -82,8 +82,8 @@ context Relapse::Builders::OsxApp do
 
       asserts("Gosu icon deleted") { not File.exists? "#{app_folder}/Contents/Resources/Gosu.icns" }
       asserts("icon is copied to correct location") { File.exists? "#{app_folder}/Contents/Resources/test_app.icns" }
-      asserts("Main.rb is correct") { File.read("#{app_folder}/Contents/Resources/Main.rb").strip == File.read(data_file("Main.rb")).strip }
-      asserts("Info.plist is correct") { File.read("#{app_folder}/Contents/Info.plist").strip == File.read(data_file("Info.plist")).strip }
+      asserts("Main.rb is correct") { same_contents? "#{app_folder}/Contents/Resources/Main.rb", data_file("Main.rb") }
+      asserts("Info.plist is correct") { same_contents? "#{app_folder}/Contents/Info.plist", data_file("Info.plist") }
 
       %w[bundler rr riot yard].each do |gem|
         asserts("#{gem} gem folder copied") { File.exists?("#{app_folder}/Contents/Resources/vendor/gems/#{gem}") }

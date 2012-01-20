@@ -78,13 +78,13 @@ Example
         o.readme = "README.html" # User asked if they want to view it after install.
       end
 
-      o.add_archive_format :zip # All outputs given this archive format.
+      p.add_archive_format :zip # All outputs given this archive format.
     end
 
 ### Tasks created
 
-Note: The _win32_ tasks (except _win32:folder_from_wrapper_) will not be created unless running on Windows.
-Note: The _win32:folder_from_wrapper_ task not be created if running on Windows.
+Note: The `win32` tasks (except `win32:folder_from_wrapper`) will not be created unless running on Windows.
+Note: The `win32:folder_from_wrapper` task not be created if running on Windows.
 
     rake build                         # Build all outputs
     rake build:osx                     # Build all osx outputs
@@ -112,7 +112,7 @@ CLI Commands
 
 Relapse also provides some supplimentary commands:
 
-* `relapse win32-wrapper [options]` - Build a win32 wrapper for use to build the :win32_folder_from_wrapper output on non-win32 platforms (runs on win32 only).
+* `relapse win32-wrapper [options]` - Build a win32 wrapper for use to build the `:win32_folder_from_wrapper` output on non-win32 platforms (runs on win32 only).
 
 
 External Requirements (Optional)

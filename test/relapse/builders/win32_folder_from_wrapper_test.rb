@@ -62,9 +62,9 @@ context Relapse::Builders::Win32FolderFromWrapper do
     context "generate" do
       hookup { Rake::Task["build:win32:folder_from_wrapper"].invoke }
 
-      asserts("files copied to folder") { source_files.all? {|f| File.read("#{folder}/src/#{f}") == File.read(f) } }
-      asserts("readme copied to folder") { File.read("#{folder}/README.txt") == File.read("README.txt") }
-      asserts("license copied to folder") { File.read("#{folder}/LICENSE.txt") == File.read("LICENSE.txt") }
+      asserts("files copied to folder") { source_files.all? {|f| same_contents? "#{folder}/src/#{f}", f } }
+      asserts("readme copied to folder") { same_contents? "#{folder}/README.txt", "README.txt" }
+      asserts("license copied to folder") {  same_contents? "#{folder}/LICENSE.txt", "LICENSE.txt" }
 
       asserts("test_app.exe has been created") { File.exists?("#{folder}/test_app.exe") }
       asserts("test_app.exe is correct") { File.read("#{folder}/test_app.exe") == File.read("#{wrapper}/console.exe") }
@@ -88,7 +88,9 @@ context Relapse::Builders::Win32FolderFromWrapper do
         denies("#{gem} gem folder left (unused)") { not Dir["#{folder}/gemhome/gems/#{gem}*"].empty? }
       end
 
-      asserts("program output") { %x[#{folder}/test_app.exe] }.equals "test run!\n"
+      if Gem.win_platform?
+        asserts("program output") { %x[#{folder}/test_app.exe] }.equals "test run!\n"
+      end
     end
   end
 end

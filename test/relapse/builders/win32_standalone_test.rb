@@ -41,8 +41,8 @@ context Relapse::Builders::Win32Standalone do
         context "generate folder" do
           hookup { redirect_bundler_gemfile { Rake::Task["build:win32:standalone"].invoke } }
 
-          asserts("readme copied to folder") { File.read("#{folder}/README.txt") == File.read("README.txt") }
-          asserts("license copied to folder") { File.read("#{folder}/LICENSE.txt") == File.read("LICENSE.txt") }
+          asserts("readme copied to folder") { same_contents? "#{folder}/README.txt", "README.txt" }
+          asserts("license copied to folder") {  same_contents? "#{folder}/LICENSE.txt", "LICENSE.txt" }
           asserts("folder includes link") { File.read("#{folder}/Relapse website.url") == link_file }
           asserts("executable created in folder and is of reasonable size") { File.size("#{folder}/test_app.exe") > 2**20 }
           asserts("program output") { redirect_bundler_gemfile { %x[#{folder}/test_app.exe] } }.equals "test run!\n"
