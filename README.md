@@ -10,12 +10,11 @@ Relapse allows cross-platform releases, relying on pre-made OS X or win32 wrappe
 
 * Author: [Bil Bas (Spooner)](https://github.com/Spooner)
 * Licence: [MIT](http://www.opensource.org/licenses/mit-license.php)
-
-Project
--------
-
 * [Github project](https://github.com/Spooner/relapse)
 * [Reporting issues](https://github.com/Spooner/relapse/issues)
+* Wrappers used to build cross-platform releases:
+  - Win32 wrapper not yet published, but can be made on a win32 system with `relapse win32_wrapper` command.
+  - [OS X wrapper downloads from libgosu.org](http://www.libgosu.org/downloads/), including Gosu, Chipmunk and Texplay binary gems. Latest version is [gosu-mac-wrapper-0.7.41](http://www.libgosu.org/downloads/gosu-mac-wrapper-0.7.41.tar.gz).
 
 Output types supported
 ----------------------
@@ -45,7 +44,7 @@ Example
 
 ### Project's Rakefile
 
-    require 'bundler'
+    require 'bundler/setup' # Relapse doesn't require that your application uses bundler, but it does make things easier.
     require 'relapse'
 
     # Example is from my game, Alpha Channel.
