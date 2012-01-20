@@ -7,6 +7,7 @@ module Relapse
       Builders.register self
 
       INSTALLER_SCRIPT = "win32_installer.iss"
+      DEFAULT_FOLDER_SUFFIX = "WIN32_INSTALLER"
 
       # @return [String] Optional start-menu grouping of the application when installed (if name == "app" and installer_group == "frog", then it will get put into 'frog/app' in the start menu).
       attr_accessor :start_menu_group
@@ -15,8 +16,6 @@ module Relapse
       attr_accessor :readme
       # @return [String] Filename of license file - Must be .txt or .rtf file, which will be shown to user who will be requested to accept it (win32 installer only).
       attr_accessor :license
-
-      def self.folder_suffix; "WIN32_INSTALLER"; end
 
       # Regular windows installer, but some users consider them evil.
       def generate_tasks

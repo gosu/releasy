@@ -9,7 +9,7 @@ module Relapse
 
       Builders.register self
 
-      def self.folder_suffix; "OSX"; end
+      DEFAULT_FOLDER_SUFFIX = "OSX"
 
       # Binary gems included in app.
       BINARY_GEMS = %w[gosu texplay chipmunk]

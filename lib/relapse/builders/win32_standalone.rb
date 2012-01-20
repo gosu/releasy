@@ -6,7 +6,7 @@ module Relapse
     class Win32Standalone < Win32Builder
       Builders.register self
 
-      def self.folder_suffix; "WIN32_EXE"; end
+      DEFAULT_FOLDER_SUFFIX = "WIN32_EXE"
 
       # Self-extracting standalone executable.
       def generate_tasks

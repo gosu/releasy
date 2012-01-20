@@ -6,7 +6,7 @@ module Relapse
     class Source < Builder
       Builders.register self
 
-      def self.folder_suffix; "SOURCE"; end
+      DEFAULT_FOLDER_SUFFIX = "SOURCE"
 
       def generate_tasks
         desc "Build source folder"

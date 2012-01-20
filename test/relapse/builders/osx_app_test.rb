@@ -12,6 +12,7 @@ context Relapse::Builders::OsxApp do
     Dir.chdir project_path
   end
 
+  asserts(:folder_suffix).equals "OSX"
   asserts(:icon=, "test_app.ico").raises Relapse::ConfigError, /icon must be a .icns file/
 
   context "no wrapper" do

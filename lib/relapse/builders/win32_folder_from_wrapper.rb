@@ -9,14 +9,13 @@ module Relapse
 
       Builders.register self
 
+      DEFAULT_FOLDER_SUFFIX = "WIN32"
       INCLUDED_BINARY_GEMS = { 'ray' => '0.2.0' }
 
       # @return [String] Name of win32 directory used as the framework for release.
       attr_accessor :wrapper
 
       def valid_for_platform?; not Relapse.win_platform?; end
-
-      def self.folder_suffix; "WIN32_FROM_WRAPPER"; end
 
       # FOLDER containing EXE, Ruby + source.
       def generate_tasks

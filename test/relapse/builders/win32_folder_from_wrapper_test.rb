@@ -15,6 +15,7 @@ context Relapse::Builders::Win32FolderFromWrapper do
   end
 
   asserts(:gemspecs).empty
+  asserts(:folder_suffix).equals "WIN32"
   asserts(:generate_tasks).raises Relapse::ConfigError, /wrapper not set/
 
   if Gem.win_platform?
@@ -35,10 +36,12 @@ context Relapse::Builders::Win32FolderFromWrapper do
     hookup do
       stub(topic).valid_for_platform?.returns(true) # Need to do this so we can test on all platforms.
       topic.wrapper = win32_folder_wrapper
+      topic.folder_suffix = "WIN32_FROM_WRAPPER" # Do disambiguate from the windows version of this.
       topic.icon = "test_app.ico"
       topic.executable_type = :console
       topic.gemspecs = Bundler.definition.specs_for([:development])
       topic.generate_tasks
+
     end
 
     asserts(:folder_suffix).equals "WIN32_FROM_WRAPPER"

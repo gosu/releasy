@@ -7,7 +7,7 @@ module Relapse
     class Win32Folder < Win32Builder
       Builders.register self
 
-      def self.folder_suffix; "WIN32"; end
+      DEFAULT_FOLDER_SUFFIX = "WIN32"
 
       # FOLDER containing EXE, Ruby + source.
       def generate_tasks

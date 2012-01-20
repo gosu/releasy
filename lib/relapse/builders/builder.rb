@@ -8,7 +8,10 @@ module Builders
     include Mixins::HasArchivers
     include Mixins::Exec
 
+    # {Project} that this Builder belongs to.
     attr_reader :project
+    # Suffix on the folder generated, after name and version.
+    attr_accessor :folder_suffix
 
     def self.type
       id = name[/[a-z0-9]+$/i]
@@ -19,14 +22,14 @@ module Builders
     end
 
     def type; self.class.type; end
-    def folder; "#{project.folder_base}_#{folder_suffix}"; end
+    def folder; "#{project.folder_base}#{folder_suffix.empty? ? '' : '_'}#{folder_suffix}"; end
     def valid_for_platform?; true; end
     def task_group; type.to_s.split(/_/).first; end
-    def folder_suffix; self.class.folder_suffix; end
 
     def initialize(project)
       super()
       @project = project
+      @folder_suffix = self.class::DEFAULT_FOLDER_SUFFIX
       setup
     end
 
