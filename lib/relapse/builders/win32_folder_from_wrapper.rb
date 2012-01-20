@@ -20,7 +20,7 @@ module Relapse
       # FOLDER containing EXE, Ruby + source.
       def generate_tasks
         raise ConfigError, "#wrapper not set" unless wrapper
-        raise ConfigError, "#wrapper not valid" unless File.directory? wrapper
+        raise ConfigError, "#wrapper not valid: #{wrapper}" unless File.directory? wrapper
 
         directory project.output_path
 

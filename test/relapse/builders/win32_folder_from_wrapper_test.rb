@@ -1,6 +1,7 @@
 require File.expand_path("helpers/helper", File.dirname(__FILE__))
 
 folder = 'pkg/test_app_0_1_WIN32_FROM_WRAPPER'
+wrapper = File.join('..', win32_folder_wrapper)
 
 context Relapse::Builders::Win32FolderFromWrapper do
   setup { Relapse::Builders::Win32FolderFromWrapper.new new_project }
@@ -35,7 +36,7 @@ context Relapse::Builders::Win32FolderFromWrapper do
   context "valid" do
     hookup do
       stub(topic).valid_for_platform?.returns(true) # Need to do this so we can test on all platforms.
-      topic.wrapper = win32_folder_wrapper
+      topic.wrapper = wrapper
       topic.folder_suffix = "WIN32_FROM_WRAPPER" # Do disambiguate from the windows version of this.
       topic.icon = "test_app.ico"
       topic.executable_type = :console
@@ -45,14 +46,14 @@ context Relapse::Builders::Win32FolderFromWrapper do
     end
 
     asserts(:folder_suffix).equals "WIN32_FROM_WRAPPER"
-    asserts(:wrapper).equals win32_folder_wrapper
+    asserts(:wrapper).equals wrapper
     asserts(:gemspecs).kind_of Bundler::SpecSet
 
     context "tasks" do
       tasks = [
           [ :Task, "build:win32:folder_from_wrapper", [folder] ],
           [ :FileTask, "pkg", [] ], # byproduct of using #directory
-          [ :FileTask, folder, source_files + [win32_folder_wrapper]],
+          [ :FileTask, folder, source_files + [wrapper]],
       ]
 
       test_tasks tasks
@@ -66,7 +67,7 @@ context Relapse::Builders::Win32FolderFromWrapper do
       asserts("license copied to folder") { File.read("#{folder}/LICENSE.txt") == File.read("LICENSE.txt") }
 
       asserts("test_app.exe has been created") { File.exists?("#{folder}/test_app.exe") }
-      asserts("test_app.exe is correct") { File.read("#{folder}/test_app.exe") == File.read("#{win32_folder_wrapper}/console.exe") }
+      asserts("test_app.exe is correct") { File.read("#{folder}/test_app.exe") == File.read("#{wrapper}/console.exe") }
       denies("console.exe left in folder") { File.exists?("#{folder}/console.exe") }
       denies("windows.exe left in folder") { File.exists?("#{folder}/windows.exe") }
 

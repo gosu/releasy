@@ -1,30 +1,16 @@
 require File.expand_path("../teststrap", File.dirname(__FILE__))
 
-include Rake::DSL
-
 if Gem.win_platform?
-  folder = 'win32_wrapper/ruby_win32_wrapper'
+  require File.expand_path("../../lib/relapse/win32_wrapper_maker", File.dirname(__FILE__))
 
-  context "Rake tasks to build win32 wrapper" do
-    hookup do
-      rm_r folder if File.directory? folder
-      require File.expand_path('../../tasks/win32_wrapper', File.dirname(__FILE__))
-    end
+  context Relapse::Win32WrapperMaker do
+    folder = win32_folder_wrapper
 
-    tasks = [
-        [:Task, 'win32_wrapper:build', [folder, "#{folder}/relapse_runner.rb", 'win32_wrapper:executables']],
-        [:Task, 'win32_wrapper:executables', []],
-
-        [:FileCreationTask, 'win32_wrapper', []],
-        [:FileTask, folder, []],
-        [:FileTask, "#{folder}/relapse_runner.rb", [folder]],
-    ]
-
-    test_tasks tasks
-
-    context "build" do
-      hookup { Rake::Task['win32_wrapper:build'].invoke }
-      teardown { Rake::Task.clear }
+    context '.build_wrapper' do
+      hookup do
+        FileUtils.rm_r folder if File.directory? folder
+        Relapse::Win32WrapperMaker.build_wrapper folder, %w[ray], "test_project/test_app.ico"
+      end
 
       %w[windows.exe console.exe relapse_runner.rb bin/ruby.exe bin/rubyw.exe].each do |file|
         asserts("#{file} present") { File.exists? "#{folder}/#{file}" }

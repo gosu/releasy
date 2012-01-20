@@ -1,0 +1,8 @@
+# Gemfile used to create win32_wrapper
+source :rubygems
+
+# Ocra used to make the wrapper.
+gem 'ocra', '~> 1.3.0'
+
+# Ray used to generate it.
+gem 'ray', '~> 0.2.0'

@@ -4,8 +4,6 @@ require 'rake/testtask'
 require 'rake/clean'
 require 'yard'
 
-require File.expand_path('../tasks/win32_wrapper', __FILE__) if Gem.win_platform?
-
 CLEAN << "test/test_project/pkg" # Created by running tests.
 CLOBBER << "win32_wrapper/*" # Created by generating the win32_wrapper.
 

@@ -24,9 +24,11 @@ END
   s.files         = `git ls-files`.split("\n")
   s.test_files    = Dir["test/**/*_test.rb"]
   s.require_paths = %w[lib]
+  s.executable    = "relapse"
 
   s.add_runtime_dependency('ocra', '~> 1.3.0')
   s.add_runtime_dependency('rake')
+  s.add_runtime_dependency('cri', '~> 2.1.0')
   s.add_development_dependency('riot', '~> 0.12.5')
   s.add_development_dependency('rr', '~> 1.0.4')
   s.add_development_dependency('yard')

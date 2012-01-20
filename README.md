@@ -104,6 +104,14 @@ Note: The _win32:folder_from_wrapper_ task not be created if running on Windows.
     rake package:win32:installer       # Package all win32_installer
     rake package:win32:installer:zip   # Create pkg/alpha_channel_1_4_0_WIN32_I...
 
+CLI Commands
+------------
+
+Relapse also provides some supplimentary commands:
+
+* `relapse win32-wrapper [options]` - Build a win32 wrapper for use to build the :win32_folder_from_wrapper output on non-win32 platforms (runs on win32 only).
+
+
 External Requirements (Optional)
 --------------------------------
 
