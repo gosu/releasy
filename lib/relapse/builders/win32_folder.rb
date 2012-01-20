@@ -1,5 +1,5 @@
 require "relapse/builders/win32_builder"
-require 'relapse/exe_maker'
+require 'relapse/win32_wrapper_maker'
 
 module Relapse
   module Builders
@@ -26,8 +26,9 @@ module Relapse
 
           mv Dir["#{File.dirname(folder)}/ocr*\.tmp"].first, folder
 
-          Relapse::ExeMaker.create("#{folder}/#{executable_name}", "src/#{project.executable}",
-                                   :icon => icon, :windows => (effective_executable_type == :windows))
+          maker = Relapse::Win32WrapperMaker.new
+          maker.build_executable("#{folder}/#{executable_name}", "src/#{project.executable}",
+                                  :icon => icon, :windows => (effective_executable_type == :windows))
 
           create_link_files folder
           project.exposed_files.each {|file| cp file, folder }
