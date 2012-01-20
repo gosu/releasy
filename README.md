@@ -1,11 +1,14 @@
 Relapse
 ================
 
-_Relapse_ automates the release of Ruby applications (from: "release apps").
-It generates a number of Rake tasks for use when there is a need to release a new version of the
-application.
+_Relapse_ automates the release of Ruby applications (its name is a perversion of "release apps").
+By configuring a Relapse::Project in your application's rakefile, Relapse can generates a number of Rake tasks for use
+when there is a need to release a new version of the application.
 
-* Author: Bil Bas (Spooner)
+Relapse allows cross-platform releases, relying on pre-made OS X or win32 wrappers to act as templates
+(Relapse is able to make the latter type of wrapper itself).
+
+* Author: [Bil Bas (Spooner)](https://github.com/Spooner)
 * Licence: [MIT](http://www.opensource.org/licenses/mit-license.php)
 
 Project
@@ -20,9 +23,9 @@ Output types supported
 The project can create one or more release folders:
 
 * `:source` - Plain source folder, which can be used by anyone with Ruby already installed.
-* `:osx_app` - OSX application bundle (.app) build, requiring a pre-made Ruby OS X wrapper [won't be executable if generated on Windows, but otherwise will work. Note that this only contains binary gems for Gosu, TexPlay and Chipmunk, but will work with applications using any source gems].
+* `:osx_app` - OSX application bundle (.app) build, requiring a pre-made Ruby OS X wrapper [Note that this only contains binary gems for Gosu, TexPlay and Chipmunk, but will work with applications using any other source gems].
 * `:win32_folder` - A folder containing Ruby, application source files and an EXE to run them [creation on Windows only]
-* `:win32_folder_from_wrapper` - A folder containing Ruby, application source files and an EXE to run them, requiring a pre-made Ruby win32 wrapper [creation on Linux/OS X]
+* `:win32_folder_from_wrapper` - A folder containing Ruby, application source files and an EXE to run them, requiring a pre-made Ruby win32 wrapper [creation on Linux/OS X only]
 * `:win32_installer` - A regular Windows installer [creation on Windows only and requires InnoSetup to be installed]
 * `:win32_standalone` - Standalone EXE file that self-extracts to a temporary directory - slower startup than the other win32 options [creation on Windows only]
 
@@ -42,6 +45,7 @@ Example
 
 ### Project's Rakefile
 
+    require 'bundler'
     require 'relapse'
 
     # Example is from my game, Alpha Channel.
@@ -60,9 +64,9 @@ Example
         o.wrapper = "../osx_app/RubyGosu App.app"
         o.icon = "media/icon.icns"
 
-        # If you use Bundler and you don't want to include your :development gems
+        # If you use Bundler and you don't want to include your :development gems :-
         o.gemspecs = Bundler.definition.specs_for([:default])
-        # Alternative if you don't use Bundler:
+        # Alternative if you don't use Bundler :-
         # o.gemspecs = Gem.loaded_specs.values
       end
       p.add_output :source
@@ -110,7 +114,7 @@ Note: The `win32:folder_from_wrapper` task not be created if running on Windows.
 CLI Commands
 ------------
 
-Relapse also provides some supplimentary commands:
+Relapse also provides some supplementary commands:
 
 * `relapse win32-wrapper [options]` - Build a win32 wrapper for use to build the `:win32_folder_from_wrapper` output on non-win32 platforms (runs on win32 only).
 
@@ -132,7 +136,7 @@ External Requirements (Optional)
 
   - Installing on win32 (or other OS)
 
-    * [Download from 7z](http://www.7-zip.org/download.html)
+    * [Download](http://www.7-zip.org/download.html)
 
 ### To create `:win32_installer` output
 
