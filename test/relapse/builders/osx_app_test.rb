@@ -74,7 +74,7 @@ context Relapse::Builders::OsxApp do
 
       asserts("executable renamed") { File.exists?("#{app_folder}/Contents/MacOS/Test App") }
       if Gem.win_platform?
-        asserts("set_app_executable.sh created") { same_contents? "#{folder}/set_app_executable.sh", data_file("set_app_executable.sh") }
+        asserts("set_app_executable.sh created and with correct line endings") { File.read("#{folder}/set_app_executable.sh") == File.read(data_file("set_app_executable.sh")) }
       else
         asserts("app is an executable") { File.executable?("#{app_folder}/Contents/MacOS/Test App") }
         denies("set_app_executable.sh created") { File.exists? "#{folder}/set_app_executable.sh" }

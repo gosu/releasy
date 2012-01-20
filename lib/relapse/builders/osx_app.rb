@@ -79,12 +79,12 @@ module Relapse
       protected
       def create_executable_setter
         if Relapse.win_platform?
-          File.open(File.join(folder, "set_app_executable.sh"), "w") do |file|
+          # Ensure that we have a Unixy file by setting binary ("wb") mode on Windows.
+          File.open(File.join(folder, "set_app_executable.sh"), "wb") do |file|
             file.puts <<END
-# Since this app bundle was created on Windows, it is not executable, so run this script to make it so.
-
 #!/bin/sh
 chmod a+x "./#{app_name}/Contents/MacOS/#{project.name}"
+echo "Made #{app_name} executable"
 END
 
           end
