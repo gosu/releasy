@@ -24,7 +24,6 @@ module Builders
     def type; self.class.type; end
     def folder; "#{project.folder_base}#{folder_suffix.empty? ? '' : '_'}#{folder_suffix}"; end
     def valid_for_platform?; true; end
-    def task_group; type.to_s.split(/_/).first; end
 
     def initialize(project)
       super()
@@ -34,6 +33,8 @@ module Builders
     end
 
     protected
+    # Called from the project, but users don't need to know about it.
+    def task_group; type.to_s.split(/_/).first; end
     def setup; end
 
     protected

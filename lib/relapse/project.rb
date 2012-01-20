@@ -3,8 +3,6 @@ require 'relapse/archivers'
 require "relapse/mixins/has_archivers"
 
 module Relapse
-  DEFAULT_PACKAGE_FOLDER = "pkg"
-
   # @attr underscored_name [String] Project name underscored (as used in file names), which will be derived from {#name}, but can be manually set.
   # @attr underscored_version [String] Version number, underscored so it can be used in file names, which will be derived from {#version}, but can be manually set.
   # @attr executable [String] Name of executable to run (defaults to 'bin/<underscored_name>')
@@ -12,6 +10,8 @@ module Relapse
   class Project
     include Rake::DSL
     include Mixins::HasArchivers
+
+    DEFAULT_PACKAGE_FOLDER = "pkg"
 
     attr_writer :underscored_name, :underscored_version, :executable
 
@@ -121,7 +121,7 @@ module Relapse
       self
     end
 
-    # Generates all tasks required by the user. Automatically called at the end of the block, if #new is given a block.
+    # Generates all tasks required by the user. Automatically called at the end of the block, if {#initialize} is given a block.
     def generate_tasks
       raise ConfigError, "Must specify at least one valid output for this OS with #add_output before tasks can be generated" if @builders.empty?
 
@@ -136,8 +136,9 @@ module Relapse
         task_name = "build:#{builder.type.to_s.tr("_", ":")}"
 
         if builder.type.to_s =~ /_/
-          build_groups[builder.task_group] << task_name
-          build_outputs << "build:#{builder.task_group}"
+          task_group = builder.send :task_group
+          build_groups[task_group] << task_name
+          build_outputs << "build:#{task_group}"
         else
           build_outputs << task_name
         end

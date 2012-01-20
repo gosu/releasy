@@ -74,7 +74,6 @@ module Relapse
 
       protected
       def app_name; "#{project.name}.app"; end
-      def executable_path; ; end
 
       protected
       def create_executable_setter

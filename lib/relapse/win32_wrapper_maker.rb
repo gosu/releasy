@@ -54,11 +54,11 @@ module Relapse
     #
     # @param executable_file [String] File to create, which should be a .exe file.
     # @param ruby_file [String] Path of script to run with the executable.
-    # @option :rubyopt [String] RUBYOPT environment variable - Options to pass to Ruby ('')
-    # @option :rubylib [String] RUBYLIB environment variable - Paths, relative to _./src/_, to add to $LOAD_PATH ('').
-    # @option :gem_path [String] GEM_PATH environment variable - Path, relative to  _./_, to load gems from ('gemhome').
-    # @option :windows [Boolean] True for an application that uses windows, false for a console application (false)
-    # @option :icon [String] Path to Windows icon file (.ico) that the executable should use (nil).
+    # @option options :rubyopt [String] RUBYOPT environment variable - Options to pass to Ruby ('')
+    # @option options :rubylib [String] RUBYLIB environment variable - Paths, relative to _./src/_, to add to $LOAD_PATH ('').
+    # @option options :gem_path [String] GEM_PATH environment variable - Path, relative to  _./_, to load gems from ('gemhome').
+    # @option options :windows [Boolean] True for an application that uses windows, false for a console application (false)
+    # @option options :icon [String] Path to Windows icon file (.ico) that the executable should use (nil).
     def build_executable(executable_file, ruby_file, options = {})
       options = {
           rubyopt: '',
