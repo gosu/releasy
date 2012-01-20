@@ -1,5 +1,6 @@
 require 'rubygems'
-require 'bundler/setup'
+require 'bundler'
+Bundler.setup(:development)
 require 'rake/testtask'
 require 'rake/clean'
 require 'yard'
