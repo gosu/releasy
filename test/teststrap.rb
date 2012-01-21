@@ -28,8 +28,9 @@ def active_builders_valid
   asserts("#active_builders are valid") { topic.send(:active_builders).all?(&:valid_for_platform?) }
 end
 
-def osx_app_wrapper; "../../osx_app/RubyGosu App.app"; end
+def osx_platform?; !!(RUBY_PLATFORM =~ /darwin/); end
 
+def osx_app_wrapper; "../../osx_app/RubyGosu App.app"; end
 def win32_folder_wrapper; "win32_wrapper/ruby_#{RUBY_DESCRIPTION[/[\d\.]+p\d+/].tr(".", "_")}_win32_wrapper"; end
 
 def same_contents?(file1, file2)

@@ -33,6 +33,7 @@ Archive types supported
 
 Optionally, release folders can be archived using one or more of:
 
+* `:dmg` - OS X self-extractor (.dmg - requires `hdiutil` to be installed, so only available on OS X)
 * `:exe` - Windows self-extractor (.exe - Includes a 7z decompression module, so not efficient for small releases)
 * `:"7z"` - 7Zip format (.7z - Best compression)
 * `:tar_bz2` - BZip2 tarball (.tar.bz2)
@@ -121,7 +122,7 @@ Relapse also provides some supplementary commands:
 External Requirements (Optional)
 --------------------------------
 
-### To create package archives
+### To create package archives (except `:dmg`)
 
 [7z](http://www.7-zip.org) must be installed.
 

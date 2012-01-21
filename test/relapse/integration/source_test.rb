@@ -2,6 +2,7 @@ require File.expand_path("../../teststrap", File.dirname(__FILE__))
 
 folder = 'pkg/test_app_0_1_SOURCE'
 
+
 context "Source in all formats" do
   setup do
     Relapse::Project.new do |p|
@@ -11,6 +12,7 @@ context "Source in all formats" do
       p.verbose = false
 
       p.add_output :source do |o|
+        o.add_archive_format :dmg
         o.add_archive_format :exe
         o.add_archive_format :zip
         o.add_archive_format :"7z"
@@ -34,7 +36,8 @@ context "Source in all formats" do
   context "tasks" do
     tasks = [
         [ :Task, "package", %w[package:source] ],
-        [ :Task, "package:source", %w[package:source:7z package:source:exe package:source:tar_gz package:source:tar_bz2 package:source:zip] ],
+        [ :Task, "package:source", %w[package:source:dmg package:source:7z package:source:exe package:source:tar_gz package:source:tar_bz2 package:source:zip] ],
+        [ :Task, "package:source:dmg", ["#{folder}.dmg"] ],
         [ :Task, "package:source:7z", ["#{folder}.7z"] ],
         [ :Task, "package:source:exe", ["#{folder}.exe"] ],
         [ :Task, "package:source:tar_gz", ["#{folder}.tar.gz"] ],
@@ -46,6 +49,7 @@ context "Source in all formats" do
 
         [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
         [ :FileCreationTask, folder, source_files ],
+        [ :FileTask, "#{folder}.dmg", [folder] ],
         [ :FileTask, "#{folder}.7z", [folder] ],
         [ :FileTask, "#{folder}.exe", [folder] ],
         [ :FileTask, "#{folder}.tar.gz", [folder] ],
@@ -54,6 +58,15 @@ context "Source in all formats" do
     ]
 
     test_tasks tasks
+  end
+
+  if osx_platform?
+    # TODO: Test this better?
+    context "dmg" do
+      hookup { Rake::Task["package:source:dmg"].invoke }
+
+      asserts("archive created") { File.size("#{folder}.dmg") > 0}
+    end
   end
 
   context "exe" do

@@ -6,6 +6,6 @@ module Relapse
   end
 end
 
-%w[exe seven_zip tar_bzip2 tar_gzip zip].each do |archiver|
+%w[dmg exe seven_zip tar_bzip2 tar_gzip zip].each do |archiver|
   require "relapse/archivers/#{archiver}"
 end

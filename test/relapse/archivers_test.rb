@@ -2,6 +2,7 @@ require File.expand_path("../teststrap", File.dirname(__FILE__))
 
 # Test all archivers at once, since they are pretty much identical.
 [
+    [:dmg,     Relapse::Archivers::Dmg,      %[GZIP=-9 hdiutil create -fs HFS+ -srcfolder "f" -volname "Test App 0.1" "f.dmg"]],
     [:exe,     Relapse::Archivers::Exe,      %[7z a -mmt -bd -t7z -sfx7z.sfx "f.exe" "f"]],
     [:"7z",    Relapse::Archivers::SevenZip, %[7z a -mmt -bd -t7z "f.7z" "f"]],
     [:tar_bz2, Relapse::Archivers::TarBzip2, %[7z a -so -mmt -bd -ttar "f.tar" "f" | 7z a -si -bd -tbzip2 "f.tar.bz2"]],
@@ -11,7 +12,12 @@ require File.expand_path("../teststrap", File.dirname(__FILE__))
   extension = "." + type.to_s.tr("_", ".")
 
   context archiver do
-    setup { archiver.new Object.new }
+    setup do
+      project = Relapse::Project.new
+      project.name = "Test App"
+      project.version = "0.1"
+      archiver.new project
+    end
     teardown { Rake::Task.clear }
 
     asserts(:type).equals type
