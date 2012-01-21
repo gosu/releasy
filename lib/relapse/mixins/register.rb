@@ -2,17 +2,39 @@ require 'forwardable'
 
 module Relapse
   module Mixins
-    # Maintains a registry of classes.
+    # Maintains a registry of classes within a module.
+    #
+    # @example
+    #   module Frogs
+    #     extend Relapse::Mixins::Register
+    #   end
+    #
+    #   class Frogs::BlueFrog
+    #     def self.type; :blue; end # Type must be defined before registering.
+    #     Frogs.register self
+    #   end
+    #
+    #   class Frogs::RedFrog
+    #     def self.type; :red; end # Type must be defined before registering.
+    #     Frogs.register self
+    #   end
+    #
+    #   Frogs[:blue]          #=> Frogs::BlueFrog
+    #   Frogs.has_type? :blue #=> true
+    #   Frogs.types           #=> [:blue, :red]
+    #   Frogs.values          #=> [Frogs::BlueFrog, Frogs::RedFrog]
     module Register
       include Enumerable
       extend Forwardable
 
-      def_delegators :registered, :[], :each
+      def_delegators :registered, :[], :each, :values
       def_delegator :registered, :has_key?, :has_type?
+      def_delegator :registered, :keys, :types
 
       # Register a class with this register of classes of that type.
+      # @param klass [Object] Object, which is defined within the namespace being registered with.
       def register(klass)
-        raise "Can't register a class not within this module" unless const_get(klass.name[/[^:]+$/]) == klass
+        raise ArgumentError, "Can't register a class not within this module" unless klass.name =~ /^(.*)::[^:]+/ and $1 == name
         registered[klass.type] = klass
       end
 
