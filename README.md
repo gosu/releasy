@@ -47,14 +47,13 @@ Example
 
     require 'bundler/setup' # Relapse doesn't require that your application uses bundler, but it does make things easier.
     require 'relapse'
+    require 'lib/alpha_channel/version'
 
     #EXAMPLE_START
     # Example is from my game, Alpha Channel.
     Relapse::Project.new do
       name "Alpha Channel"
-      version "1.2.3"
-      # or, more maintainably:
-      # version AlphaChannel::VERSION
+      version AlphaChannel::VERSION
 
       executable "bin/alpha_channel.rbw"
       files `git ls-files`.split("\n").reject {|f| f[0, 1] == '.' }

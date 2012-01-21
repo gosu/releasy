@@ -25,6 +25,9 @@ end
 
 ["README.md"].each do |file|
   context "#{file} examples" do
+    module AlphaChannel
+      VERSION = "1.2.2"
+    end
     File.read(file).scan(/#EXAMPLE_START.*#EXAMPLE_END/m) {|e| run_riot e }
   end
 end
