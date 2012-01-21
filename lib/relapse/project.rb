@@ -1,4 +1,4 @@
-require 'relapse/dsl'
+require 'relapse/dsl_wrapper'
 require 'relapse/builders'
 require 'relapse/archivers'
 require "relapse/mixins/has_archivers"
@@ -95,7 +95,7 @@ module Relapse
       @version = @executable = nil
 
       if block_given?
-        Dsl.new(self).instance_eval &block
+        DSLWrapper.new(self).instance_eval &block
         generate_tasks
       end
     end
@@ -113,7 +113,7 @@ module Relapse
       builder = Builders[type].new(self)
       @builders << builder
 
-      Dsl.new(builder).instance_eval(&block) if block_given?
+      DSLWrapper.new(builder).instance_eval(&block) if block_given?
 
       builder
     end

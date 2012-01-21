@@ -16,7 +16,7 @@ module Mixins
       archiver = Archivers[type].new(respond_to?(:project) ? project : self)
       @archivers << archiver
 
-      Dsl.new(archiver).instance_eval(&block) if block_given?
+      DSLWrapper.new(archiver).instance_eval(&block) if block_given?
 
       archiver
     end

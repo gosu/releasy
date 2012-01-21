@@ -89,18 +89,18 @@ context Relapse::Project do
       asserts("win32 standalone active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).find {|b| b.type == :win32_standalone }) }.size 2
     end
 
-    asserts "add_build yields an instance_eval-ed Relapse::Dsl" do
+    asserts "add_build yields an instance_eval-ed Relapse::DSLWrapper" do
       correct = false
       topic.add_build :win32_folder_from_wrapper do
-        correct = (is_a?(Relapse::Dsl) and owner.is_a?(Relapse::Builders::Win32FolderFromWrapper))
+        correct = (is_a?(Relapse::DSLWrapper) and owner.is_a?(Relapse::Builders::Win32FolderFromWrapper))
       end
       correct
     end
 
-    asserts "add_archive yields an instance_eval-ed Relapse::Dsl" do
+    asserts "add_archive yields an instance_eval-ed Relapse::DSLWrapper" do
       correct = false
       topic.add_archive :tar_gz do
-        correct = (is_a?(Relapse::Dsl) and owner.is_a?(Relapse::Archivers::TarGzip))
+        correct = (is_a?(Relapse::DSLWrapper) and owner.is_a?(Relapse::Archivers::TarGzip))
       end
       correct
     end
