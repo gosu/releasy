@@ -17,6 +17,7 @@ context Relapse::Builders::OsxApp do
 
   asserts(:folder_suffix).equals "OSX"
   asserts(:icon=, "test_app.ico").raises Relapse::ConfigError, /icon must be a .icns file/
+  denies(:gemspecs).empty
 
   context "no wrapper" do
     hookup do
@@ -46,7 +47,7 @@ context Relapse::Builders::OsxApp do
       topic.url = "org.frog.fish"
       topic.wrapper = osx_app_wrapper
       topic.icon = "test_app.icns"
-      topic.gemspecs = Bundler.definition.specs_for([:development])
+      topic.gemspecs = gemspecs_to_use
       topic.generate_tasks
     end
 
@@ -54,6 +55,7 @@ context Relapse::Builders::OsxApp do
     asserts(:app_name).equals "Test App.app"
     asserts(:url).equals "org.frog.fish"
     asserts(:wrapper).equals osx_app_wrapper
+    asserts(:gemspecs).same_elements gemspecs_to_use
 
     context "tasks" do
       tasks = [
@@ -85,8 +87,10 @@ context Relapse::Builders::OsxApp do
       asserts("Main.rb is correct") { same_contents? "#{app_folder}/Contents/Resources/Main.rb", data_file("Main.rb") }
       asserts("Info.plist is correct") { same_contents? "#{app_folder}/Contents/Info.plist", data_file("Info.plist") }
 
-      %w[bundler rr riot yard].each do |gem|
-        asserts("#{gem} gem folder copied") { File.exists?("#{app_folder}/Contents/Resources/vendor/gems/#{gem}") }
+      gemspecs_to_use.each do |gemspec|
+        name = "#{gemspec.name}-#{gemspec.version}"
+        asserts("#{name} gem folder copied") { File.directory? "#{app_folder}/Contents/Resources/vendor/gems/#{name}" }
+        asserts("#{name} spec copied") { File.exists? "#{app_folder}/Contents/Resources/vendor/specifications/#{name}.gemspec" }
       end
 
       denies("default chingu gem left in app")  { File.exists?("#{app_folder}/Contents/Resources/lib/chingu") }

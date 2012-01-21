@@ -15,7 +15,7 @@ end
 # Hack to allow test to work using a different gemfile than Relapse's.
 def redirect_bundler_gemfile
   bundle_gemfile = ENV['BUNDLE_GEMFILE']
-  ENV['BUNDLE_GEMFILE'] = ''
+  ENV['BUNDLE_GEMFILE'] = File.expand_path('test_project/Gemfile', $original_path)
   ret_val = yield
   ENV['BUNDLE_GEMFILE'] = bundle_gemfile
   ret_val
@@ -23,6 +23,11 @@ end
 
 def data_file(file)
   File.expand_path("test/relapse/builders/data/#{file}", $original_path)
+end
+
+def gemspecs_to_use
+  # Don't add Relapse since it is may be being run locally and thus not work at all.
+  Gem.loaded_specs.values.find_all {|s| %w[bundler cri ocra].include? s.name }
 end
 
 def link_file

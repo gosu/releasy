@@ -41,7 +41,7 @@ module Relapse
           # Copy gems.
           destination = File.join(folder, 'gemhome')
           downloaded_binary_gems = install_binary_gems destination
-          copy_system_gems vendored_gem_names(INCLUDED_BINARY_GEMS.keys + downloaded_binary_gems), destination
+          copy_gems vendored_gem_names(INCLUDED_BINARY_GEMS.keys + downloaded_binary_gems), destination
           delete_unnecessary_gems destination
         end
 
@@ -68,24 +68,6 @@ module Relapse
           rm File.join(folder, 'bin/rubyw.exe')
           rm File.join(folder, 'windows.exe')
           mv File.join(folder, 'console.exe'), File.join(folder, executable_name)
-        end
-      end
-
-      protected
-      def copy_system_gems(gems, destination)
-        puts "Copying source gems from system" if project.verbose?
-        gems_dir = "#{destination}/gems"
-        specs_dir = "#{destination}/specifications"
-        mkdir_p gems_dir
-        mkdir_p specs_dir
-
-        gems.each do |gem|
-          spec = gemspecs.find {|g| g.name == gem }
-          gem_dir = spec.full_gem_path
-          puts "Copying gem: #{spec.name} #{spec.version}" if project.verbose?
-          cp_r gem_dir, gems_dir
-          spec_file = File.expand_path("../../specifications/#{File.basename gem_dir}.gemspec", gem_dir)
-          cp_r spec_file, specs_dir
         end
       end
 

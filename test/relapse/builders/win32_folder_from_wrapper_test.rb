@@ -15,9 +15,9 @@ context Relapse::Builders::Win32FolderFromWrapper do
     Dir.chdir project_path
   end
 
-  asserts(:gemspecs).empty
   asserts(:folder_suffix).equals "WIN32"
   asserts(:generate_tasks).raises Relapse::ConfigError, /wrapper not set/
+  denies(:gemspecs).empty
 
   if Gem.win_platform?
     denies(:valid_for_platform?)
@@ -40,14 +40,13 @@ context Relapse::Builders::Win32FolderFromWrapper do
       topic.folder_suffix = "WIN32_FROM_WRAPPER" # Do disambiguate from the windows version of this.
       topic.icon = "test_app.ico"
       topic.executable_type = :console
-      topic.gemspecs = Bundler.definition.specs_for([:development])
+      topic.gemspecs = gemspecs_to_use
       topic.generate_tasks
-
     end
 
     asserts(:folder_suffix).equals "WIN32_FROM_WRAPPER"
     asserts(:wrapper).equals wrapper
-    asserts(:gemspecs).kind_of Bundler::SpecSet
+    asserts(:gemspecs).equals gemspecs_to_use
 
     context "tasks" do
       tasks = [
@@ -78,9 +77,10 @@ context Relapse::Builders::Win32FolderFromWrapper do
 
       asserts("relapse_runner.rb is correct") { File.read("#{folder}/relapse_runner.rb").strip == File.read(data_file("relapse_runner.rb")).strip }
 
-      %w[bundler rr riot yard].each do |gem|
-        asserts("#{gem} gem specification copied") { not Dir["#{folder}/gemhome/specifications/#{gem}*.gemspec"].empty? }
-        asserts("#{gem} gem folder copied") { not Dir["#{folder}/gemhome/gems/#{gem}*"].empty? }
+      gemspecs_to_use.each do |gemspec|
+        name = "#{gemspec.name}-#{gemspec.version}"
+        asserts("#{name} gem specification copied") { File.exists? "#{folder}/gemhome/specifications/#{name}.gemspec" }
+        asserts("#{name} gem folder copied") { File.directory? "#{folder}/gemhome/gems/#{name}" }
       end
 
       %w[ray].each do |gem|
@@ -89,7 +89,7 @@ context Relapse::Builders::Win32FolderFromWrapper do
       end
 
       if Gem.win_platform?
-        asserts("program output") { %x[#{folder}/test_app.exe] }.equals "test run!\n"
+        asserts("program output") { redirect_bundler_gemfile { %x[#{folder}/test_app.exe] } }.equals "test run!\n"
       end
     end
   end

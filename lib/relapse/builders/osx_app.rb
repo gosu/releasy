@@ -55,7 +55,7 @@ module Relapse
           # Copy accompanying files.
           project.exposed_files.each {|file| cp file, folder }
 
-          copy_gems vendored_gem_names(BINARY_GEMS), File.join(new_app, 'Contents/Resources/vendor/gems')
+          copy_gems vendored_gem_names(BINARY_GEMS), File.join(new_app, 'Contents/Resources/vendor')
           create_main new_app
           edit_init new_app
           remove_gems new_app
@@ -70,6 +70,7 @@ module Relapse
         @icon = nil
         @url = nil
         @wrapper = nil
+        super
       end
 
       protected
@@ -119,8 +120,8 @@ END
         puts "--- Creating Main.rb" if project.verbose?
         File.open("#{app}/Contents/Resources/Main.rb", "w") do |file|
           file.puts <<END_TEXT
-#{vendored_gem_names(BINARY_GEMS).inspect}.each do |gem|
-  $LOAD_PATH.unshift File.expand_path("../vendor/gems/\#{gem}/lib", __FILE__)
+Dir[File.expand_path("../vendor/gems/*/lib", __FILE__)].each do |lib|
+  $LOAD_PATH.unshift lib
 end
 
 OSX_EXECUTABLE_FOLDER = File.expand_path("../../..", __FILE__)

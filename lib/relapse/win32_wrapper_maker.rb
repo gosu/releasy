@@ -128,11 +128,11 @@ module Relapse
     protected
     # Copy some binary gems.
     def install_gems(gems, gemhome)
-      puts "=== Copying pre-compiled binary gems"
+      puts "=== Installing pre-compiled binary gems"
 
       gems.each do |gem|
         puts "Installing #{gem}"
-        command = %[gem install #{gem} --install-dir "#{gemhome}"]
+        command = %[gem install #{gem} --install-dir "#{gemhome}" --no-rdoc --no-ri --ignore-dependencies]
         puts command
         puts %x[#{command}]
       end

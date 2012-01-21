@@ -66,11 +66,6 @@ Example
         url "com.github.spooner.games.alpha_channel"
         wrapper "../osx_app/RubyGosu App.app"
         icon "media/icon.icns"
-
-        # If you use Bundler and you don't want to include your :development gems :-
-        gemspecs Bundler.definition.specs_for([:default])
-        # Alternative if you don't use Bundler :-
-        # gemspecs Gem.loaded_specs.values
       end
       add_build :source
       add_build :win32_folder do

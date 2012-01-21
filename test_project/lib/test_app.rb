@@ -1,5 +1,6 @@
 # Required only so we know the gem is being copied properly.
-require 'riot'
-require 'riot/rr'
+require 'bundler/setup'
+require 'cri'
+require 'rake'
 
 require 'test_app/stuff'

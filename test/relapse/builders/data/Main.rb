@@ -1,5 +1,5 @@
-["bundler", "redcarpet", "riot", "rr", "yard"].each do |gem|
-  $LOAD_PATH.unshift File.expand_path("../vendor/gems/#{gem}/lib", __FILE__)
+Dir[File.expand_path("../vendor/gems/*/lib", __FILE__)].each do |lib|
+  $LOAD_PATH.unshift lib
 end
 
 OSX_EXECUTABLE_FOLDER = File.expand_path("../../..", __FILE__)
