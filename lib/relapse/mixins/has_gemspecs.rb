@@ -1,6 +1,6 @@
 module Relapse::Mixins
   module HasGemspecs
-    # @return [Array<Gem>] List of gemspecs used by the application, which should usually be: Bundler.definition.gems_for([:default])
+    # @return [Array<Gem>] List of gemspecs used by the application. Will default to the gems in the `default` Bundler group or, if Bundler isn't used, all gems loaded by rubygems.
     attr_accessor :gemspecs
 
     protected

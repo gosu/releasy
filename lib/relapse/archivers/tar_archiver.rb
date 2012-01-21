@@ -7,7 +7,7 @@ module Archivers
   class TarArchiver < Archiver
     protected
     def command(folder)
-      %[7z a -so -mmt -bd -ttar "#{folder}.tar" "#{folder}" | 7z a -si -bd -t#{format} "#{folder}#{extension}"]
+      %[7z a -so -mmt -bd -ttar "#{folder}.tar" "#{folder}" | 7z a -si -bd -t#{self.class::FORMAT} "#{folder}#{extension}"]
     end
   end
 end
