@@ -47,28 +47,28 @@ context Relapse::Project do
 
   context "defined" do
     setup do
-      Relapse::Project.new do |p|
-        p.name = "Test Project - (2a)"
-        p.version = "v0.1.5"
+      Relapse::Project.new do
+        name "Test Project - (2a)"
+        version "v0.1.5"
 
-        p.add_archive_format :"7z"
-        p.add_archive_format :zip
+        add_archive_format :"7z"
+        add_archive_format :zip
 
-        p.add_output :source
-        p.add_output :osx_app do |o|
-          o.add_archive_format :tar_gz
-          o.wrapper = osx_app_wrapper
-          o.url = "org.url.app"
-          o.gemspecs = Bundler.setup.gems
+        add_output :source
+        add_output :osx_app do
+          add_archive_format :tar_gz
+          wrapper osx_app_wrapper
+          url "org.url.app"
+          gemspecs Bundler.setup.gems
         end
-        p.add_output :win32_standalone do |o|
-          o.ocra_parameters = "--no-enc"
+        add_output :win32_standalone do
+          ocra_parameters "--no-enc"
         end
 
-        p.files = source_files
+        files source_files
 
-        p.add_link "www.frog.com", "Frog"
-        p.add_link "www2.fish.com", "Fish"
+        add_link "www.frog.com", "Frog"
+        add_link "www2.fish.com", "Fish"
       end
     end
 
@@ -87,6 +87,22 @@ context Relapse::Project do
     asserts("osx app active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).find {|b| b.type == :osx_app }) }.size 3
     if Gem.win_platform?
       asserts("win32 standalone active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).find {|b| b.type == :win32_standalone }) }.size 2
+    end
+
+    asserts "add_output yields an instance_eval-ed Relapse::Dsl" do
+      correct = false
+      topic.add_output :win32_folder_from_wrapper do
+        correct = (is_a?(Relapse::Dsl) and owner.is_a?(Relapse::Builders::Win32FolderFromWrapper))
+      end
+      correct
+    end
+
+    asserts "add_archive_format yields an instance_eval-ed Relapse::Dsl" do
+      correct = false
+      topic.add_archive_format :tar_gz do
+        correct = (is_a?(Relapse::Dsl) and owner.is_a?(Relapse::Archivers::TarGzip))
+      end
+      correct
     end
 
     context "#generate_archive_tasks" do

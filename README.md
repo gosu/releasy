@@ -49,40 +49,40 @@ Example
     require 'relapse'
 
     # Example is from my game, Alpha Channel.
-    Relapse::Project.new do |p|
-      p.name = "Alpha Channel"
-      p.version = AlphaChannel::VERSION
-      p.executable = "bin/alpha_channel.rbw"
-      p.files = `git ls-files`.split("\n").reject {|f| f[0, 1] == '.' }
-      p.exposed_files = ["README.html"]
-      p.add_link "http://spooner.github.com/games/alpha_channel", "Alpha Channel website"
+    Relapse::Project.new do
+      name "Alpha Channel"
+      version AlphaChannel::VERSION
+      executable "bin/alpha_channel.rbw"
+      files `git ls-files`.split("\n").reject {|f| f[0, 1] == '.' }
+      exposed_files ["README.html"]
+      add_link "http://spooner.github.com/games/alpha_channel", "Alpha Channel website"
 
       # Create a variety of releases, for all platforms.
-      p.add_output :osx_app do |o|
-        o.add_archive_format :tar_gz
-        o.url = "com.github.spooner.games.alpha_channel"
-        o.wrapper = "../osx_app/RubyGosu App.app"
-        o.icon = "media/icon.icns"
+      add_output :osx_app do
+        add_archive_format :tar_gz
+        url "com.github.spooner.games.alpha_channel"
+        wrapper "../osx_app/RubyGosu App.app"
+        icon "media/icon.icns"
 
         # If you use Bundler and you don't want to include your :development gems :-
-        o.gemspecs = Bundler.definition.specs_for([:default])
+        gemspecs Bundler.definition.specs_for([:default])
         # Alternative if you don't use Bundler :-
-        # o.gemspecs = Gem.loaded_specs.values
+        # gemspecs Gem.loaded_specs.values
       end
-      p.add_output :source
-      p.add_output :win32_folder do |o|
-        o.icon = "media/icon.ico"
-        o.add_archive_format :exe
-        o.ocra_parameters = "--no-enc"
+      add_output :source
+      add_output :win32_folder do
+        icon "media/icon.ico"
+        add_archive_format :exe
+        ocra_parameters "--no-enc"
       end
-      p.add_output :win32_installer do |o|
-        o.icon = "media/icon.ico"
-        o.ocra_parameters = "--no-enc"
-        o.start_menu_group = "Spooner Games"
-        o.readme = "README.html" # User asked if they want to view it after install.
+      add_output :win32_installer do
+        icon "media/icon.ico"
+        ocra_parameters "--no-enc"
+        start_menu_group "Spooner Games"
+        readme "README.html" # User asked if they want to view it after install.
       end
 
-      p.add_archive_format :zip # All outputs given this archive format.
+      add_archive_format :zip # All outputs given this archive format.
     end
 
 ### Tasks created

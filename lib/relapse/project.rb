@@ -1,3 +1,4 @@
+require 'relapse/dsl'
 require 'relapse/builders'
 require 'relapse/archivers'
 require "relapse/mixins/has_archivers"
@@ -73,7 +74,7 @@ module Relapse
     #     project.name = "My Application"
     #     project.add_output :source
     #     project.generate_tasks
-    def initialize
+    def initialize(&block)
       super()
 
       @builders = []
@@ -87,7 +88,7 @@ module Relapse
       @version = @executable = nil
 
       if block_given?
-        yield self
+        Dsl.new(self).instance_eval &block
         generate_tasks
       end
     end
@@ -105,7 +106,7 @@ module Relapse
       builder = Builders[type].new(self)
       @builders << builder
 
-      yield builder if block_given?
+      Dsl.new(builder).instance_eval(&block) if block_given?
 
       builder
     end

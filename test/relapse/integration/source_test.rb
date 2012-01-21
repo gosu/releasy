@@ -5,20 +5,21 @@ folder = 'pkg/test_app_0_1_SOURCE'
 
 context "Source in all formats" do
   setup do
-    Relapse::Project.new do |p|
-      p.name = "Test App"
-      p.version = "0.1"
-      p.files = source_files
-      p.verbose = false
+    Relapse::Project.new do
+      name "Test App"
+      version "0.1"
+      files source_files
+      verbose false
 
-      p.add_output :source do |o|
-        o.add_archive_format :dmg
-        o.add_archive_format :exe
-        o.add_archive_format :zip
-        o.add_archive_format :"7z"
+      add_output :source do
+        add_archive_format :dmg
+        add_archive_format :exe
+        add_archive_format :zip
+        add_archive_format :"7z"
       end
-      p.add_archive_format :tar_gz
-      p.add_archive_format :tar_bz2
+
+      add_archive_format :tar_gz
+      add_archive_format :tar_bz2
     end
   end
 
