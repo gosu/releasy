@@ -10,7 +10,7 @@ module Relapse
   #       attr_accessor :value
   #       attr_accessor :list
   #       def initialize; @value = 0; @list = []; end
-  #       def run; # do stuff; end
+  #       def run; @list.map {|i| i + 7 }; end
   #     end
   #
   #     object = Cheese.new

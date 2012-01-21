@@ -66,7 +66,7 @@ module Relapse
     #     # when the block is closed.
     #     Relapse::Project.new do
     #       name "My Application"
-    #       version MyApplication::VERSION
+    #       version "1.2.4"
     #       add_build :source do
     #         add_archive :zip
     #       end
@@ -76,7 +76,7 @@ module Relapse
     #     # Without using blocks.
     #     project = Relapse::Project.new
     #     project.name = "My Application"
-    #     project.version = MyApplication::VERSION
+    #     project.version = "1.2.4"
     #     output = project.add_build :source
     #     output.add_archive :zip
     #     project.generate_tasks

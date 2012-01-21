@@ -48,10 +48,14 @@ Example
     require 'bundler/setup' # Relapse doesn't require that your application uses bundler, but it does make things easier.
     require 'relapse'
 
+    #EXAMPLE_START
     # Example is from my game, Alpha Channel.
     Relapse::Project.new do
       name "Alpha Channel"
-      version AlphaChannel::VERSION
+      version "1.2.3"
+      # or, more maintainably:
+      # version AlphaChannel::VERSION
+
       executable "bin/alpha_channel.rbw"
       files `git ls-files`.split("\n").reject {|f| f[0, 1] == '.' }
       exposed_files ["README.html"]
@@ -84,6 +88,8 @@ Example
 
       add_archive :zip # All outputs given this archive format.
     end
+
+    #EXAMPLE_END
 
 ### Tasks created
 

@@ -21,4 +21,9 @@ end
 
 YARD::Rake::YardocTask.new
 
+desc "Run a yard server to auto-update docs"
+task :yard_server do
+  system "bundle exec yard server --reload"
+end
+
 task :default => :test
