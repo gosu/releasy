@@ -13,7 +13,7 @@ def run_riot(example, index)
         asserts(code.split("\n").last) { result }.equals expected
       end
     else
-      asserts("runs without error") { eval(example); true }
+      should('runs without error') { eval(example); true }
     end
   end
 end
@@ -39,8 +39,8 @@ module AlphaChannel
   VERSION = "1.2.2"
 end
 
-["README.md"].each do |file|
+['README.md'].each do |file|
   context "#{file} examples" do
-    File.read(file).scan(/#<.*#>/m).each_with_index {|e, i| run_riot e, i }
+    File.read(file).scan(/#<<<.*#>>>/m).each_with_index {|e, i| run_riot e, i }
   end
 end

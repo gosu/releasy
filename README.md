@@ -45,18 +45,19 @@ Example
 
 ### Project's Rakefile
 
+    # Example is from my game, Alpha Channel.
+    require 'rubygems'
     require 'bundler/setup' # Relapse doesn't require that your application uses bundler, but it does make things easier.
     require 'relapse'
     require 'lib/alpha_channel/version'
 
-    #<
-    # Example is from my game, Alpha Channel.
+    #<<<
     Relapse::Project.new do
       name "Alpha Channel"
       version AlphaChannel::VERSION
 
       executable "bin/alpha_channel.rbw"
-      files `git ls-files`.split("\n").reject {|f| f[0, 1] == '.' }
+      files `git ls-files`.split("\n") - ['.gitignore']
       exposed_files ["README.html"]
       add_link "http://spooner.github.com/games/alpha_channel", "Alpha Channel website"
 
@@ -67,12 +68,15 @@ Example
         wrapper "../osx_app/RubyGosu App.app"
         icon "media/icon.icns"
       end
+
       add_build :source
+
       add_build :windows_folder do
         icon "media/icon.ico"
         add_archive :exe
         ocra_parameters "--no-enc"
       end
+
       add_build :windows_installer do
         icon "media/icon.ico"
         ocra_parameters "--no-enc"
@@ -82,8 +86,7 @@ Example
 
       add_archive :zip # All outputs given this archive format.
     end
-
-    #>
+    #>>>
 
 ### Tasks created
 
