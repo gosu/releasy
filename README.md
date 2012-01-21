@@ -49,7 +49,7 @@ Example
     require 'relapse'
     require 'lib/alpha_channel/version'
 
-    #EXAMPLE_START
+    #<
     # Example is from my game, Alpha Channel.
     Relapse::Project.new do
       name "Alpha Channel"
@@ -83,7 +83,7 @@ Example
       add_archive :zip # All outputs given this archive format.
     end
 
-    #EXAMPLE_END
+    #>
 
 ### Tasks created
 
