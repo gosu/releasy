@@ -52,7 +52,7 @@ Example
       p.name = "Alpha Channel"
       p.version = AlphaChannel::VERSION
       p.executable = "bin/alpha_channel.rbw"
-      p.files = `git ls-files`.split("\n").reject {|f| f[0] == '.' }
+      p.files = `git ls-files`.split("\n").reject {|f| f[0, 1] == '.' }
       p.exposed_files = ["README.html"]
       p.add_link "http://spooner.github.com/games/alpha_channel", "Alpha Channel website"
 

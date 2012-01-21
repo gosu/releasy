@@ -42,7 +42,7 @@ module Archivers
     end
 
     protected
-    def package(folder); "#{folder}#{extension[0] == '.' ? '' : '.'}#{extension}"; end
+    def package(folder); "#{folder}#{extension[0, 1] == '.' ? '' : '.'}#{extension}"; end
 
     protected
     def command(folder)
