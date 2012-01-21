@@ -6,6 +6,6 @@ module Relapse
   end
 end
 
-%w[osx_app source win32_folder win32_folder_from_wrapper win32_installer win32_standalone].each do |builder|
+%w[osx_app source windows_folder windows_folder_from_wrapper windows_installer windows_standalone].each do |builder|
   require "relapse/builders/#{builder}"
 end

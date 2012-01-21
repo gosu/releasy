@@ -1,9 +1,9 @@
-require "relapse/builders/win32_builder"
+require "relapse/builders/windows_builder"
 
 module Relapse
   module Builders
-    # Creates a completely standalone (self-extracting when run) win32 executable.
-    class Win32Standalone < Win32Builder
+    # Creates a completely standalone (self-extracting when run) Windows executable.
+    class WindowsStandalone < WindowsBuilder
       Builders.register self
 
       DEFAULT_FOLDER_SUFFIX = "WIN32_EXE"
@@ -23,7 +23,7 @@ module Relapse
         end
 
         desc "Build standalone exe #{project.version} [Ocra]"
-        task "build:win32:standalone" => folder
+        task "build:windows:standalone" => folder
       end
 
       protected

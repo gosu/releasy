@@ -2,15 +2,15 @@ require "relapse/builders/builder"
 
 module Relapse
 module Builders
-  # General functionality for win32 builders.
+  # General functionality for Windows builders.
   # @abstract
   # @attr icon [String] Optional filename of icon to show on executable/installer (.ico).
-  class Win32Builder < Builder
+  class WindowsBuilder < Builder
     OCRA_COMMAND = "ocra"
     ICON_EXTENSION = ".ico"
     EXECUTABLE_TYPES = [:auto, :windows, :console]
 
-    # @return [String] Extra options to send to Ocra (win32 outputs only).
+    # @return [String] Extra options to send to Ocra (Windows outputs only).
     attr_accessor :ocra_parameters
 
     # @return [:auto, :windows, :console] Type of ruby to run executable with: :console means run with `ruby`, :windows means run with `rubyw`,  :auto means determine type from executable extension (.rb => :console or .rbw => :windows).

@@ -1,14 +1,14 @@
-require "relapse/win32_wrapper_maker"
+require "relapse/windows_wrapper_maker"
 
-default_output = "win32_wrapper/ruby_#{RUBY_DESCRIPTION[/[\d\.]+p\d+/].tr(".", "-")}_win32_wrapper"
+default_output = "windows_wrapper/ruby_#{RUBY_DESCRIPTION[/[\d\.]+p\d+/].tr(".", "_")}_win32_wrapper"
 default_icon = File.expand_path("../../../../test_project/test_app.ico", __FILE__)
 
 Relapse::Cli.define_command do
-  name        'win32-wrapper'
-  usage       'win32-wrapper [options]'
+  name        'windows-wrapper'
+  usage       'windows-wrapper [options]'
   aliases
-  summary     'build a win32 wrapper (win32 only)'
-  description 'Build a win32 wrapper for use to build the :win32_folder_from_wrapper output on non-win32 platforms (runs on win32 only).'
+  summary     'build a Windows wrapper (Windows only)'
+  description 'Build a Windows wrapper for use to build the :windows_folder_from_wrapper output on non-Windows platforms (runs on Windows only).'
 
   flag   :h, :help,    'show help for this command' do |value, cmd|
     puts cmd.help
@@ -29,16 +29,16 @@ Relapse::Cli.define_command do
     }.merge! options
 
     unless Gem.win_platform?
-      puts "win32-wrapper only available on win32 platform"
+      puts "windows-wrapper only available on Windows platform"
       exit 0
     end
 
     if File.exists? options[:output]
-      puts "win32-wrapper: #{options[:output]} already exists"
+      puts "windows-wrapper: #{options[:output]} already exists"
       exit 0
     end
 
-    Relapse::Win32WrapperMaker.build_wrapper(options[:output], options[:gems].split(/[,;\s]+/), options[:icon])
+    Relapse::WindowsWrapperMaker.new.build_wrapper(options[:output], options[:gems].split(/[,;\s]+/), options[:icon])
   end
 end
 

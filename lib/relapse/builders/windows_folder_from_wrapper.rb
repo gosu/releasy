@@ -1,10 +1,10 @@
-require "relapse/builders/win32_builder"
+require "relapse/builders/windows_builder"
 require "relapse/mixins/has_gemspecs"
 
 module Relapse
   module Builders
-    # Wraps up application in a pre-made wrapper. If building on Windows, use :win32_folder instead, since it will be much smaller.
-    class Win32FolderFromWrapper < Win32Builder
+    # Wraps up application in a pre-made wrapper. If building on Windows, use :windows_folder instead, since it will be much smaller.
+    class WindowsFolderFromWrapper < WindowsBuilder
       include Mixins::HasGemspecs
 
       Builders.register self
@@ -12,7 +12,7 @@ module Relapse
       DEFAULT_FOLDER_SUFFIX = "WIN32"
       INCLUDED_BINARY_GEMS = { 'ray' => '0.2.0' }
 
-      # @return [String] Name of win32 directory used as the framework for release.
+      # @return [String] Name of Windows wrapper directory used as the framework for release.
       attr_accessor :wrapper
 
       def valid_for_platform?; not Relapse.win_platform?; end
@@ -46,7 +46,7 @@ module Relapse
         end
 
         desc "Build source/exe folder #{project.version} from wrapper"
-        task "build:win32:folder_from_wrapper" => folder
+        task "build:windows:folder_from_wrapper" => folder
       end
 
       protected
@@ -76,21 +76,21 @@ module Relapse
         puts "Checking gems to see if any are binary" if project.verbose?
         binary_gems = []
         gemspecs.reject {|g| INCLUDED_BINARY_GEMS.include? g.name }.each do |spec|
-          puts "Checking gem #{spec.name} #{spec.version} to see if there is a win32 binary version" if project.verbose?
+          puts "Checking gem #{spec.name} #{spec.version} to see if there is a Windows binary version" if project.verbose?
           # Find out what versions are available and if the required version is available as a windows binary, download and install that.
           versions = %x[gem list "#{spec.name}" --remote --all --prerelease]
           if versions =~ /#{spec.name} \(([^\)]*)\)/m
             version_string = $1
             platforms = version_string.split(/,\s*/).find {|s| s =~ /^#{spec.version}/ }.split(/\s+/)
-            win32_platform = platforms.find {|p| p =~ /mingw|mswin/ }
-            raise "Gem #{spec.name} is binary, but #{spec.version} does not have a published binary" if version_string =~ /mingw|mswin/ and not win32_platform
+            windows_platform = platforms.find {|p| p =~ /mingw|mswin/ }
+            raise "Gem #{spec.name} is binary, but #{spec.version} does not have a published binary" if version_string =~ /mingw|mswin/ and not windows_platform
 
-            if win32_platform
-              puts "Installing win32 version of binary gem #{spec.name} #{spec.version}"
+            if windows_platform
+              puts "Installing Windows version of binary gem #{spec.name} #{spec.version}"
               # If we have a bundle file specified, then gem will _only_ install the version specified by it and not the one we request.
               bundle_gemfile = ENV['BUNDLE_GEMFILE']
               ENV['BUNDLE_GEMFILE'] = ''
-              exec %[gem install "#{spec.name}" --remote --no-rdoc --no-ri --force --ignore-dependencies --platform "#{win32_platform}" --version "#{spec.version}" --install-dir "#{destination}"]
+              exec %[gem install "#{spec.name}" --remote --no-rdoc --no-ri --force --ignore-dependencies --platform "#{windows_platform}" --version "#{spec.version}" --install-dir "#{destination}"]
               ENV['BUNDLE_GEMFILE'] = bundle_gemfile
               binary_gems << spec.name
             end
@@ -104,7 +104,7 @@ module Relapse
       def delete_unnecessary_gems(destination)
         (INCLUDED_BINARY_GEMS.keys - gemspecs.map(&:name)).each do |gem|
           full_gem_name = "#{gem}-#{INCLUDED_BINARY_GEMS[gem]}"
-          puts "Deleting unused win32 binary gem from wrapper: #{full_gem_name}" if project.verbose?
+          puts "Deleting unused Windows binary gem from wrapper: #{full_gem_name}" if project.verbose?
           rm_r "#{destination}/gems/#{full_gem_name}"
           rm_r "#{destination}/specifications/#{full_gem_name}.gemspec"
         end

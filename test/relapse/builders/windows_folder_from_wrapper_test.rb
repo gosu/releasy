@@ -1,10 +1,10 @@
 require File.expand_path("helpers/helper", File.dirname(__FILE__))
 
 folder = 'pkg/test_app_0_1_WIN32_FROM_WRAPPER'
-wrapper = File.join('..', win32_folder_wrapper)
+wrapper = File.join('..', windows_folder_wrapper)
 
-context Relapse::Builders::Win32FolderFromWrapper do
-  setup { Relapse::Builders::Win32FolderFromWrapper.new new_project }
+context Relapse::Builders::WindowsFolderFromWrapper do
+  setup { Relapse::Builders::WindowsFolderFromWrapper.new new_project }
 
   teardown do
     Dir.chdir $original_path
@@ -50,7 +50,7 @@ context Relapse::Builders::Win32FolderFromWrapper do
 
     context "tasks" do
       tasks = [
-          [ :Task, "build:win32:folder_from_wrapper", [folder] ],
+          [ :Task, "build:windows:folder_from_wrapper", [folder] ],
           [ :FileTask, "pkg", [] ], # byproduct of using #directory
           [ :FileTask, folder, source_files + [wrapper]],
       ]
@@ -59,7 +59,7 @@ context Relapse::Builders::Win32FolderFromWrapper do
     end
 
     context "generate" do
-      hookup { Rake::Task["build:win32:folder_from_wrapper"].invoke }
+      hookup { Rake::Task["build:windows:folder_from_wrapper"].invoke }
 
       asserts("files copied to folder") { source_files.all? {|f| same_contents? "#{folder}/src/#{f}", f } }
       asserts("readme copied to folder") { same_contents? "#{folder}/README.txt", "README.txt" }

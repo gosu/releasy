@@ -1,20 +1,20 @@
-require "relapse/builders/win32_builder"
+require "relapse/builders/windows_builder"
 
 module Relapse
   module Builders
     # Builds a win32 installer for the application.
-    class Win32Installer < Win32Builder
+    class WindowsInstaller < WindowsBuilder
       Builders.register self
 
-      INSTALLER_SCRIPT = "win32_installer.iss"
+      INSTALLER_SCRIPT = "windows_installer.iss"
       DEFAULT_FOLDER_SUFFIX = "WIN32_INSTALLER"
 
       # @return [String] Optional start-menu grouping of the application when installed (if name == "app" and installer_group == "frog", then it will get put into 'frog/app' in the start menu).
       attr_accessor :start_menu_group
 
-      # @return [String] File name of readme file - End user will have the option to view this after the win32 installer has installed, recommended to be .txt, .rtf or .html.
+      # @return [String] File name of readme file - End user will have the option to view this after the Windows installer has installed, recommended to be .txt, .rtf or .html.
       attr_accessor :readme
-      # @return [String] Filename of license file - Must be .txt or .rtf file, which will be shown to user who will be requested to accept it (win32 installer only).
+      # @return [String] Filename of license file - Must be .txt or .rtf file, which will be shown to user who will be requested to accept it (Windows installer only).
       attr_accessor :license
 
       # Regular windows installer, but some users consider them evil.
@@ -33,7 +33,7 @@ module Relapse
         end
 
         desc "Build installer #{project.version} [Innosetup]"
-        task "build:win32:installer" => folder
+        task "build:windows:installer" => folder
       end
 
       protected

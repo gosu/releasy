@@ -1,4 +1,4 @@
-# Gemfile used to create win32_wrapper
+# Gemfile used to create windows_wrapper
 source :rubygems
 
 # Ocra used to make the wrapper.

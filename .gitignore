@@ -14,4 +14,4 @@ doc/
 test_project/pkg
 test_project/test_app.exe
 Gemfile.lock
-win32_wrapper/
+windows_wrapper/

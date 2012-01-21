@@ -3,7 +3,7 @@ require 'ocra'
 
 module Relapse
   # Creates wrappers and executables by wrapping Ocra's functionality.
-  class Win32WrapperMaker
+  class WindowsWrapperMaker
     include FileUtils
     include FileUtils::Verbose
 
@@ -26,7 +26,7 @@ module Relapse
       File.open("#{wrapper_dir}.rb", "w") {|f| f.puts "# nothing" }
 
       Dir.chdir output_dir do
-        ENV['BUNDLE_GEMFILE'] = File.expand_path("../win32_wrapper_maker/Gemfile", __FILE__)
+        ENV['BUNDLE_GEMFILE'] = File.expand_path("../windows_wrapper_maker/Gemfile", __FILE__)
         command = %[bundle exec ocra #{wrapper_name}.rb --debug-extract --no-dep-run --add-all-core]
         output = `#{command}`
         puts output

@@ -31,7 +31,7 @@ end
 def osx_platform?; !!(RUBY_PLATFORM =~ /darwin/); end
 
 def osx_app_wrapper; "../../osx_app/RubyGosu App.app"; end
-def win32_folder_wrapper; "win32_wrapper/ruby_#{RUBY_DESCRIPTION[/[\d\.]+p\d+/].tr(".", "_")}_win32_wrapper"; end
+def windows_folder_wrapper; "windows_wrapper/ruby_#{RUBY_DESCRIPTION[/[\d\.]+p\d+/].tr(".", "_")}_win32_wrapper"; end
 
 def same_contents?(file1, file2)
   File.readlines(file1).map(&:strip) == File.readlines(file2).map(&:strip)

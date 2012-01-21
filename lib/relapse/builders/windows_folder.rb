@@ -1,10 +1,10 @@
-require "relapse/builders/win32_builder"
-require 'relapse/win32_wrapper_maker'
+require "relapse/builders/windows_builder"
+require 'relapse/windows_wrapper_maker'
 
 module Relapse
   module Builders
-    # Builds a folder containing Ruby + your source + a small win32 executable to run your executable script.
-    class Win32Folder < Win32Builder
+    # Builds a folder containing Ruby + your source + a small Windows executable to run your executable script.
+    class WindowsFolder < WindowsBuilder
       Builders.register self
 
       DEFAULT_FOLDER_SUFFIX = "WIN32"
@@ -26,7 +26,7 @@ module Relapse
 
           mv Dir["#{File.dirname(folder)}/ocr*\.tmp"].first, folder
 
-          maker = Relapse::Win32WrapperMaker.new
+          maker = Relapse::WindowsWrapperMaker.new
           maker.build_executable("#{folder}/#{executable_name}", "src/#{project.executable}",
                                   :icon => icon, :windows => (effective_executable_type == :windows))
 
@@ -35,7 +35,7 @@ module Relapse
         end
 
         desc "Build source/exe folder #{project.version}"
-        task "build:win32:folder" => folder
+        task "build:windows:folder" => folder
       end
 
       protected

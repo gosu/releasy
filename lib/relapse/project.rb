@@ -104,7 +104,7 @@ module Relapse
 
     # Add a type of output to produce. Must define at least one of these.
     #
-    # @param type [:osx_app, :source, :win32_folder, :win32_folder_from_wrapper, :win32_installer, :win32_standalone]
+    # @param type [:osx_app, :source, :windows_folder, :windows_folder_from_wrapper, :windows_installer, :windows_standalone]
     # @return [Project] self
     def add_build(type, &block)
       raise ArgumentError, "Unsupported output type #{type}" unless Builders.has_type? type
@@ -186,7 +186,7 @@ module Relapse
     def generate_archive_tasks
       return if active_builders.empty?
 
-      win32_tasks = []
+      windows_tasks = []
       osx_tasks = []
       top_level_tasks = []
       active_builders.each do |builder|
@@ -201,9 +201,9 @@ module Relapse
         task "package:#{output_task}" => archivers.map {|c| "package:#{output_task}:#{c.type}" }
 
         case output_task
-          when /^win32:/
-            win32_tasks << "package:#{output_task}"
-            top_level_tasks << "package:win32" unless top_level_tasks.include? "package:win32"
+          when /^windows:/
+            windows_tasks << "package:#{output_task}"
+            top_level_tasks << "package:windows" unless top_level_tasks.include? "package:windows"
           when /^osx:/
             osx_tasks << "package:#{output_task}"
             top_level_tasks << "package:osx" unless top_level_tasks.include? "package:osx"
@@ -212,13 +212,13 @@ module Relapse
         end
       end
 
-      unless win32_tasks.empty?
-        desc "Package all win32"
-        task "package:win32" => win32_tasks
+      unless windows_tasks.empty?
+        desc "Package all Windows"
+        task "package:windows" => windows_tasks
       end
 
       unless osx_tasks.empty?
-        desc "Package all osx"
+        desc "Package all OS X"
         task "package:osx" => osx_tasks
       end
 

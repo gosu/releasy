@@ -11,8 +11,8 @@ Gem::Specification.new do |s|
   s.homepage    = "http://spooner.github.com/libraries/relapse/"
   s.summary     = %q{Relapse helps to make Ruby application releases simpler}
   s.description = <<END
-#{s.summary}, by creating and archiving source folders, win32 folders,
-win32 standalone executables, win32 installers and osx app bundles
+#{s.summary}, by creating and archiving source folders, Windows folders,
+standalone executables, installers and OS X app bundles.
 END
 
   s.licenses = ["MIT", "GNU LGPL"] # Since I include a file from 7z.

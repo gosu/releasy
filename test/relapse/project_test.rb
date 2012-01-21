@@ -61,7 +61,7 @@ context Relapse::Project do
           url "org.url.app"
           gemspecs Bundler.setup.gems
         end
-        add_build :win32_standalone do
+        add_build :windows_standalone do
           ocra_parameters "--no-enc"
         end
 
@@ -86,13 +86,13 @@ context Relapse::Project do
     asserts("source active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).find {|b| b.type == :source }) }.size 2
     asserts("osx app active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).find {|b| b.type == :osx_app }) }.size 3
     if Gem.win_platform?
-      asserts("win32 standalone active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).find {|b| b.type == :win32_standalone }) }.size 2
+      asserts("Windows standalone active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).find {|b| b.type == :windows_standalone }) }.size 2
     end
 
     asserts "add_build yields an instance_eval-ed Relapse::DSLWrapper" do
       correct = false
-      topic.add_build :win32_folder_from_wrapper do
-        correct = (is_a?(Relapse::DSLWrapper) and owner.is_a?(Relapse::Builders::Win32FolderFromWrapper))
+      topic.add_build :windows_folder_from_wrapper do
+        correct = (is_a?(Relapse::DSLWrapper) and owner.is_a?(Relapse::Builders::WindowsFolderFromWrapper))
       end
       correct
     end

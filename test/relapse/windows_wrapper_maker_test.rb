@@ -1,12 +1,12 @@
 require File.expand_path("../teststrap", File.dirname(__FILE__))
 
 if Gem.win_platform?
-  require File.expand_path("../../lib/relapse/win32_wrapper_maker", File.dirname(__FILE__))
+  require File.expand_path("../../lib/relapse/windows_wrapper_maker", File.dirname(__FILE__))
 
-  folder = win32_folder_wrapper
+  folder = windows_folder_wrapper
 
-  context Relapse::Win32WrapperMaker do
-    setup { Relapse::Win32WrapperMaker.new }
+  context Relapse::WindowsWrapperMaker do
+    setup { Relapse::WindowsWrapperMaker.new }
 
     context '#build_executable' do
       hookup do
