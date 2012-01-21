@@ -62,18 +62,25 @@ module Relapse
     # Can be used with or without a block to generate building and packaging tasks.
     #
     # @example
-    #     # Using a block, the tasks are automatically generated when the block is closed.
-    #     Project.new do |p|
-    #       p.name = "My Application"
-    #       p.add_output :source
+    #     # Using a block, the API is more terse and the tasks are automatically generated
+    #     # when the block is closed.
+    #     Relapse::Project.new do
+    #       name "My Application"
+    #       version MyApplication::VERSION
+    #       add_output :source do
+    #         add_archive_format :zip
+    #       end
     #     end
     #
     # @example
-    #     # Without using a block.
-    #     project = Project.new
+    #     # Without using blocks.
+    #     project = Relapse::Project.new
     #     project.name = "My Application"
-    #     project.add_output :source
+    #     project.version = MyApplication::VERSION
+    #     output = project.add_output :source
+    #     output.add_archive_format :zip
     #     project.generate_tasks
+    #
     def initialize(&block)
       super()
 
