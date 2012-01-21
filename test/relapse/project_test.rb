@@ -33,16 +33,16 @@ context Relapse::Project do
     asserts("attempting to generate tasks without any outputs") { topic.generate_tasks }.raises Relapse::ConfigError, /must specify at least one valid output/i
 
     asserts(:active_builders).empty
-    asserts(:add_output, :source).kind_of Relapse::Builders::Source
+    asserts(:add_build, :source).kind_of Relapse::Builders::Source
     asserts(:active_builders).size 1
-    asserts(:add_output, :source).raises(Relapse::ConfigError, /already have output :source/i)
-    asserts(:add_output, :unknown).raises(ArgumentError, /unsupported output/i)
+    asserts(:add_build, :source).raises(Relapse::ConfigError, /already have output :source/i)
+    asserts(:add_build, :unknown).raises(ArgumentError, /unsupported output/i)
 
     asserts("active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).first) }.empty
-    asserts(:add_archive_format, :zip).kind_of Relapse::Archivers::Zip
+    asserts(:add_archive, :zip).kind_of Relapse::Archivers::Zip
     asserts("active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).first) }.size 1
-    asserts(:add_archive_format, :zip).raises(Relapse::ConfigError, /already have archive format :zip/i)
-    asserts(:add_archive_format, :unknown).raises(ArgumentError, /unsupported archive/i)
+    asserts(:add_archive, :zip).raises(Relapse::ConfigError, /already have archive format :zip/i)
+    asserts(:add_archive, :unknown).raises(ArgumentError, /unsupported archive/i)
   end
 
   context "defined" do
@@ -51,17 +51,17 @@ context Relapse::Project do
         name "Test Project - (2a)"
         version "v0.1.5"
 
-        add_archive_format :"7z"
-        add_archive_format :zip
+        add_archive :"7z"
+        add_archive :zip
 
-        add_output :source
-        add_output :osx_app do
-          add_archive_format :tar_gz
+        add_build :source
+        add_build :osx_app do
+          add_archive :tar_gz
           wrapper osx_app_wrapper
           url "org.url.app"
           gemspecs Bundler.setup.gems
         end
-        add_output :win32_standalone do
+        add_build :win32_standalone do
           ocra_parameters "--no-enc"
         end
 
@@ -89,17 +89,17 @@ context Relapse::Project do
       asserts("win32 standalone active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).find {|b| b.type == :win32_standalone }) }.size 2
     end
 
-    asserts "add_output yields an instance_eval-ed Relapse::Dsl" do
+    asserts "add_build yields an instance_eval-ed Relapse::Dsl" do
       correct = false
-      topic.add_output :win32_folder_from_wrapper do
+      topic.add_build :win32_folder_from_wrapper do
         correct = (is_a?(Relapse::Dsl) and owner.is_a?(Relapse::Builders::Win32FolderFromWrapper))
       end
       correct
     end
 
-    asserts "add_archive_format yields an instance_eval-ed Relapse::Dsl" do
+    asserts "add_archive yields an instance_eval-ed Relapse::Dsl" do
       correct = false
-      topic.add_archive_format :tar_gz do
+      topic.add_archive :tar_gz do
         correct = (is_a?(Relapse::Dsl) and owner.is_a?(Relapse::Archivers::TarGzip))
       end
       correct

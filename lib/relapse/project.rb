@@ -67,8 +67,8 @@ module Relapse
     #     Relapse::Project.new do
     #       name "My Application"
     #       version MyApplication::VERSION
-    #       add_output :source do
-    #         add_archive_format :zip
+    #       add_build :source do
+    #         add_archive :zip
     #       end
     #     end
     #
@@ -77,8 +77,8 @@ module Relapse
     #     project = Relapse::Project.new
     #     project.name = "My Application"
     #     project.version = MyApplication::VERSION
-    #     output = project.add_output :source
-    #     output.add_archive_format :zip
+    #     output = project.add_build :source
+    #     output.add_archive :zip
     #     project.generate_tasks
     #
     def initialize(&block)
@@ -106,7 +106,7 @@ module Relapse
     #
     # @param type [:osx_app, :source, :win32_folder, :win32_folder_from_wrapper, :win32_installer, :win32_standalone]
     # @return [Project] self
-    def add_output(type, &block)
+    def add_build(type, &block)
       raise ArgumentError, "Unsupported output type #{type}" unless Builders.has_type? type
       raise ConfigError, "Already have output #{type.inspect}" if @builders.any? {|b| b.type == type }
 
@@ -131,7 +131,7 @@ module Relapse
 
     # Generates all tasks required by the user. Automatically called at the end of the block, if {#initialize} is given a block.
     def generate_tasks
-      raise ConfigError, "Must specify at least one valid output for this OS with #add_output before tasks can be generated" if @builders.empty?
+      raise ConfigError, "Must specify at least one valid output for this OS with #add_build before tasks can be generated" if @builders.empty?
 
       # Even if there are builders specified, none may work on this platform.
       return if active_builders.empty?

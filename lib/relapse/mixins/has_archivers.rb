@@ -9,7 +9,7 @@ module Mixins
     #
     # @param type [:exe, :"7z", :tar_bz2, :tar_gz, :zip]
     # @return [Project] self
-    def add_archive_format(type, &block)
+    def add_archive(type, &block)
       raise ArgumentError, "Unsupported archive format #{type.inspect}" unless Archivers.has_type? type
       raise ConfigError, "Already have archive format #{type.inspect}" if @archivers.any? {|a| a.type == type }
 

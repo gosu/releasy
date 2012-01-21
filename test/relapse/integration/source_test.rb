@@ -11,15 +11,15 @@ context "Source in all formats" do
       files source_files
       verbose false
 
-      add_output :source do
-        add_archive_format :dmg
-        add_archive_format :exe
-        add_archive_format :zip
-        add_archive_format :"7z"
+      add_build :source do
+        add_archive :dmg
+        add_archive :exe
+        add_archive :zip
+        add_archive :"7z"
       end
 
-      add_archive_format :tar_gz
-      add_archive_format :tar_bz2
+      add_archive :tar_gz
+      add_archive :tar_bz2
     end
   end
 

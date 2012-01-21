@@ -58,8 +58,8 @@ Example
       add_link "http://spooner.github.com/games/alpha_channel", "Alpha Channel website"
 
       # Create a variety of releases, for all platforms.
-      add_output :osx_app do
-        add_archive_format :tar_gz
+      add_build :osx_app do
+        add_archive :tar_gz
         url "com.github.spooner.games.alpha_channel"
         wrapper "../osx_app/RubyGosu App.app"
         icon "media/icon.icns"
@@ -69,20 +69,20 @@ Example
         # Alternative if you don't use Bundler :-
         # gemspecs Gem.loaded_specs.values
       end
-      add_output :source
-      add_output :win32_folder do
+      add_build :source
+      add_build :win32_folder do
         icon "media/icon.ico"
-        add_archive_format :exe
+        add_archive :exe
         ocra_parameters "--no-enc"
       end
-      add_output :win32_installer do
+      add_build :win32_installer do
         icon "media/icon.ico"
         ocra_parameters "--no-enc"
         start_menu_group "Spooner Games"
         readme "README.html" # User asked if they want to view it after install.
       end
 
-      add_archive_format :zip # All outputs given this archive format.
+      add_archive :zip # All outputs given this archive format.
     end
 
 ### Tasks created
