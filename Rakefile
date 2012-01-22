@@ -1,6 +1,9 @@
 require 'rubygems'
 require 'bundler'
 Bundler.setup(:development)
+require 'rake'
+# Hack to ensure rake testtask/clean will load on Ruby 1.8.x
+Gem.loaded_specs['rake'].add_self_to_load_path if RUBY_VERSION =~ /^1\.8\.\d+/
 require 'rake/testtask'
 require 'rake/clean'
 require 'yard'

@@ -15,6 +15,7 @@ Relapse allows cross-platform releases, relying on pre-made OS X or Windows wrap
 * Wrappers used to build cross-platform releases:
   - Win32 wrapper not yet published, but can be made on a Windows system with `relapse windows-wrapper` command.
   - [OS X wrapper downloads from libgosu.org](http://www.libgosu.org/downloads/), including Gosu, Chipmunk and Texplay binary gems. Latest version is [gosu-mac-wrapper-0.7.41](http://www.libgosu.org/downloads/gosu-mac-wrapper-0.7.41.tar.gz).
+* Tested on Ruby 1.9.3 and 1.8.7 on Windows and Lubuntu. Should work fine on OS X (partially tested via other users).
 
 Output types supported
 ----------------------

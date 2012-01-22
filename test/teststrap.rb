@@ -8,7 +8,7 @@ $LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
 require 'relapse'
 
 def source_files
-  %w[bin/test_app lib/test_app.rb lib/test_app/stuff.rb README.txt LICENSE.txt]
+  %w[bin/test_app lib/test_app.rb lib/test_app/stuff.rb README.txt LICENSE.txt Gemfile.lock Gemfile]
 end
 
 def project_path
@@ -31,7 +31,7 @@ end
 def osx_platform?; !!(RUBY_PLATFORM =~ /darwin/); end
 
 def osx_app_wrapper; "../../osx_app/RubyGosu App.app"; end
-def windows_folder_wrapper; "windows_wrapper/ruby_#{RUBY_DESCRIPTION[/[\d\.]+p\d+/].tr(".", "_")}_win32_wrapper"; end
+def windows_folder_wrapper; "windows_wrapper/ruby_#{RUBY_VERSION.tr(".", "_")}p#{RUBY_PATCHLEVEL}_win32_wrapper"; end
 
 def same_contents?(file1, file2)
   File.readlines(file1).map(&:strip) == File.readlines(file2).map(&:strip)

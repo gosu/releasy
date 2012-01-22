@@ -17,7 +17,9 @@ context Relapse::DSLWrapper do
 
   setup { Relapse::DSLWrapper.new owner }
 
-  asserts(:public_methods, false).same_elements [:frog, :fish, :add_cheese, :owner, :add_peas, :knees]
+  expected_methods = [:frog, :fish, :add_cheese, :owner, :add_peas, :knees]
+  expected_methods.map!(&:to_s) if RUBY_VERSION =~ /1\.8\./
+  asserts(:public_methods, false).same_elements expected_methods
   asserts(:owner).equals { owner }
 
   asserts("a method that doesn't exist on the owner") { topic.wibble }.raises NoMethodError, /<Owner:0x\w+> does not have either public method, #wibble or #wibble=/

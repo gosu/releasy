@@ -32,6 +32,8 @@ context "Source in all formats" do
     Dir.chdir project_path
   end
 
+  helper(:contents_description) { /#{source_files.size} files, 4 folders/m }
+
   active_builders_valid
 
   context "tasks" do
@@ -80,27 +82,27 @@ context "Source in all formats" do
     hookup { Rake::Task["package:source:tar_gz"].invoke }
 
     asserts("archive created") { File.size("#{folder}.tar.gz") > 0}
-    asserts("archive contains expected files") { `7z x -so -bd -tgzip #{folder}.tar.gz | 7z l -si -bd -ttar` =~ /5 files, 4 folders/m }
+    asserts("archive contains expected files") { `7z x -so -bd -tgzip #{folder}.tar.gz | 7z l -si -bd -ttar` =~ contents_description }
   end
 
   context "tar.bz2" do
     hookup { Rake::Task["package:source:tar_bz2"].invoke }
 
     asserts("archive created") { File.size("#{folder}.tar.bz2") > 0}
-    asserts("archive contains expected files") { `7z x -so -bd -tbzip2 #{folder}.tar.bz2 | 7z l -si -bd -ttar` =~ /5 files, 4 folders/m }
+    asserts("archive contains expected files") { `7z x -so -bd -tbzip2 #{folder}.tar.bz2 | 7z l -si -bd -ttar` =~ contents_description }
   end
 
   context "zip" do
     hookup { Rake::Task["package:source:zip"].invoke }
 
     asserts("archive created") { File.size("#{folder}.zip") > 0}
-    asserts("archive contains expected files") { `7z l -bd -tzip #{folder}.zip` =~ /5 files, 4 folders/m }
+    asserts("archive contains expected files") { `7z l -bd -tzip #{folder}.zip` =~ contents_description }
   end
 
   context "7z" do
     hookup { Rake::Task["package:source:7z"].invoke }
 
     asserts("archive created") { File.size("#{folder}.7z") > 0}
-    asserts("archive contains expected files") { `7z l -bd -t7z #{folder}.7z` =~ /5 files, 4 folders/m }
+    asserts("archive contains expected files") { `7z l -bd -t7z #{folder}.7z` =~ contents_description }
   end
 end

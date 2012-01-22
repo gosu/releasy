@@ -27,7 +27,7 @@ end
 
 def gemspecs_to_use
   # Don't add Relapse since it is may be being run locally and thus not work at all.
-  Gem.loaded_specs.values.find_all {|s| %w[bundler cri ocra].include? s.name }
+  Gem.loaded_specs.values.find_all {|s| %w[bundler cri ocra thor].include? s.name }
 end
 
 def link_file

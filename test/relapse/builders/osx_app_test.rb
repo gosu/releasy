@@ -55,7 +55,7 @@ context Relapse::Builders::OsxApp do
     asserts(:app_name).equals "Test App.app"
     asserts(:url).equals "org.frog.fish"
     asserts(:wrapper).equals osx_app_wrapper
-    asserts(:gemspecs).same_elements gemspecs_to_use
+    asserts("gemspecs correct") { topic.gemspecs == gemspecs_to_use }
 
     context "tasks" do
       tasks = [

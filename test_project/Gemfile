@@ -6,3 +6,4 @@ source :rubygems
 # Just include some gems that we know must be installed on the system that has Relapse.
 gem "cri"
 gem "ocra"
+gem "thor"

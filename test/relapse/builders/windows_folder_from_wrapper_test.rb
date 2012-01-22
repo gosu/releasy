@@ -46,7 +46,7 @@ context Relapse::Builders::WindowsFolderFromWrapper do
 
     asserts(:folder_suffix).equals "WIN32_FROM_WRAPPER"
     asserts(:wrapper).equals wrapper
-    asserts(:gemspecs).equals gemspecs_to_use
+    asserts("gemspecs correct") { topic.gemspecs == gemspecs_to_use }
 
     context "tasks" do
       tasks = [

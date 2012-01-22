@@ -31,14 +31,16 @@ context Relapse::Mixins::Register do
     end
 
     hookup do
-      class Frogs::BlueFrog
-        TYPE = :blue # Type must be defined before registering.
-        Frogs.register self
-      end
+      unless defined? Frogs::BlueFrog
+        class Frogs::BlueFrog
+          TYPE = :blue # Type must be defined before registering.
+          Frogs.register self
+        end
 
-      class Frogs::RedFrog
-        TYPE = :red # Type must be defined before registering.
-        Frogs.register self
+        class Frogs::RedFrog
+          TYPE = :red # Type must be defined before registering.
+          Frogs.register self
+        end
       end
     end
 

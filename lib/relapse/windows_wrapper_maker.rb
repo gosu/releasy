@@ -61,11 +61,11 @@ module Relapse
     # @option options :icon [String] Path to Windows icon file (.ico) that the executable should use (nil).
     def build_executable(executable_file, ruby_file, options = {})
       options = {
-          rubyopt: '',
-          rubylib: '',
-          gem_path: 'gemhome',
-          windows: false,
-          icon: nil,
+          :rubyopt => '',
+          :rubylib => '',
+          :gem_path => 'gemhome',
+          :windows => false,
+          :icon => nil,
       }.merge! options
 
       load_ocra unless defined? Ocra::OcraBuilder
