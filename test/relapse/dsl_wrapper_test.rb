@@ -17,10 +17,10 @@ context Relapse::DSLWrapper do
 
   setup { Relapse::DSLWrapper.new owner }
 
-  asserts(:public_methods, false).same_elements [:frog, :fish, :add_cheese, :owner, :add_peas, :knees, :method_missing]
+  asserts(:public_methods, false).same_elements [:frog, :fish, :add_cheese, :owner, :add_peas, :knees]
   asserts(:owner).equals { owner }
 
-  asserts("a method that doesn't exist on the owner") { topic.wibble }.raises NoMethodError, / does not have a public method, #wibble/
+  asserts("a method that doesn't exist on the owner") { topic.wibble }.raises NoMethodError, /<Owner:0x\w+> does not have either public method, #wibble or #wibble=/
 
   should "redirect to a setter, that has no corresponding getter, even if no arguments are passed" do
     topic.knees
@@ -63,4 +63,15 @@ context Relapse::DSLWrapper do
     end
     yielded == :knees
   end
+
+  should "instance_eval when given a block on the constructor (.new)" do
+    mock(owner).frog(5)
+    Relapse::DSLWrapper.new owner do
+      frog 5
+    end
+    true
+  end
+
+  asserts(".wrap is an alias for .new without a block") { Relapse::DSLWrapper.wrap(owner).is_a? Relapse::DSLWrapper }
+  asserts(".wrap is an alias for .new given a block") { (Relapse::DSLWrapper.wrap(owner) {}).is_a? Relapse::DSLWrapper }
 end

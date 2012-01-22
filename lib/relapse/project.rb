@@ -95,7 +95,7 @@ module Relapse
       @version = @executable = nil
 
       if block_given?
-        DSLWrapper.new(self).instance_eval &block
+        DSLWrapper.new(self, &block)
         generate_tasks
       end
     end
@@ -113,7 +113,7 @@ module Relapse
       builder = Builders[type].new(self)
       @builders << builder
 
-      DSLWrapper.new(builder).instance_eval(&block) if block_given?
+      DSLWrapper.new(builder, &block) if block_given?
 
       builder
     end
