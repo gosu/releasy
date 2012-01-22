@@ -7,10 +7,11 @@ module Relapse
     class WindowsFolderFromWrapper < WindowsBuilder
       include Mixins::HasGemspecs
 
-      Builders.register self
-
+      TYPE = :windows_folder_from_wrapper
       DEFAULT_FOLDER_SUFFIX = "WIN32"
       INCLUDED_BINARY_GEMS = { 'ray' => '0.2.0' }
+
+      Builders.register self
 
       # @return [String] Name of Windows wrapper directory used as the framework for release.
       attr_accessor :wrapper

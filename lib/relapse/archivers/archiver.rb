@@ -10,18 +10,10 @@ module Archivers
     attr_reader :project
     attr_accessor :extension
 
-    def self.type
-      id = name[/[a-z0-9]+$/i]
-      id.gsub! /([A-Z]+)([A-Z][a-z])/, '\1_\2'
-      id.gsub! /([a-z\d])([A-Z])/, '\1_\2'
-      id.downcase!
-      id.to_sym
-    end
-    def type; self.class.type; end
-
+    def type; self.class::TYPE; end
     def initialize(project)
       @project = project
-      @extension = ".#{type.to_s.tr("_", ".")}"
+      @extension = self.class::DEFAULT_EXTENSION
     end
 
     def generate_tasks(output_task, folder)

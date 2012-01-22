@@ -4,6 +4,7 @@ module Relapse
   module Builders
     # Creates a folder containing the application source.
     class Source < Builder
+      TYPE = :source
       Builders.register self
 
       DEFAULT_FOLDER_SUFFIX = "SOURCE"

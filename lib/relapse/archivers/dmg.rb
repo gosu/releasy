@@ -4,6 +4,9 @@ module Relapse
   module Archivers
     # OS X .dmg format (self-extractor).
     class Dmg < Archiver
+      TYPE = :dmg
+      DEFAULT_EXTENSION = ".dmg"
+
       Archivers.register self
 
       protected

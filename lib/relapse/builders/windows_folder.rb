@@ -5,9 +5,10 @@ module Relapse
   module Builders
     # Builds a folder containing Ruby + your source + a small Windows executable to run your executable script.
     class WindowsFolder < WindowsBuilder
-      Builders.register self
-
+      TYPE = :windows_folder
       DEFAULT_FOLDER_SUFFIX = "WIN32"
+
+      Builders.register self
 
       # FOLDER containing EXE, Ruby + source.
       def generate_tasks

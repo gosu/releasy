@@ -7,7 +7,7 @@ module Relapse
     class OsxApp < Builder
       include Mixins::HasGemspecs
 
-      Builders.register self
+      TYPE = :osx_app
 
       DEFAULT_FOLDER_SUFFIX = "OSX"
 
@@ -17,6 +17,8 @@ module Relapse
       ICON_EXTENSION = ".icns"
       # Source gems included in app that we should remove.
       SOURCE_GEMS_TO_REMOVE = %w[chingu]
+
+      Builders.register self
 
       # @return [String] Name of .app directory used as the framework for osx app release.
       attr_accessor :wrapper

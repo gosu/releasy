@@ -10,12 +10,12 @@ module Relapse
     #   end
     #
     #   class Frogs::BlueFrog
-    #     def self.type; :blue; end # Type must be defined before registering.
+    #     TYPE = :blue # Type must be defined before registering.
     #     Frogs.register self
     #   end
     #
     #   class Frogs::RedFrog
-    #     def self.type; :red; end # Type must be defined before registering.
+    #     TYPE = :red # Type must be defined before registering.
     #     Frogs.register self
     #   end
     #
@@ -34,8 +34,10 @@ module Relapse
       # Register a class with this register of classes of that type.
       # @param klass [Object] Object, which is defined within the namespace being registered with.
       def register(klass)
-        raise ArgumentError, "Can't register a class not within this module" unless klass.name =~ /^(.*)::[^:]+/ and $1 == name
-        registered[klass.type] = klass
+        raise TypeError, "Can only register classes" unless klass.is_a? Class
+        raise ArgumentError, "Can't register a class not within this module" unless klass.name.split('::')[0...-1].join('::') == name
+        raise ArgumentError, "To register, a class must have TYPE defined" unless klass.const_defined? :TYPE
+        registered[klass::TYPE] = klass
       end
 
       protected

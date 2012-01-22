@@ -53,7 +53,7 @@ require File.expand_path("../teststrap", File.dirname(__FILE__))
     context "class" do
       setup { topic.class }
 
-      asserts(:type).equals type
+      asserts("#{archiver}::TYPE") { topic::TYPE }.equals type
 
       if type == :exe
         asserts("#{archiver}::SFX_NAME") { topic::SFX_NAME }.equals "7z.sfx"

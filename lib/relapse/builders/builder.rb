@@ -13,15 +13,7 @@ module Builders
     # Suffix on the folder generated, after name and version.
     attr_accessor :folder_suffix
 
-    def self.type
-      id = name[/[a-z0-9]+$/i]
-      id.gsub! /([A-Z]+)([A-Z][a-z])/, '\1_\2'
-      id.gsub! /([a-z\d])([A-Z])/, '\1_\2'
-      id.downcase!
-      id.to_sym
-    end
-
-    def type; self.class.type; end
+    def type; self.class::TYPE; end
     def folder; "#{project.folder_base}#{folder_suffix.empty? ? '' : '_'}#{folder_suffix}"; end
     def valid_for_platform?; true; end
 

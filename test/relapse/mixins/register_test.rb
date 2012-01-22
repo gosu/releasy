@@ -12,14 +12,16 @@ context Relapse::Mixins::Register do
   asserts(:types).same_elements []
   asserts(:values).same_elements []
 
-  helper :cat do
-    class Cat
-      def self.type; :wibbly; end
-      Test.register self
+  hookup do
+    unless defined? NotInModule
+      class NotInModule; TYPE = :wibbly; end
+      class Test::Untyped; end
     end
   end
 
-  asserts("Trying to register a class not within the module") { cat }.raises ArgumentError, /Can't register a class not within this module/
+  asserts("trying to register a non-class") { Test.register 12 }.raises TypeError, /Can only register classes/
+  asserts("trying to register a class not within the module") { Test.register NotInModule }.raises ArgumentError, /Can't register a class not within this module/
+  asserts("trying to register a class without TYPE, even if in the module") { Test.register Test::Untyped }.raises ArgumentError, /To register, a class must have TYPE defined/
 
   context "with registered classes (blue and red frogs)" do
     setup do
@@ -30,12 +32,12 @@ context Relapse::Mixins::Register do
 
     hookup do
       class Frogs::BlueFrog
-        def self.type; :blue; end # Type must be defined before registering.
+        TYPE = :blue # Type must be defined before registering.
         Frogs.register self
       end
 
       class Frogs::RedFrog
-        def self.type; :red; end # Type must be defined before registering.
+        TYPE = :red # Type must be defined before registering.
         Frogs.register self
       end
     end

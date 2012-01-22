@@ -3,11 +3,14 @@ require "relapse/archivers/archiver"
 module Relapse
   module Archivers
     class Exe < Archiver
-      Archivers.register self
+      TYPE = :exe
+      DEFAULT_EXTENSION = ".exe"
 
       SFX_NAME = "7z.sfx"
       SFX_FILE = File.expand_path("../../../../bin/#{SFX_NAME}", __FILE__)
       SFX_FOLDER = "/usr/lib/p7zip"
+
+      Archivers.register self
 
       protected
       def self_extractor

@@ -4,9 +4,10 @@ module Relapse
   module Builders
     # Creates a completely standalone (self-extracting when run) Windows executable.
     class WindowsStandalone < WindowsBuilder
-      Builders.register self
-
+      TYPE = :windows_standalone
       DEFAULT_FOLDER_SUFFIX = "WIN32_EXE"
+
+      Builders.register self
 
       # Self-extracting standalone executable.
       def generate_tasks

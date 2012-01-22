@@ -4,10 +4,11 @@ module Relapse
   module Builders
     # Builds a win32 installer for the application.
     class WindowsInstaller < WindowsBuilder
-      Builders.register self
-
+      TYPE = :windows_installer
       INSTALLER_SCRIPT = "windows_installer.iss"
       DEFAULT_FOLDER_SUFFIX = "WIN32_INSTALLER"
+
+      Builders.register self
 
       # @return [String] Optional start-menu grouping of the application when installed (if name == "app" and installer_group == "frog", then it will get put into 'frog/app' in the start menu).
       attr_accessor :start_menu_group

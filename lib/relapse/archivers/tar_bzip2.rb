@@ -3,8 +3,9 @@ require "relapse/archivers/tar_archiver"
 module Relapse
   module Archivers
     class TarBzip2 < TarArchiver
+      TYPE = :tar_bz2
+      DEFAULT_EXTENSION = ".tar.bz2"
       FORMAT = "bzip2"
-      def self.type; :tar_bz2; end
       Archivers.register self
     end
   end
