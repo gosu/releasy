@@ -69,8 +69,9 @@ module Relapse
         load ocra_file
       else
         script = File.read(ocra_file)
+        # On non-windows, UTF8 is the standard way to load files, which is not what we want at all since it will complain about "\xFF".
         script.force_encoding Encoding::ASCII_8BIT if script.respond_to? :force_encoding
-        script.gsub("File::ALT_SEPARATOR", "'\\\\\\\\'")
+        script.gsub!("File::ALT_SEPARATOR", "'\\\\\\\\'")
         Object.class_eval script, ocra_file
       end
 
