@@ -8,10 +8,10 @@ tmp
 tags
 ctags
 .bundle
-*.lock
 .idea/
 doc/
 test_output
 test_project/test_app.exe
 Gemfile.lock
-wrappers/
+wrappers/*.tar.gz
+wrappers/*.7z
