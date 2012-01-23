@@ -56,7 +56,7 @@ context Relapse::Project do
         add_build :source
         add_build :osx_app do
           add_archive :tar_gz
-          wrapper osx_app_wrapper
+          wrapper Dir["../wrappers/gosu-mac-wrapper-*.tar.gz"].first
           url "org.url.app"
           gemspecs Bundler.setup.gems
         end
