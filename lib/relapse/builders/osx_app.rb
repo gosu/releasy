@@ -36,7 +36,7 @@ module Relapse
       def generate_tasks
         raise ConfigError, "#url not set" unless url
         raise ConfigError, "#wrapper not set" unless wrapper
-        raise ConfigError, "#wrapper not valid .app folder" unless File.extname(wrapper) == ".app" and File.directory? wrapper
+        raise ConfigError, "#wrapper not valid wrapper: #{wrapper}" unless File.basename(wrapper) =~ /gosu-mac-wrapper-[\d\.]+.tar.gz/
 
         new_app = File.join folder, app_name
 
@@ -49,7 +49,8 @@ module Relapse
           Rake::FileUtilsExt.verbose project.verbose?
 
           # Copy the app files.
-          cp_r wrapper, new_app
+          exec %[7z x -so -bd "#{wrapper}" | 7z x -si -mmt -bd -ttar -o"#{folder}"]
+          mv File.join(folder, "RubyGosu App.app"), new_app
 
           ## Copy my source files.
           copy_files_relative project.files, File.join(new_app, 'Contents/Resources/application')

@@ -14,4 +14,4 @@ doc/
 test_output
 test_project/test_app.exe
 Gemfile.lock
-rubies/
+wrappers/

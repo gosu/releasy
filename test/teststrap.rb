@@ -30,7 +30,6 @@ end
 
 def osx_platform?; !!(RUBY_PLATFORM =~ /darwin/); end
 
-def osx_app_wrapper; "../../osx_app/RubyGosu App.app"; end
 def windows_folder_wrapper; "windows_wrapper/ruby_#{RUBY_VERSION.tr(".", "_")}p#{RUBY_PATCHLEVEL}_win32_wrapper"; end
 
 def same_contents?(file1, file2)

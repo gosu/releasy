@@ -1,6 +1,6 @@
 require File.expand_path("helpers/helper", File.dirname(__FILE__))
 
-Dir[File.expand_path("rubies/ruby-*.7z", $original_path)].each do |path_to_ruby_dist|
+Dir[File.expand_path("wrappers/ruby-*.7z", $original_path)].each do |path_to_ruby_dist|
   ruby_version = path_to_ruby_dist[/\d\.\d\.\d-p\d+/]
   suffix = "WIN32_FROM_RUBY_DIST_#{ruby_version.tr(".", "_")}"
   folder = File.join(output_path, "test_app_0_1_#{suffix}")

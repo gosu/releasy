@@ -66,7 +66,7 @@ Example
       add_build :osx_app do
         add_archive :tar_gz
         url "com.github.spooner.games.alpha_channel"
-        wrapper "../osx_app/RubyGosu App.app"
+        wrapper "../osx_app/gosu-mac-wrapper-0.7.41.tar.gz"
         icon "media/icon.icns"
       end
 
