@@ -57,7 +57,7 @@ require File.expand_path("../teststrap", File.dirname(__FILE__))
 
       if type == :exe
         asserts("#{archiver}::SFX_NAME") { topic::SFX_NAME }.equals "7z.sfx"
-        asserts("#{archiver}::SFX_FOLDER") { topic::SFX_FOLDER }.equals "/usr/lib/p7zip"
+        asserts("#{archiver}::SFX_FILE") { topic::SFX_FILE }.equals File.expand_path("bin/7z.sfx", $original_path)
         asserts("sfx file included") { File.exists? topic::SFX_FILE }
       end
     end

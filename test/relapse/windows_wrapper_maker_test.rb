@@ -18,7 +18,7 @@ if Gem.win_platform?
         builder = Object.new
         mock(builder).setenv("RUBYOPT", options[:rubyopt] || '')
         mock(builder).setenv("RUBYLIB", options[:rubylib] || '')
-        mock(builder).setenv("GEM_PATH", "\xFF\\#{options[:gem_path] || "gemhome"}")
+        mock(builder).setenv("GEM_PATH", "\xFF\\#{options[:gem_path] || "vendor"}")
         mock(builder).postcreateprocess(Ocra::Pathname("\xFF\\bin\\#{ruby_exe}"), "#{ruby_exe} \"\xFF\\#{script}\"")
 
         mock(Ocra::OcraBuilder).new(exe, windows).yields(builder)

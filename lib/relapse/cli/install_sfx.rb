@@ -52,8 +52,7 @@ Relapse::Cli.define_command do
 
         if ENV["USER"] != "root"
           command = %[sudo cp "#{sfx_path}" "#{assets_location}"]
-          puts "Copy failed, trying again as super-user"
-          puts command
+          puts "Copy failed, trying again as super-user:\n#{command}"
           exec command
           if File.exists? destination_file
             puts "#{sfx_file} copied to #{assets_location}"

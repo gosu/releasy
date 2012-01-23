@@ -77,9 +77,11 @@ context "relapse install-sfx" do
     should "copy sfx file" do
       stubs "/usr/bin/7z"
       stub(File).exists?("/usr/lib/p7zip/7z.sfx").returns false
-      stub(FileUtils).cp(File.expand_path("bin/7z.sfx"), "/usr/lib/p7zip") { raise Errno::ENOENT }
+      stub(FileUtils).cp(File.expand_path("bin/7z.sfx"), "/usr/lib/p7zip", :verbose => true) { raise Errno::ENOENT }
       any_instance_of(Cri::CommandDSL) do |o|
-        mock(o).exec(%[sudo cp "#{File.expand_path('bin/7z.sfx')}" "/usr/lib/p7zip"])
+        mock(o).exec(%[sudo cp "#{File.expand_path('bin/7z.sfx')}" "/usr/lib/p7zip"]) do
+          stub(File).exists?("/usr/lib/p7zip/7z.sfx").returns true
+        end
       end
 
       ["install-sfx"]
