@@ -37,7 +37,7 @@ module Relapse
         sb.setenv('RUBYLIB', options[:rubylib])
         sb.setenv('GEM_PATH', (root / options[:gem_path]).to_native)
 
-        ruby_executable = options[:windows] ? Ocra::Host.rubyw_exe : Ocra::Host.ruby_exe
+        ruby_executable = options[:windows] ? "rubyw.exe" : "ruby.exe"
         exe = root / 'bin' / ruby_executable
         script = (root / ruby_file).to_native
 
