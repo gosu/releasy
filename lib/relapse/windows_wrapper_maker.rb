@@ -68,7 +68,10 @@ module Relapse
       if Gem.win_platform?
         load ocra_file
       else
-        binding.eval File.read(ocra_file).gsub("File::ALT_SEPARATOR", "'\\\\\\\\'"), ocra_file
+        script = File.read(ocra_file)
+        script.force_encoding Encoding::ASCII_8BIT if script.respond_to? :force_encoding
+        script.gsub("File::ALT_SEPARATOR", "'\\\\\\\\'")
+        Object.class_eval script, ocra_file
       end
 
       # Need to disable this method so we get the right output.
