@@ -1,6 +1,6 @@
 require File.expand_path("helpers/helper", File.dirname(__FILE__))
 
-folder = "pkg/test_app_0_1_OSX"
+folder = File.join(output_path, "test_app_0_1_OSX")
 app_folder = File.join(folder, "Test App.app")
 
 context Relapse::Builders::OsxApp do
@@ -59,8 +59,9 @@ context Relapse::Builders::OsxApp do
 
     context "tasks" do
       tasks = [
-          [ :Task, "build:osx:app", %w[pkg/test_app_0_1_OSX] ],
-          [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
+          [ :Task, "build:osx:app", [folder] ],
+          [ :FileCreationTask, '..', [] ], # byproduct of using #directory
+          [ :FileCreationTask, output_path, [] ], # byproduct of using #directory
           [ :FileCreationTask, folder, source_files + [osx_app_wrapper]],
       ]
 

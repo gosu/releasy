@@ -1,6 +1,6 @@
 require File.expand_path("helpers/helper", File.dirname(__FILE__))
 
-folder = "pkg/test_app_0_1_WIN32_INSTALLER"
+folder = File.join(output_path, "test_app_0_1_WIN32_INSTALLER")
 
 context Relapse::Builders::WindowsInstaller do
   setup { Relapse::Builders::WindowsInstaller.new new_project }
@@ -28,15 +28,16 @@ context Relapse::Builders::WindowsInstaller do
         asserts(:valid_for_platform?)
         asserts(:start_menu_group).equals "Relapse Test Apps"
         asserts(:folder_suffix).equals "WIN32_INSTALLER"
-        asserts(:temp_installer_script).equals "pkg/windows_installer.iss"
+        asserts(:temp_installer_script).equals "#{output_path}/windows_installer.iss"
         asserts(:folder).equals folder
         asserts(:installer_name).equals "#{folder}/test_app_setup.exe"
         asserts(:icon=, "test_app.icns").raises Relapse::ConfigError, /icon must be a .ico file/
 
         context "tasks" do
           tasks = [
-              [ :Task, "build:windows:installer", %w[pkg/test_app_0_1_WIN32_INSTALLER] ],
-              [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
+              [ :Task, "build:windows:installer", [folder] ],
+              [ :FileCreationTask, '..', [] ], # byproduct of using #directory
+              [ :FileCreationTask, output_path, [] ], # byproduct of using #directory
               [ :FileCreationTask, folder, source_files ],
           ]
 

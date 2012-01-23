@@ -26,7 +26,6 @@ context Relapse::Project do
     asserts(:verbose?).equals true
     asserts(:links).equals Hash.new
     asserts(:to_s).equals "<Relapse::Project>"
-
     asserts(:output_path).equals "pkg"
     asserts(:folder_base).equals "pkg/" # Would be more, but dependent on name.
 
@@ -91,8 +90,8 @@ context Relapse::Project do
 
     asserts "add_build yields an instance_eval-ed Relapse::DSLWrapper" do
       correct = false
-      topic.add_build :windows_folder_from_wrapper do
-        correct = (is_a?(Relapse::DSLWrapper) and owner.is_a?(Relapse::Builders::WindowsFolderFromWrapper))
+      topic.add_build :windows_folder do
+        correct = (is_a?(Relapse::DSLWrapper) and owner.is_a?(Relapse::Builders::WindowsFolder))
       end
       correct
     end

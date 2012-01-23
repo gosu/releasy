@@ -8,8 +8,7 @@ require 'rake/testtask'
 require 'rake/clean'
 require 'yard'
 
-CLEAN << "test/test_project/pkg" # Created by running tests.
-CLOBBER << "win32_wrapper/*" # Created by generating the win32_wrapper.
+CLEAN << "test_output" # Created by running tests.
 
 Bundler::GemHelper.install_tasks
 

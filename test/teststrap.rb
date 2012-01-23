@@ -38,10 +38,15 @@ def same_contents?(file1, file2)
 end
 $original_path = Dir.pwd
 
-# Ensure that the pkg directory is clean before starting tests, but don't do it for every test.
-if File.directory? "test_project/pkg"
+def output_path; "../test_output"; end
+
+# Ensure that the output directory is clean before starting tests, but don't do it for every test.
+output_dir = "test_output"
+if File.directory? output_dir
   puts "Deleting existing test outputs"
-  rm_r FileList["test_project/pkg/*"], :verbose => false
+  rm_r FileList["#{output_dir}/*"], :verbose => false
+else
+  mkdir output_dir
 end
 
 

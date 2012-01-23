@@ -1,6 +1,6 @@
 require File.expand_path("helpers/helper", File.dirname(__FILE__))
 
-folder = "pkg/test_app_0_1_SOURCE"
+folder = File.join(output_path, "test_app_0_1_SOURCE")
 context Relapse::Builders::Source do
   setup { Relapse::Builders::Source.new new_project }
 
@@ -15,6 +15,7 @@ context Relapse::Builders::Source do
 
   context "valid" do
     hookup do
+
       topic.generate_tasks
     end
 
@@ -23,8 +24,9 @@ context Relapse::Builders::Source do
 
     context "tasks" do
       tasks = [
-          [ :Task, "build:source", %w[pkg/test_app_0_1_SOURCE] ],
-          [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
+          [ :Task, "build:source", [folder] ],
+          [ :FileCreationTask, '..', [] ], # byproduct of using #directory
+          [ :FileCreationTask, output_path, [] ], # byproduct of using #directory
           [ :FileCreationTask, folder, source_files ],
       ]
 

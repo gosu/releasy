@@ -1,6 +1,6 @@
 require File.expand_path("helpers/helper", File.dirname(__FILE__))
 
-folder = "pkg/test_app_0_1_WIN32_EXE"
+folder = File.join(output_path, "test_app_0_1_WIN32_EXE")
 
 context Relapse::Builders::WindowsStandalone do
   setup { Relapse::Builders::WindowsStandalone.new new_project }
@@ -30,8 +30,9 @@ context Relapse::Builders::WindowsStandalone do
 
         context "tasks" do
           tasks = [
-              [ :Task, "build:windows:standalone", %w[pkg/test_app_0_1_WIN32_EXE] ],
-              [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
+              [ :Task, "build:windows:standalone", [folder] ],
+              [ :FileCreationTask, '..', [] ], # byproduct of using #directory
+              [ :FileCreationTask, output_path, [] ], # byproduct of using #directory
               [ :FileCreationTask, folder, source_files ],
           ]
 

@@ -1,14 +1,15 @@
 require File.expand_path("../../teststrap", File.dirname(__FILE__))
 
-folder = 'pkg/test_app_0_1_SOURCE'
+folder = File.join(output_path, "test_app_0_1_SOURCE")
 
-
+_output_path = output_path # Needed to get to work in the DSLWrapper.
 context "Source in all formats" do
   setup do
     Relapse::Project.new do
       name "Test App"
       version "0.1"
       files source_files
+      output_path _output_path
       verbose false
 
       add_build :source do
@@ -50,7 +51,8 @@ context "Source in all formats" do
         [ :Task, "build", %w[build:source] ],
         [ :Task, "build:source", [folder] ],
 
-        [ :FileCreationTask, "pkg", [] ], # byproduct of using #directory
+        [ :FileCreationTask, '..', [] ],
+        [ :FileCreationTask, output_path, [] ], # byproduct of using #directory
         [ :FileCreationTask, folder, source_files ],
         [ :FileTask, "#{folder}.dmg", [folder] ],
         [ :FileTask, "#{folder}.7z", [folder] ],

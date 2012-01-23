@@ -11,7 +11,7 @@ ctags
 *.lock
 .idea/
 doc/
-test_project/pkg
+test_output
 test_project/test_app.exe
 Gemfile.lock
-windows_wrapper/
+rubies/

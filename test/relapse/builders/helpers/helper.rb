@@ -8,6 +8,7 @@ def new_project
   project.exposed_files = %w[README.txt LICENSE.txt]
   project.add_link "http://spooner.github.com/libraries/relapse/", "Relapse website"
   project.verbose = false
+  project.output_path = output_path
 
   project
 end

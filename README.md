@@ -25,7 +25,7 @@ The project can create one or more release folders:
 * `:source` - Plain source folder, which can be used by anyone with Ruby already installed.
 * `:osx_app` - OSX application bundle (.app) build, requiring a pre-made Ruby OS X wrapper [Note that this only contains binary gems for Gosu, TexPlay and Chipmunk, but will work with applications using any other source gems].
 * `:windows_folder` - A folder containing Ruby, application source files and an EXE to run them [creation on Windows only]
-* `:windows_folder_from_wrapper` - A folder containing Ruby, application source files and an EXE to run them, requiring a pre-made Ruby Windows wrapper [creation on Linux/OS X only]
+* `:windows_folder_from_ruby_dist` - A folder containing Ruby, application source files and an EXE to run them, requiring a copy of a RubyInstaller archive [creation on OSX/Linux]
 * `:windows_installer` - A regular Windows installer [creation on Windows only and requires InnoSetup to be installed]
 * `:windows_standalone` - Standalone EXE file that self-extracts to a temporary directory - slower startup than the other Windows options [creation on Windows only]
 
@@ -142,7 +142,7 @@ External Requirements (Optional)
 
     * [Download](http://www.7-zip.org/download.html)
 
-### To create `:windows_installer` output
+### To create `:windows_installer` output (Windows only)
 
 [InnoSetup](http://www.jrsoftware.org/isdl.php) must be installed.
 
