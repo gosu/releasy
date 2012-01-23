@@ -13,6 +13,7 @@ v0.2.0
   * Archive formats can have a different `#extension` set.
   * Output formats can have a different `#folder_suffix` set.
   * No longer require Innosetup to be installed in order to create `:windows_folder` output.
+  * Added command, 'relapse install-sfx' that installs the self-extractor package for 7z, to enable :exe archiving (non-Windows only).
   * Lots of other things fixes, refactors and additions, that I lost track of :$
 
 v0.1.0

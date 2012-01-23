@@ -120,7 +120,7 @@ CLI Commands
 
 Relapse also provides some supplementary commands:
 
-* `relapse Windows-wrapper [options]` - Build a Windows wrapper for use to build the `:windows_folder_from_wrapper` output on non-Windows platforms (runs on Windows only).
+* `relapse install-sfx [options]` - Installs a copy of the Windows self-extractor in the local 7z installation, to allow use of the :exe archive format (it comes with the Windows version of 7z, so only need to use this command on OS X/Linux).
 
 
 External Requirements (Optional)
