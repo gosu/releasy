@@ -151,8 +151,8 @@ Credits
 
 * Thanks to jlnr for creating "RubyGosu App.app", an OS X application bundle used to wrap application code.
 * Thanks to larsh for the [Ocra gem](http://ocra.rubyforge.org/), which is used for generating Win32 executables.
-* Thanks to jlnr for help testing the OS X package builder.
-* Thanks to shawn42 for help designing the API.
+* Thanks to jlnr and shawn42 for help testing on OS X; without you I would have been screwed!
+* Thanks to shawn42 and everyone at #gosu and #rubylang for suggestions on how to improve the API.
 
 Third Party Assets included
 ---------------------------
