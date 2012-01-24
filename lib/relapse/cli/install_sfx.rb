@@ -46,7 +46,7 @@ Relapse::Cli.define_command do
       exit 0
     else
       begin
-        FileUtils.cp sfx_path, assets_location, verbose: true
+        FileUtils.cp sfx_path, assets_location, :verbose => true
         puts "#{sfx_file} copied to #{assets_location}"
       rescue Errno::ENOENT, Errno::EACCES
 

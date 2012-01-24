@@ -96,7 +96,7 @@ context Relapse::Project do
     asserts(:name).equals "Test Project - (2a)"
     asserts(:underscored_name).equals "test_project_2a"
     asserts(:version).equals "v0.1.5"
-    asserts(:files).same_elements source_files
+    asserts("file") { topic.files.to_a }.same_elements source_files
     asserts(:underscored_version).equals "v0_1_5"
     asserts(:executable).equals "bin/test_project_2a"
     asserts(:folder_base).equals "pkg/test_project_2a_v0_1_5"
