@@ -58,8 +58,10 @@ Example
       version AlphaChannel::VERSION
 
       executable "bin/alpha_channel.rbw"
-      files `git ls-files`.split("\n") - ['.gitignore']
-      exposed_files ["README.html"]
+      files `git ls-files`.split("\n")
+      files.exclude '.gitignore'
+
+      exposed_files ["README.html", "LICENSE.txt"]
       add_link "http://spooner.github.com/games/alpha_channel", "Alpha Channel website"
 
       # Create a variety of releases, for all platforms.
@@ -82,7 +84,8 @@ Example
         icon "media/icon.ico"
         ocra_parameters "--no-enc"
         start_menu_group "Spooner Games"
-        readme "README.html" # User asked if they want to view it after install.
+        readme "README.html" # User asked if they want to view readme after install.
+        license "LICENSE.txt" # User asked to read this and confirm before installing.
       end
 
       add_archive :zip # All outputs given this archive format.

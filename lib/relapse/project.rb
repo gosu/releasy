@@ -8,6 +8,8 @@ module Relapse
   # @attr underscored_version [String] Version number, underscored so it can be used in file names, which will be derived from {#version}, but can be manually set.
   # @attr executable [String] Name of executable to run (defaults to 'bin/<underscored_name>')
   # @attr_reader folder_base [String] The path to the folder to create - All variations of output will be based on extending this path.
+  # @attr files [Rake::FileList] List of files to include in package.
+  # @attr exposed_files [Rake::FileList] Files which should always be copied into the archive folder root, so they are always visible to the user. e.g readme, change-log and/or license files.
   class Project
     include Rake::DSL
     include Mixins::HasArchivers
@@ -20,9 +22,7 @@ module Relapse
     attr_writer :verbose
     # @return [String] Name of the application, such as "My Application".
     attr_accessor :name
-    # @return [Array<String>] List of files to include in package.
-    attr_accessor :files
-    # @return [Array<String>] Files which should always be copied into the archive folder root, so they are always visible to the user. e.g readme, change-log and/or license files.
+    # @return [Array<String>]
     attr_accessor :exposed_files
     # @return [String] Version number as a string (for example, "1.2.0").
     attr_accessor :version
@@ -32,6 +32,16 @@ module Relapse
     # Verbosity of the console output.
     # @return [Boolean] True to make the tasks output more information.
     def verbose?; @verbose; end
+
+    attr_reader :exposed_files
+    def exposed_files=(files)
+      @exposed_files = Rake::FileList.new files
+    end
+
+    attr_reader :files
+    def files=(files)
+      @files = Rake::FileList.new files
+    end
 
     def to_s; "<#{self.class}#{name ? " #{name}" : ""}#{version ? " #{version}" : ""}>"; end
 
@@ -86,8 +96,8 @@ module Relapse
 
       @builders = []
       @links = {}
-      @files = []
-      @exposed_files = []
+      @files = Rake::FileList.new
+      @exposed_files = Rake::FileList.new
       @output_path = DEFAULT_PACKAGE_FOLDER
       @verbose = true
 

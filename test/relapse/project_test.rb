@@ -22,7 +22,9 @@ context Relapse::Project do
     asserts(:version).nil
     asserts(:executable).nil
     asserts(:files).empty
+    asserts(:files).kind_of Rake::FileList
     asserts(:exposed_files).empty
+    asserts(:exposed_files).kind_of Rake::FileList
     asserts(:verbose?).equals true
     asserts(:links).equals Hash.new
     asserts(:to_s).equals "<Relapse::Project>"
@@ -42,6 +44,18 @@ context Relapse::Project do
     asserts("active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).first) }.size 1
     asserts(:add_archive, :zip).raises(Relapse::ConfigError, /already have archive format :zip/i)
     asserts(:add_archive, :unknown).raises(ArgumentError, /unsupported archive/i)
+
+    context "#files" do
+      hookup { topic.files = ["fish.rb"] }
+      asserts(:files).size 1
+      asserts(:files).kind_of Rake::FileList
+    end
+
+    context "#exposed_files" do
+      hookup { topic.exposed_files = "fish.rb" }
+      asserts(:exposed_files).size 1
+      asserts(:exposed_files).kind_of Rake::FileList
+    end
   end
 
   context "defined" do
