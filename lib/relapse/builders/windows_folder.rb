@@ -1,10 +1,10 @@
-require "relapse/builders/windows_builder"
+require "relapse/builders/ocra_builder"
 require 'relapse/windows_wrapper_maker'
 
 module Relapse
   module Builders
     # Builds a folder containing Ruby + your source + a small Windows executable to run your executable script.
-    class WindowsFolder < WindowsBuilder
+    class WindowsFolder < OcraBuilder
       TYPE = :windows_folder
       DEFAULT_FOLDER_SUFFIX = "WIN32"
 

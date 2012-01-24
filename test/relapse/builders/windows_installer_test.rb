@@ -31,7 +31,7 @@ context Relapse::Builders::WindowsInstaller do
         asserts(:temp_installer_script).equals "#{output_path}/windows_installer.iss"
         asserts(:folder).equals folder
         asserts(:installer_name).equals "#{folder}/test_app_setup.exe"
-        asserts(:icon=, "test_app.icns").raises Relapse::ConfigError, /icon must be a .ico file/
+        asserts(:icon=, "test_app.icns").raises ArgumentError, /icon must be a .ico file/
 
         context "tasks" do
           tasks = [

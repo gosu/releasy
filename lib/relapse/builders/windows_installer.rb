@@ -1,9 +1,9 @@
-require "relapse/builders/windows_builder"
+require "relapse/builders/ocra_builder"
 
 module Relapse
   module Builders
     # Builds a win32 installer for the application.
-    class WindowsInstaller < WindowsBuilder
+    class WindowsInstaller < OcraBuilder
       TYPE = :windows_installer
       INSTALLER_SCRIPT = "windows_installer.iss"
       DEFAULT_FOLDER_SUFFIX = "WIN32_INSTALLER"

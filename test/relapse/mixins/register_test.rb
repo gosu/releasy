@@ -2,7 +2,7 @@ require File.expand_path("../../teststrap", File.dirname(__FILE__))
 
 context Relapse::Mixins::Register do
   setup do
-    module Test
+    module RegisterTest
      extend Relapse::Mixins::Register
     end
   end
@@ -15,13 +15,13 @@ context Relapse::Mixins::Register do
   hookup do
     unless defined? NotInModule
       class NotInModule; TYPE = :wibbly; end
-      class Test::Untyped; end
+      class RegisterTest::Untyped; end
     end
   end
 
-  asserts("trying to register a non-class") { Test.register 12 }.raises TypeError, /Can only register classes/
-  asserts("trying to register a class not within the module") { Test.register NotInModule }.raises ArgumentError, /Can't register a class not within this module/
-  asserts("trying to register a class without TYPE, even if in the module") { Test.register Test::Untyped }.raises ArgumentError, /To register, a class must have TYPE defined/
+  asserts("trying to register a non-class") { topic.register 12 }.raises TypeError, /Can only register classes/
+  asserts("trying to register a class not within the module") { topic.register NotInModule }.raises ArgumentError, /Can't register a class not within this module/
+  asserts("trying to register a class without TYPE, even if in the module") { topic.register topic::Untyped }.raises ArgumentError, /To register, a class must have TYPE defined/
 
   context "with registered classes (blue and red frogs)" do
     setup do

@@ -41,7 +41,6 @@ Dir[File.expand_path("wrappers/ruby-*.7z", $original_path)].each do |path_to_rub
         stub(topic).valid_for_platform?.returns(true) # Need to do this so we can test on all platforms.
         topic.ruby_dist = path_to_ruby_dist
         topic.folder_suffix = suffix
-        topic.icon = "test_app.ico"
         topic.executable_type = :console
         topic.gemspecs = gemspecs_to_use
         topic.no_tcl_tk

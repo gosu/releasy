@@ -1,9 +1,9 @@
-require "relapse/builders/windows_builder"
+require "relapse/builders/ocra_builder"
 
 module Relapse
   module Builders
     # Creates a completely standalone (self-extracting when run) Windows executable.
-    class WindowsStandalone < WindowsBuilder
+    class WindowsStandalone < OcraBuilder
       TYPE = :windows_standalone
       DEFAULT_FOLDER_SUFFIX = "WIN32_EXE"
 

@@ -26,7 +26,7 @@ context Relapse::Builders::WindowsStandalone do
         asserts(:folder_suffix).equals "WIN32_EXE"
         asserts(:executable_name).equals "test_app.exe"
         asserts(:folder).equals folder
-        asserts(:icon=, "test_app.icns").raises Relapse::ConfigError, /icon must be a .ico file/
+        asserts(:icon=, "test_app.icns").raises ArgumentError, /icon must be a .ico file/
 
         context "tasks" do
           tasks = [
