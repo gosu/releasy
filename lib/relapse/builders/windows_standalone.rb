@@ -9,6 +9,7 @@ module Relapse
 
       Builders.register self
 
+      protected
       # Self-extracting standalone executable.
       def generate_tasks
         directory folder

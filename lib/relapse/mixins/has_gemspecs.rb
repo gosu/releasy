@@ -1,4 +1,6 @@
-module Relapse::Mixins
+module Relapse
+module Mixins
+  # An object that manages a list of {#gemspecs}
   module HasGemspecs
     # @return [Array<Gem>] List of gemspecs used by the application. Will default to the gems in the `default` Bundler group or, if Bundler isn't used, all gems loaded by rubygems.
     attr_accessor :gemspecs
@@ -36,4 +38,5 @@ module Relapse::Mixins
       end
     end
   end
+end
 end

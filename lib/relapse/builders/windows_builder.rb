@@ -8,10 +8,10 @@ module Builders
   class WindowsBuilder < Builder
     EXECUTABLE_TYPES = [:auto, :windows, :console]
 
-    # @return [:auto, :windows, :console] Type of ruby to run executable with: :console means run with `ruby`, :windows means run with `rubyw`,  :auto means determine type from executable extension (.rb => :console or .rbw => :windows).
+    # @return [:auto, :windows, :console] Type of ruby to run executable with. :console means run with 'ruby.exe', :windows means run with 'rubyw.exe',  :auto means determine type from executable extension (.rb => :console or .rbw => :windows).
     attr_accessor :executable_type
 
-    # Excludes encoding files from 1.9 release? (equivalent to using '--no-enc' in Ocra).
+    # Excludes encoding files from 1.9 releases (equivalent to using '--no-enc' in Ocra).
     def exclude_encoding
        @exclude_encoding = true
     end
@@ -20,6 +20,8 @@ module Builders
     def encoding_excluded?; @exclude_encoding; end
     protected :encoding_excluded?
 
+    # Executable type, resolving :auto if possible.
+    # @return [:windows, :console]
     def effective_executable_type
       if executable_type == :auto
         case File.extname(project.executable)

@@ -11,15 +11,20 @@ module Archivers
 
     MD5_READ_SIZE = 128 * 64 # MD5 likes 128 byte chunks.
 
+    # @return [Project] Project this Archiver was created by.
     attr_reader :project
+    # @return [String] Extension of archive to be created (such as ".zip").
     attr_accessor :extension
 
     def type; self.class::TYPE; end
+
     def initialize(project)
       @project = project
       @extension = self.class::DEFAULT_EXTENSION
     end
 
+    protected
+    # Generate tasks to create the archive of this file.
     def generate_tasks(output_task, folder)
       pkg = package folder
 
@@ -31,6 +36,7 @@ module Archivers
       end
     end
 
+    protected
     def archive(folder)
       pkg = package folder
       Rake::FileUtilsExt.verbose project.verbose?

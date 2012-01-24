@@ -22,7 +22,7 @@ context Relapse::Builders::WindowsInstaller do
           topic.license = "LICENSE.txt"
           topic.readme = "README.txt"
           topic.executable_type = :console
-          topic.generate_tasks
+          topic.send :generate_tasks
         end
 
         asserts(:valid_for_platform?)

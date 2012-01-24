@@ -9,6 +9,7 @@ module Relapse
 
       DEFAULT_FOLDER_SUFFIX = "SOURCE"
 
+      protected
       def generate_tasks
         desc "Build source folder"
         task "build:source" => folder

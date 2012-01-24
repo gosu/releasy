@@ -1,6 +1,7 @@
 require "relapse/builders/windows_builder"
 
-module Relapse::Builders
+module Relapse
+module Builders
   # Functionality for a {WindowsBuilder} that use Ocra and runs on Windows.
   # @attr icon [String] Optional filename of icon to show on executable/installer (.ico).
   # @abstract
@@ -38,4 +39,5 @@ module Relapse::Builders
       command
     end
   end
+end
 end

@@ -45,7 +45,7 @@ Dir[File.expand_path("wrappers/ruby-*.7z", $original_path)].each do |path_to_rub
         topic.gemspecs = gemspecs_to_use
         topic.exclude_tcl_tk
         topic.exclude_encoding
-        topic.generate_tasks
+        topic.send :generate_tasks
       end
 
       asserts(:output_path).equals output_path

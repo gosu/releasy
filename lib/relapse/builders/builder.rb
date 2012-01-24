@@ -8,13 +8,15 @@ module Builders
     include Mixins::HasArchivers
     include Mixins::Exec
 
-    # {Project} that this Builder belongs to.
+    # @return [Project] that this Builder belongs to.
     attr_reader :project
-    # Suffix on the folder generated, after name and version.
+    # @return [String] Suffix on the folder generated, after name and version.
     attr_accessor :folder_suffix
 
+    # @return [Symbol] Type of builder.
     def type; self.class::TYPE; end
-    def folder; "#{project.folder_base}#{folder_suffix.empty? ? '' : '_'}#{folder_suffix}"; end
+
+    # Is the builder valid for the current platform (OS)?
     def valid_for_platform?; true; end
 
     def initialize(project)
@@ -25,8 +27,13 @@ module Builders
     end
 
     protected
-    # Called from the project, but users don't need to know about it.
+    # @return [String] Called from the project, but users don't need to know about it.
     def task_group; type.to_s.split(/_/).first; end
+    # @return [String] Output folder.
+    def folder; "#{project.folder_base}#{folder_suffix.empty? ? '' : '_'}#{folder_suffix}"; end
+
+    protected
+    # Called by {#initalize}
     def setup; end
 
     protected

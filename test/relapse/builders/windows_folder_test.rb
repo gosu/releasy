@@ -18,7 +18,7 @@ context Relapse::Builders::WindowsFolder do
         hookup do
           topic.exclude_encoding
           topic.executable_type = :console
-          topic.generate_tasks
+          topic.send :generate_tasks
         end
 
         asserts(:valid_for_platform?)

@@ -19,7 +19,7 @@ context Relapse::Builders::WindowsStandalone do
           topic.exclude_encoding
           topic.executable_type = :console
           topic.icon = "test_app.ico"
-          topic.generate_tasks
+          topic.send :generate_tasks
         end
 
         asserts(:valid_for_platform?)

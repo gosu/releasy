@@ -16,7 +16,7 @@ context Relapse::Builders::Source do
   context "valid" do
     hookup do
 
-      topic.generate_tasks
+      topic.send :generate_tasks
     end
 
     asserts(:folder).equals folder

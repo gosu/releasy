@@ -18,6 +18,7 @@ module Relapse
       # @return [String] Filename of license file - Must be .txt or .rtf file, which will be shown to user who will be requested to accept it (Windows installer only).
       attr_accessor :license
 
+      protected
       # Regular windows installer, but some users consider them evil.
       def generate_tasks
         directory folder

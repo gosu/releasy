@@ -50,7 +50,7 @@ if osx_app_wrapper
         topic.wrapper = osx_app_wrapper
         topic.icon = "test_app.icns"
         topic.gemspecs = gemspecs_to_use
-        topic.generate_tasks
+        topic.send :generate_tasks
       end
 
       asserts(:folder_suffix).equals "OSX"
@@ -99,7 +99,7 @@ if osx_app_wrapper
         denies("default chingu gem left in app")  { File.exists?("#{app_folder}/Contents/Resources/lib/chingu") }
 
         if RUBY_PLATFORM =~ /darwin/
-          asserts("program output") { redirect_bundler_gemfile { %x[open "#{app_folder}"] } }.equals "test run!\n"
+          asserts("program output") { redirect_bundler_gemfile { %x["./#{app_folder}/Contents/MacOS/Test App"] } }.equals "test run!\n"
         end
       end
     end

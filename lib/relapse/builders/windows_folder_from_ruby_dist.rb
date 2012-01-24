@@ -35,10 +35,12 @@ module Relapse
 
       # Remove TCL/TK from package, which can save a significant amount of space if the application does not require them.
       # This is over 6MB uncompressed, which is a saving of 1.6MB when compressed with 7z format (LZMA).
-      def exclude_tcl_tk; @exclude_tcl_tk = true; end
+      # @return [Project] self
+      def exclude_tcl_tk; @exclude_tcl_tk = true; self; end
 
       def valid_for_platform?; not Relapse.win_platform?; end
 
+      protected
       # FOLDER containing EXE, Ruby + source.
       def generate_tasks
         raise ConfigError, "#ruby_dist not set" unless ruby_dist

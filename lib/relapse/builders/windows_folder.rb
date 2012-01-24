@@ -10,6 +10,7 @@ module Relapse
 
       Builders.register self
 
+      protected
       # FOLDER containing EXE, Ruby + source.
       def generate_tasks
         directory project.output_path

@@ -7,10 +7,9 @@ module Relapse
   # @attr underscored_name [String] Project name underscored (as used in file names), which will be derived from {#name}, but can be manually set.
   # @attr underscored_version [String] Version number, underscored so it can be used in file names, which will be derived from {#version}, but can be manually set.
   # @attr executable [String] Name of executable to run (defaults to 'bin/<underscored_name>')
-  # @attr_reader folder_base [String] The path to the folder to create - All variations of output will be based on extending this path.
+  # @attr_reader folder_base [String] The path to the folders to create. All variations of output will be based on extending this path.
   # @attr files [Rake::FileList] List of files to include in package.
   # @attr exposed_files [Rake::FileList] Files which should always be copied into the archive folder root, so they are always visible to the user. e.g readme, change-log and/or license files.
-  # @attr_writer md5 [Boolean] Create MD5 hashes for created archives.
   class Project
     include Rake::DSL
     include Mixins::HasArchivers
@@ -23,30 +22,27 @@ module Relapse
     attr_writer :verbose
     # @return [String] Name of the application, such as "My Application".
     attr_accessor :name
-    # @return [Array<String>]
-    attr_accessor :exposed_files
     # @return [String] Version number as a string (for example, "1.2.0").
     attr_accessor :version
     # @return [String] Folder to output to (defaults to 'pkg/')
     attr_accessor :output_path
 
+    # @return [Boolean] Create MD5 hashes for created archives.
     attr_writer :md5
+    # @return [Boolean] Whether MD5 checksums will be created for all packages created (default is false).
     def md5?; @md5; end
 
     # Verbosity of the console output.
     # @return [Boolean] True to make the tasks output more information.
     def verbose?; @verbose; end
 
-    attr_reader :exposed_files
-    def exposed_files=(files)
-      @exposed_files = Rake::FileList.new files
-    end
+    def exposed_files; @exposed_files; end
+    def exposed_files=(files); @exposed_files = Rake::FileList.new files; end
 
-    attr_reader :files
-    def files=(files)
-      @files = Rake::FileList.new files
-    end
+    def files; @files; end
+    def files=(files); @files = Rake::FileList.new files; end
 
+    # @return [String]
     def to_s; "<#{self.class}#{name ? " #{name}" : ""}#{version ? " #{version}" : ""}>"; end
 
     def underscored_name
@@ -75,26 +71,30 @@ module Relapse
 
     # Can be used with or without a block to generate building and packaging tasks.
     #
-    # @example
-    #     # Using a block, the API is more terse and the tasks are automatically generated
-    #     # when the block is closed.
-    #     Relapse::Project.new do
-    #       name "My Application"
-    #       version "1.2.4"
-    #       add_build :source do
-    #         add_archive :zip
+    # @overload initialize
+    #   Without using blocks, the {Project} can be accessed directly.
+    #   @example
+    #       project = Relapse::Project.new
+    #       project.name = "My Application"
+    #       project.version = "1.2.4"
+    #       output = project.add_build :source
+    #       output.add_archive :zip
+    #       project.generate_tasks
+    #
+    # @overload initialize(&block)
+    #   Using a block, the API is more terse and the tasks are automatically generated
+    #   when the block is closed.
+    #
+    #   @example
+    #       Relapse::Project.new do
+    #         name "My Application"
+    #         version "1.2.4"
+    #         add_build :source do
+    #           add_archive :zip
+    #         end
     #       end
-    #     end
     #
-    # @example
-    #     # Without using blocks.
-    #     project = Relapse::Project.new
-    #     project.name = "My Application"
-    #     project.version = "1.2.4"
-    #     output = project.add_build :source
-    #     output.add_archive :zip
-    #     project.generate_tasks
-    #
+    #   @yield [] bleh
     def initialize(&block)
       super()
 
@@ -108,13 +108,13 @@ module Relapse
       @name = @underscored_name = @underscored_version = nil
       @version = @executable = nil
 
+      setup
+
       if block_given?
         DSLWrapper.new(self, &block)
         generate_tasks
       end
     end
-
-
 
     # Add a type of output to produce. Must define at least one of these.
     #
@@ -144,6 +144,7 @@ module Relapse
     end
 
     # Generates all tasks required by the user. Automatically called at the end of the block, if {#initialize} is given a block.
+    # @return [Project] self
     def generate_tasks
       raise ConfigError, "Must specify at least one valid output for this OS with #add_build before tasks can be generated" if @builders.empty?
 
@@ -154,7 +155,7 @@ module Relapse
       build_groups = Hash.new {|h, k| h[k] = [] }
 
       active_builders.each do |builder|
-        builder.generate_tasks
+        builder.send :generate_tasks
         task_name = "build:#{builder.type.to_s.tr("_", ":")}"
 
         if builder.type.to_s =~ /_/
@@ -190,6 +191,9 @@ module Relapse
     def links; @links; end
 
     protected
+    def setup; end
+
+    protected
     # @return [Array<Builder>]
     def active_builders
       @builders.find_all(&:valid_for_platform?)
@@ -208,7 +212,7 @@ module Relapse
 
         archivers = active_archivers(builder)
         archivers.each do |archiver|
-          archiver.generate_tasks output_task, builder.folder
+          archiver.send :generate_tasks, output_task, builder.send(:folder)
         end
 
         desc "Package all #{builder.type}"

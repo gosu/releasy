@@ -33,6 +33,7 @@ module Relapse
         @icon = icon
       end
 
+      protected
       def generate_tasks
         raise ConfigError, "#url not set" unless url
         raise ConfigError, "#wrapper not set" unless wrapper

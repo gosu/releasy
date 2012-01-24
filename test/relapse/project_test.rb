@@ -33,7 +33,7 @@ context Relapse::Project do
     asserts(:output_path).equals "pkg"
     asserts(:folder_base).equals "pkg/" # Would be more, but dependent on name.
 
-    asserts("attempting to generate tasks without any outputs") { topic.generate_tasks }.raises Relapse::ConfigError, /must specify at least one valid output/i
+    asserts("attempting to generate tasks without any outputs") { topic.send :generate_tasks }.raises Relapse::ConfigError, /must specify at least one valid output/i
 
     asserts(:active_builders).empty
     asserts(:add_build, :source).kind_of Relapse::Builders::Source
@@ -130,7 +130,7 @@ context Relapse::Project do
 
       should "call generate_tasks on all archivers" do
         topic.send(:active_builders).each do |builder|
-          topic.send(:active_archivers, builder).each {|a| mock(a).generate_tasks(builder.type.to_s.sub('_', ':'), builder.folder) }
+          topic.send(:active_archivers, builder).each {|a| mock(a).generate_tasks(builder.type.to_s.sub('_', ':'), builder.send(:folder)) }
         end
         topic.send :generate_archive_tasks
       end
@@ -141,12 +141,12 @@ context Relapse::Project do
 
       should "call generate_tasks on all builders" do
         topic.send(:active_builders) {|b| mock(b).generate_tasks }
-        topic.generate_tasks
+        topic.send :generate_tasks
       end
 
       should "call #generate_archive_tasks" do
         mock(topic).generate_archive_tasks
-        topic.generate_tasks
+        topic.send :generate_tasks
       end
     end
   end
