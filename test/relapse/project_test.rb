@@ -27,6 +27,8 @@ context Relapse::Project do
     asserts(:exposed_files).kind_of Rake::FileList
     asserts(:verbose?).equals true
     asserts(:links).equals Hash.new
+    asserts(:md5?).equals false
+
     asserts(:to_s).equals "<Relapse::Project>"
     asserts(:output_path).equals "pkg"
     asserts(:folder_base).equals "pkg/" # Would be more, but dependent on name.
@@ -44,6 +46,11 @@ context Relapse::Project do
     asserts("active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).first) }.size 1
     asserts(:add_archive, :zip).raises(Relapse::ConfigError, /already have archive format :zip/i)
     asserts(:add_archive, :unknown).raises(ArgumentError, /unsupported archive/i)
+
+    context "#md5" do
+      hookup { topic.md5 = true }
+      asserts(:md5?).equals true
+    end
 
     context "#files" do
       hookup { topic.files = ["fish.rb"] }

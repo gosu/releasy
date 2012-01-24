@@ -10,6 +10,7 @@ module Relapse
   # @attr_reader folder_base [String] The path to the folder to create - All variations of output will be based on extending this path.
   # @attr files [Rake::FileList] List of files to include in package.
   # @attr exposed_files [Rake::FileList] Files which should always be copied into the archive folder root, so they are always visible to the user. e.g readme, change-log and/or license files.
+  # @attr_writer md5 [Boolean] Create MD5 hashes for created archives.
   class Project
     include Rake::DSL
     include Mixins::HasArchivers
@@ -28,6 +29,9 @@ module Relapse
     attr_accessor :version
     # @return [String] Folder to output to (defaults to 'pkg/')
     attr_accessor :output_path
+
+    attr_writer :md5
+    def md5?; @md5; end
 
     # Verbosity of the console output.
     # @return [Boolean] True to make the tasks output more information.
@@ -100,7 +104,7 @@ module Relapse
       @exposed_files = Rake::FileList.new
       @output_path = DEFAULT_PACKAGE_FOLDER
       @verbose = true
-
+      @md5 = false
       @name = @underscored_name = @underscored_version = nil
       @version = @executable = nil
 

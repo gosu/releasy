@@ -2,6 +2,12 @@ require File.expand_path("../../teststrap", File.dirname(__FILE__))
 
 folder = File.join(output_path, "test_app_0_1_SOURCE")
 
+def md5_created(extension)
+  file = "#{File.join(output_path, "test_app_0_1_SOURCE")}#{extension}.MD5"
+  asserts("MD5 file created") { File.exists?(file) }
+  asserts("MD5 file contents sensible") { File.read(file) =~ /^[0-9a-f]{32}$/ }
+end
+
 _output_path = output_path # Needed to get to work in the DSLWrapper.
 context "Source in all formats" do
   setup do
@@ -11,6 +17,7 @@ context "Source in all formats" do
       files source_files
       output_path _output_path
       verbose false
+      md5 true
 
       add_build :source do
         add_archive :dmg
@@ -74,37 +81,42 @@ context "Source in all formats" do
     end
   end
 
-  context "exe" do
+  context ".exe" do
     hookup { Rake::Task["package:source:exe"].invoke }
 
     asserts("archive created") { File.size("#{folder}.exe") > 0}
+    md5_created ".exe"
   end
 
-  context "tar.gz" do
+  context ".tar.gz" do
     hookup { Rake::Task["package:source:tar_gz"].invoke }
 
     asserts("archive created") { File.size("#{folder}.tar.gz") > 0}
     asserts("archive contains expected files") { `7z x -so -bd -tgzip #{folder}.tar.gz | 7z l -si -bd -ttar` =~ contents_description }
+    md5_created ".tar.gz"
   end
 
-  context "tar.bz2" do
+  context ".tar.bz2" do
     hookup { Rake::Task["package:source:tar_bz2"].invoke }
 
     asserts("archive created") { File.size("#{folder}.tar.bz2") > 0}
     asserts("archive contains expected files") { `7z x -so -bd -tbzip2 #{folder}.tar.bz2 | 7z l -si -bd -ttar` =~ contents_description }
+    md5_created ".tar.bz2"
   end
 
-  context "zip" do
+  context ".zip" do
     hookup { Rake::Task["package:source:zip"].invoke }
 
     asserts("archive created") { File.size("#{folder}.zip") > 0}
     asserts("archive contains expected files") { `7z l -bd -tzip #{folder}.zip` =~ contents_description }
+    md5_created ".zip"
   end
 
-  context "7z" do
+  context ".7z" do
     hookup { Rake::Task["package:source:7z"].invoke }
 
     asserts("archive created") { File.size("#{folder}.7z") > 0}
     asserts("archive contains expected files") { `7z l -bd -t7z #{folder}.7z` =~ contents_description }
+    md5_created ".7z"
   end
 end
