@@ -27,7 +27,7 @@ context Relapse::Project do
     asserts(:exposed_files).kind_of Rake::FileList
     asserts(:verbose?).equals true
     asserts(:links).equals Hash.new
-    asserts(:md5?).equals false
+    asserts(:create_md5s?).equals false
 
     asserts(:to_s).equals "<Relapse::Project>"
     asserts(:output_path).equals "pkg"
@@ -47,9 +47,21 @@ context Relapse::Project do
     asserts(:add_archive, :zip).raises(Relapse::ConfigError, /already have archive format :zip/i)
     asserts(:add_archive, :unknown).raises(ArgumentError, /unsupported archive/i)
 
-    context "#md5" do
-      hookup { topic.md5 = true }
-      asserts(:md5?).equals true
+    context "#verbose" do
+      hookup { topic.quiet }
+      hookup { topic.verbose }
+      asserts(:verbose?).equals true
+    end
+
+    context "#quiet" do
+      hookup { topic.verbose }
+      hookup { topic.quiet }
+      asserts(:verbose?).equals false
+    end
+
+    context "#create_md5s" do
+      hookup { topic.create_md5s }
+      asserts(:create_md5s?).equals true
     end
 
     context "#files" do

@@ -47,7 +47,7 @@ module Archivers
         exec command(File.basename folder)
       end
 
-      File.open("#{pkg}.MD5", "w") {|f| f.puts checksum(pkg) } if project.md5?
+      File.open("#{pkg}.MD5", "w") {|f| f.puts checksum(pkg) } if project.send :create_md5s?
     end
 
     protected
