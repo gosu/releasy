@@ -2,7 +2,7 @@ Put RubyInstaller distributions here for testing (Other Downloads - 7-zip archiv
 
 http://rubyinstaller.org/downloads/
 
-e.g. relapse/wrappers/ruby-1.8.7-p357-i386-mingw32.7z
+e.g. relapse/wrappers/ruby-1.9.3-p0-i386-mingw32.7z
 
 ------------------------------------
 
