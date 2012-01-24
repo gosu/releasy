@@ -97,6 +97,10 @@ if osx_app_wrapper
         end
 
         denies("default chingu gem left in app")  { File.exists?("#{app_folder}/Contents/Resources/lib/chingu") }
+
+        if RUBY_PLATFORM =~ /darwin/
+          asserts("program output") { redirect_bundler_gemfile { %x[open "#{app_folder}"] } }.equals "test run!\n"
+        end
       end
     end
   end
