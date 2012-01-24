@@ -44,6 +44,7 @@ Dir[File.expand_path("wrappers/ruby-*.7z", $original_path)].each do |path_to_rub
         topic.icon = "test_app.ico"
         topic.executable_type = :console
         topic.gemspecs = gemspecs_to_use
+        topic.no_tcl_tk
         topic.generate_tasks
       end
 
@@ -79,6 +80,7 @@ Dir[File.expand_path("wrappers/ruby-*.7z", $original_path)].each do |path_to_rub
 
         asserts("plenty of dlls copied") { Dir["#{folder}/bin/*.dll"].size >= 6 }
 
+        denies("tcl/tk left") { Dir["#{folder}/bin/tk*.dll", "#{folder}/bin/tcl*.dll", "#{folder}/lib/tcltk", "#{folder}/lib/ruby/tk*" "#{folder}/lib/ruby/1.?.*/tcl*" "#{folder}/lib/ruby/1.?.*/tk*"].any? }
         denies("share folder left") { File.exist?("#{folder}/share") }
 
         gemspecs_to_use.each do |gemspec|

@@ -17,10 +17,17 @@ module Relapse
       TYPE = :windows_folder_from_ruby_dist
       DEFAULT_FOLDER_SUFFIX = "WIN32"
 
+      # Files that are required for Tcl/Tk, but which are unlikely to be used in many applications.
+      TCL_TK_FILES = %w[bin/tcl*-ri.dll bin/tk*-ri.dll lib/tcltk lib/ruby/tk*.rb lib/ruby/1.*/tcl.rb lib/ruby/1.*/tk*]
+
       Builders.register self
 
       # @return [String] Path to windows distribution archive that has been manually downloaded from http://rubyinstaller.org/downloads/ (e.g. "rubies/ruby-1.9.2-p290-i386-mingw32.7z").
       attr_accessor :ruby_dist
+
+      # Remove TCL/TK from package, which can save a significant amount of space if the application does not require them.
+      # This is over 6MB uncompressed, which is a saving of 1.6MB when compressed with 7z format (LZMA).
+      def no_tcl_tk; @no_tcl_tk = true; end
 
       def valid_for_platform?; not Relapse.win_platform?; end
 
@@ -45,6 +52,9 @@ module Relapse
 
         copy_ruby_distribution
 
+        # Remove TCL/TK dlls, lib folder and source.
+        rm_r Dir[*(TCL_TK_FILES.map {|f| File.join(folder, f) })].uniq.sort if @no_tcl_tk
+
         copy_files_relative project.files, File.join(folder, 'src')
 
         create_link_files folder
@@ -60,6 +70,7 @@ module Relapse
 
       protected
       def setup
+        @no_tcl_tk = false
         @ruby_dist = nil
         super
       end
@@ -73,6 +84,7 @@ module Relapse
         exec %[7z x "#{ruby_dist}" -o"#{File.dirname folder}"]
         mv File.join(File.dirname(folder), archive_name), folder
         rm_r File.join(folder, "share")
+        rm_r File.join(folder, "include") if File.exists? File.join(folder, "include")
         unused_exe = effective_executable_type == :windows ? "ruby.exe" : "rubyw.exe"
         rm File.join(folder, "bin", unused_exe)
       end
