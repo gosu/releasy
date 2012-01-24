@@ -38,7 +38,7 @@ module Archivers
 
     protected
     def command(folder)
-      %[7z a -mmt -bd -t#{type} "#{package(folder)}" "#{folder}"]
+      %[7z a -mmt -bd -t#{type} -mx9 "#{package(folder)}" "#{folder}"]
     end
   end
 end

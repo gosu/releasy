@@ -3,11 +3,11 @@ require File.expand_path("../teststrap", File.dirname(__FILE__))
 # Test all archivers at once, since they are pretty much identical.
 [
     [:dmg,     Relapse::Archivers::Dmg,      %[GZIP=-9 hdiutil create -fs HFS+ -srcfolder "f" -volname "Test App 0.1" "f.dmg"]],
-    [:exe,     Relapse::Archivers::Exe,      %[7z a -mmt -bd -t7z -sfx7z.sfx "f.exe" "f"]],
-    [:"7z",    Relapse::Archivers::SevenZip, %[7z a -mmt -bd -t7z "f.7z" "f"]],
-    [:tar_bz2, Relapse::Archivers::TarBzip2, %[7z a -so -mmt -bd -ttar "f.tar" "f" | 7z a -si -bd -tbzip2 "f.tar.bz2"]],
-    [:tar_gz,  Relapse::Archivers::TarGzip,  %[7z a -so -mmt -bd -ttar "f.tar" "f" | 7z a -si -bd -tgzip "f.tar.gz"]],
-    [:zip,     Relapse::Archivers::Zip,      %[7z a -mmt -bd -tzip "f.zip" "f"]],
+    [:exe,     Relapse::Archivers::Exe,      %[7z a -mmt -bd -t7z -mx9 -sfx7z.sfx "f.exe" "f"]],
+    [:"7z",    Relapse::Archivers::SevenZip, %[7z a -mmt -bd -t7z -mx9 "f.7z" "f"]],
+    [:tar_bz2, Relapse::Archivers::TarBzip2, %[7z a -so -mmt -bd -ttar "f.tar" "f" | 7z a -si -bd -tbzip2 -mx9 "f.tar.bz2"]],
+    [:tar_gz,  Relapse::Archivers::TarGzip,  %[7z a -so -mmt -bd -ttar "f.tar" "f" | 7z a -si -bd -tgzip -mx9 "f.tar.gz"]],
+    [:zip,     Relapse::Archivers::Zip,      %[7z a -mmt -bd -tzip -mx9 "f.zip" "f"]],
 ].each do |type, archiver, command|
   extension = "." + type.to_s.tr("_", ".")
 

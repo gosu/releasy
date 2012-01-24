@@ -13,7 +13,7 @@ module Relapse
 
       protected
       def command(folder)
-        %[7z a -mmt -bd -t7z -sfx#{SFX_NAME} "#{package(folder)}" "#{folder}"]
+        %[7z a -mmt -bd -t7z -mx9 -sfx#{SFX_NAME} "#{package(folder)}" "#{folder}"]
       end
     end
   end
