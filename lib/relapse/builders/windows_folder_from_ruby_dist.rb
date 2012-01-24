@@ -18,7 +18,15 @@ module Relapse
       DEFAULT_FOLDER_SUFFIX = "WIN32"
 
       # Files that are required for Tcl/Tk, but which are unlikely to be used in many applications.
-      TCL_TK_FILES = %w[bin/tcl*-ri.dll bin/tk*-ri.dll lib/tcltk lib/ruby/tk*.rb lib/ruby/1.*/tcl.rb lib/ruby/1.*/tk*]
+      TCL_TK_FILES = %w[bin/tcl*-ri.dll bin/tk*-ri.dll
+                         lib/tcltk
+                         lib/ruby/tk*.rb
+                         lib/ruby/1.*/tk* lib/ruby/1.*/tcl*
+                         lib/ruby/1.*/i386-mingw32/tk* lib/ruby/1.*/i386-mingw32/tcl*
+                       ]
+
+      # Encoding files that are required, even if we don't need most of them if we select to {#exclude_encoding}.
+      REQUIRED_ENCODING_FILES = %w[encdb.so iso_8859_1.so utf_16le.so trans/single_byte.so trans/transdb.so trans/utf_16_32.so]
 
       Builders.register self
 
@@ -27,7 +35,7 @@ module Relapse
 
       # Remove TCL/TK from package, which can save a significant amount of space if the application does not require them.
       # This is over 6MB uncompressed, which is a saving of 1.6MB when compressed with 7z format (LZMA).
-      def no_tcl_tk; @no_tcl_tk = true; end
+      def exclude_tcl_tk; @exclude_tcl_tk = true; end
 
       def valid_for_platform?; not Relapse.win_platform?; end
 
@@ -51,9 +59,7 @@ module Relapse
         Rake::FileUtilsExt.verbose project.verbose?
 
         copy_ruby_distribution
-
-        # Remove TCL/TK dlls, lib folder and source.
-        rm_r Dir[*(TCL_TK_FILES.map {|f| File.join(folder, f) })].uniq.sort if @no_tcl_tk
+        delete_excluded_files
 
         copy_files_relative project.files, File.join(folder, 'src')
 
@@ -69,8 +75,21 @@ module Relapse
       end
 
       protected
+      def delete_excluded_files
+        # Remove TCL/TK dlls, lib folder and source.
+        rm_r Dir[*(TCL_TK_FILES.map {|f| File.join(folder, f) })].uniq.sort if @exclude_tcl_tk
+
+        # Remove Encoding files on Ruby 1.9
+        if encoding_excluded? and ruby_dist =~ /1\.9\.\d/
+          encoding_files = Dir[File.join folder, "lib/ruby/1.9.1/i386-mingw32/enc/**/*.so"]
+          required_encoding_files = REQUIRED_ENCODING_FILES.map {|f| File.join folder, "lib/ruby/1.9.1/i386-mingw32/enc", f }
+          rm_r encoding_files - required_encoding_files
+        end
+      end
+
+      protected
       def setup
-        @no_tcl_tk = false
+        @exclude_tcl_tk = false
         @ruby_dist = nil
         super
       end

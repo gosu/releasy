@@ -11,6 +11,15 @@ module Builders
     # @return [:auto, :windows, :console] Type of ruby to run executable with: :console means run with `ruby`, :windows means run with `rubyw`,  :auto means determine type from executable extension (.rb => :console or .rbw => :windows).
     attr_accessor :executable_type
 
+    # Excludes encoding files from 1.9 release? (equivalent to using '--no-enc' in Ocra).
+    def exclude_encoding
+       @exclude_encoding = true
+    end
+
+    # Should encoding files be excluded?
+    def encoding_excluded?; @exclude_encoding; end
+    protected :encoding_excluded?
+
     def effective_executable_type
       if executable_type == :auto
         case File.extname(project.executable)
@@ -28,6 +37,7 @@ module Builders
 
     protected
     def setup
+      @exclude_encoding = false
       @executable_type = :auto
       super
     end

@@ -43,7 +43,8 @@ Dir[File.expand_path("wrappers/ruby-*.7z", $original_path)].each do |path_to_rub
         topic.folder_suffix = suffix
         topic.executable_type = :console
         topic.gemspecs = gemspecs_to_use
-        topic.no_tcl_tk
+        topic.exclude_tcl_tk
+        topic.exclude_encoding
         topic.generate_tasks
       end
 
@@ -79,8 +80,15 @@ Dir[File.expand_path("wrappers/ruby-*.7z", $original_path)].each do |path_to_rub
 
         asserts("plenty of dlls copied") { Dir["#{folder}/bin/*.dll"].size >= 6 }
 
-        denies("tcl/tk left") { Dir["#{folder}/bin/tk*.dll", "#{folder}/bin/tcl*.dll", "#{folder}/lib/tcltk", "#{folder}/lib/ruby/tk*" "#{folder}/lib/ruby/1.?.*/tcl*" "#{folder}/lib/ruby/1.?.*/tk*"].any? }
+        denies("tcl/tk left") { (Dir["#{folder}/**/tk*", "#{folder}/**/tcl*"].reject {|f| f =~ %r[test/unit] }).any? }
         denies("share folder left") { File.exist?("#{folder}/share") }
+
+        if ruby_version =~ /^1\.9\.\d/
+          helper(:enc_folder) { "#{folder}/lib/ruby/1.9.1/i386-mingw32/enc" }
+          denies("include folder left") { File.exist?("#{folder}/include") }
+
+          asserts("remaining encoding files") { Dir["#{enc_folder}/**/*.so"].map {|f| f[(enc_folder.size + 1)..-1] } }.same_elements %w[encdb.so iso_8859_1.so utf_16le.so trans/single_byte.so trans/transdb.so trans/utf_16_32.so]
+        end
 
         gemspecs_to_use.each do |gemspec|
           name = "#{gemspec.name}-#{gemspec.version}"

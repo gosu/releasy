@@ -31,6 +31,7 @@ module Relapse::Builders
       command = defined?(Bundler) ? 'bundle exec ' : ''
       command += %[#{OCRA_COMMAND} "#{project.executable}" ]
       command += "--#{effective_executable_type} "
+      command += "--no-enc " if encoding_excluded?
       command += "#{ocra_parameters} " if ocra_parameters
       command += %[--icon "#{icon}" ] if icon
       command += (project.files - [project.executable]).map {|f| %["#{f}"]}.join(" ")

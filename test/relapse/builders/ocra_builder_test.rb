@@ -24,13 +24,14 @@ context Relapse::Builders::OcraBuilder do
 
   context "#ocra_command" do
     hookup do
-      topic.ocra_parameters = "--no-enc"
+      topic.exclude_encoding
+      topic.ocra_parameters = "--wobble"
       topic.project.executable = source_files.first
       topic.executable_type = :console
       topic.icon = "icon.ico"
     end
 
-    helper(:command) { %[ocra "bin/test_app" --console --no-enc --icon "icon.ico" "lib/test_app.rb" "lib/test_app/stuff.rb" "README.txt" "LICENSE.txt" "Gemfile.lock" "Gemfile"] }
+    helper(:command) { %[ocra "bin/test_app" --console --no-enc --wobble --icon "icon.ico" "lib/test_app.rb" "lib/test_app/stuff.rb" "README.txt" "LICENSE.txt" "Gemfile.lock" "Gemfile"] }
     asserts(:ocra_command).equals { %[bundle exec #{command}] }
   end
 end

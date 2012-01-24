@@ -82,7 +82,7 @@ context Relapse::Project do
           gemspecs Bundler.setup.gems
         end
         add_build :windows_standalone do
-          ocra_parameters "--no-enc"
+          exclude_encoding
         end
 
         files source_files

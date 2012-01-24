@@ -16,7 +16,7 @@ context Relapse::Builders::WindowsStandalone do
     if Gem.win_platform?
       context "on Windows" do
         hookup do
-          topic.ocra_parameters = "--no-enc"
+          topic.exclude_encoding
           topic.executable_type = :console
           topic.icon = "test_app.ico"
           topic.generate_tasks

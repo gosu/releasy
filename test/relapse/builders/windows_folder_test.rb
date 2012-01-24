@@ -16,6 +16,7 @@ context Relapse::Builders::WindowsFolder do
     if Gem.win_platform?
       context "on Windows" do
         hookup do
+          topic.exclude_encoding
           topic.executable_type = :console
           topic.generate_tasks
         end

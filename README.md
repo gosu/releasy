@@ -77,12 +77,12 @@ Example
       add_build :windows_folder do
         icon "media/icon.ico"
         add_archive :exe
-        ocra_parameters "--no-enc"
+        exclude_encoding
       end
 
       add_build :windows_installer do
         icon "media/icon.ico"
-        ocra_parameters "--no-enc"
+        exclude_encoding
         start_menu_group "Spooner Games"
         readme "README.html" # User asked if they want to view readme after install.
         license "LICENSE.txt" # User asked to read this and confirm before installing.

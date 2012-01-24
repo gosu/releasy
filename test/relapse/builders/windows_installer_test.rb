@@ -17,7 +17,7 @@ context Relapse::Builders::WindowsInstaller do
       context "on Windows" do
         hookup do
           topic.start_menu_group = "Relapse Test Apps"
-          topic.ocra_parameters = "--no-enc"
+          topic.exclude_encoding
           topic.icon = "test_app.ico"
           topic.license = "LICENSE.txt"
           topic.readme = "README.txt"
