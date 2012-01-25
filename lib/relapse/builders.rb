@@ -1,6 +1,7 @@
 require 'relapse/mixins/register'
 
 module Relapse
+  # Contains all {Builder} types.
   module Builders
     extend Mixins::Register
   end

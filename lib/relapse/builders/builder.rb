@@ -3,6 +3,8 @@ require "relapse/mixins/exec"
 
 module Relapse
 module Builders
+  # Builds release folders.
+  # @abstract
   class Builder
     include Rake::DSL
     include Mixins::HasArchivers

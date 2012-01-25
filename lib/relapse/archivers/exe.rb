@@ -2,6 +2,9 @@ require "relapse/archivers/archiver"
 
 module Relapse
   module Archivers
+    # Windows self-extracting archive.
+    #
+    # If not on Windows, run "relapse install-sfx" after installing 7z, before you can use this.
     class Exe < Archiver
       TYPE = :exe
       DEFAULT_EXTENSION = ".exe"

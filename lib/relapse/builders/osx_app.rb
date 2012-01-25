@@ -3,6 +3,8 @@ require "relapse/mixins/has_gemspecs"
 
 module Relapse
   module Builders
+    # Builds an OS X application bundle.
+    #
     # @attr icon [String] Optional filename of icon to show on executable/installer (.icns).
     class OsxApp < Builder
       include Mixins::HasGemspecs

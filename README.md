@@ -94,8 +94,8 @@ Example
 
 ### Tasks created
 
-Note: The `windows` tasks (except `windows:folder_from_wrapper`) will not be created unless running on Windows.
-Note: The `windows:folder_from_wrapper` task not be created if running on Windows.
+Note: The `windows:folder`, `windows:installer` and `windows:standalone` will be created only if running on Windows.
+The `windows:folder_from_ruby_dist` task will not be created if running on Windows.
 
     rake build                         # Build all outputs
     rake build:osx                     # Build all osx outputs

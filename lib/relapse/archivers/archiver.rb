@@ -4,6 +4,8 @@ require "relapse/mixins/exec"
 
 module Relapse
 module Archivers
+  # Archives a build folder.
+  #
   # @abstract
   class Archiver
     include Rake::DSL
