@@ -1,21 +1,21 @@
-Relapse
+Releasy
 ================
 
-_Relapse_ automates the release of Ruby applications (its name is a perversion of "release apps").
-By configuring a Relapse::Project in your application's rakefile, Relapse can generates a number of Rake tasks for use
+_Releasy_ automates the release of Ruby applications (name comes from "Release + easy").
+By configuring a Releasy::Project in your application's rakefile, Releasy can generates a number of Rake tasks for use
 when there is a need to release a new version of the application.
 
-Relapse allows cross-platform releases, relying on pre-made OS X or Windows wrappers to act as templates
-(Relapse is able to make the latter type of wrapper itself).
+Releasy allows cross-platform releases, relying on pre-made OS X or Windows wrappers to act as templates
+(Releasy is able to make the latter type of wrapper itself).
 
 * Author: [Bil Bas (Spooner)](https://github.com/Spooner)
 * Licence: [MIT](http://www.opensource.org/licenses/mit-license.php)
-* [Github project](https://github.com/Spooner/relapse)
-* [Reporting issues](https://github.com/Spooner/relapse/issues)
+* [Github project](https://github.com/Spooner/releasy)
+* [Reporting issues](https://github.com/Spooner/releasy/issues)
 * Wrappers used to build cross-platform releases:
-  - Win32 wrapper not yet published, but can be made on a Windows system with `relapse windows-wrapper` command.
-  - [OS X wrapper downloads from libgosu.org](http://www.libgosu.org/downloads/), including Gosu, Chipmunk and Texplay binary gems. Latest version is [gosu-mac-wrapper-0.7.41](http://www.libgosu.org/downloads/gosu-mac-wrapper-0.7.41.tar.gz).
-* Tested on Ruby 1.9.3 and 1.8.7 on Windows and Lubuntu. Should work fine on OS X (partially tested via other users).
+  - _Windows:_ [RubyInstaller 7-ZIP archives](http://rubyinstaller.org/downloads/); Ruby 1.8.7, 1.9.2 or 1.9.3
+  - _OS X:_ [libgosu downloads](http://www.libgosu.org/downloads/). Latest version of the OS X-compatible wrapper is "gosu-mac-wrapper-0.7.41.tar.gz" which uses Ruby 1.9.2 and includes some binary gems: Gosu, Chipmunk and TexPlay.
+* Tested on Ruby 1.9.3 and 1.8.7 on Windows, Lubuntu and OS X.
 
 Output types supported
 ----------------------
@@ -23,7 +23,7 @@ Output types supported
 The project can create one or more release folders:
 
 * `:source` - Plain source folder, which can be used by anyone with Ruby already installed.
-* `:osx_app` - OSX application bundle (.app) build, requiring a pre-made Ruby OS X wrapper [Note that this only contains binary gems for Gosu, TexPlay and Chipmunk, but will work with applications using any other source gems].
+* `:osx_app` - OS X application bundle (.app) build, requiring a pre-made Ruby OS X wrapper [Note that this only contains binary gems for Gosu, TexPlay and Chipmunk, but will work with applications using any other source gems].
 * `:windows_folder` - A folder containing Ruby, application source files and an EXE to run them [creation on Windows only]
 * `:windows_folder_from_ruby_dist` - A folder containing Ruby, application source files and an EXE to run them, requiring a copy of a RubyInstaller archive [creation on OSX/Linux]
 * `:windows_installer` - A regular Windows installer [creation on Windows only and requires InnoSetup to be installed]
@@ -48,12 +48,12 @@ Example
 
     # Example is from my game, Alpha Channel.
     require 'rubygems'
-    require 'bundler/setup' # Relapse doesn't require that your application uses bundler, but it does make things easier.
-    require 'relapse'
+    require 'bundler/setup' # Releasy doesn't require that your application uses bundler, but it does make things easier.
+    require 'releasy'
     require 'lib/alpha_channel/version'
 
     #<<<
-    Relapse::Project.new do
+    Releasy::Project.new do
       name "Alpha Channel"
       version AlphaChannel::VERSION
 
@@ -121,12 +121,12 @@ The `windows:folder_from_ruby_dist` task will not be created if running on Windo
 CLI Commands
 ------------
 
-Relapse also provides some supplementary commands:
+Releasy also provides some supplementary commands:
 
-* `relapse install-sfx [options]` - Installs a copy of the Windows self-extractor in the local 7z installation, to allow use of the :exe archive format (it comes with the Windows version of 7z, so only need to use this command on OS X/Linux).
+* `releasy install-sfx [options]` - Installs a copy of the Windows self-extractor in the local 7z installation, to allow use of the `:exe` archive format (it comes with the Windows version of 7z, so only need to use this command on OS X/Linux).
 
 
-External Requirements (Optional)
+External Requirements (Optional, but recommended)
 --------------------------------
 
 ### To create package archives (except `:dmg`)
@@ -156,6 +156,7 @@ Credits
 * Thanks to larsh for the [Ocra gem](http://ocra.rubyforge.org/), which is used for generating Win32 executables.
 * Thanks to jlnr and shawn42 for help testing on OS X; without you I would have been screwed!
 * Thanks to shawn42 and everyone at #gosu and #rubylang for suggestions on how to improve the API.
+* Thanks to kyrylo for coming up with the name, Releasy!
 
 Third Party Assets included
 ---------------------------

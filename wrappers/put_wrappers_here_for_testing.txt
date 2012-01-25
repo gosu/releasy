@@ -2,7 +2,7 @@ Put RubyInstaller distributions here for testing (Other Downloads - 7-zip archiv
 
 http://rubyinstaller.org/downloads/
 
-e.g. relapse/wrappers/ruby-1.9.3-p0-i386-mingw32.7z
+e.g. releasy/wrappers/ruby-1.9.3-p0-i386-mingw32.7z
 
 ------------------------------------
 
@@ -10,8 +10,8 @@ Put Ruby OSX wrappers here (compiled by jlnr from libgosu.org).
 
 http://www.libgosu.org/downloads/
 
-e.g. relapse/wrappers/gosu-mac-wrapper-0.7.41.tar.gz
+e.g. releasy/wrappers/gosu-mac-wrapper-0.7.41.tar.gz
 
 ------------------------------------
 
-When using Relapse normally, you can specify the location of wrappers; this is ONLY for testing purposes.
+When using Releasy normally, you can specify the location of wrappers; this is ONLY for testing purposes.

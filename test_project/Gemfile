@@ -1,9 +1,9 @@
 # Hacky gemfile to ensure that we can generate output in tests from this sub-project.
-# That is, so we can avoid using the Relapse gemfile.
+# That is, so we can avoid using the Releasy gemfile.
 
 source :rubygems
 
-# Just include some gems that we know must be installed on the system that has Relapse.
+# Just include some gems that we know must be installed on the system that has Releasy.
 gem "cri"
 gem "ocra"
 gem "thor"

@@ -5,7 +5,7 @@ require 'riot/rr'
 require 'fileutils'
 
 $LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
-require 'relapse'
+require 'releasy'
 
 def source_files
   %w[bin/test_app lib/test_app.rb lib/test_app/stuff.rb README.txt LICENSE.txt Gemfile.lock Gemfile]
