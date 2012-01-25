@@ -1,8 +1,8 @@
 Releasy
-================
+=======
 
 _Releasy_ automates the release of Ruby applications (name comes from "Release + easy").
-By configuring a Releasy::Project in your application's rakefile, Releasy can generates a number of Rake tasks for use
+By configuring a {Releasy::Project} in your application's rakefile, Releasy can generates a number of Rake tasks for use
 when there is a need to release a new version of the application.
 
 Releasy allows cross-platform releases, relying on pre-made OS X or Windows wrappers to act as templates
@@ -15,7 +15,7 @@ Releasy allows cross-platform releases, relying on pre-made OS X or Windows wrap
 * Wrappers used to build cross-platform releases:
   - _Windows:_ [RubyInstaller 7-ZIP archives](http://rubyinstaller.org/downloads/); Ruby 1.8.7, 1.9.2 or 1.9.3
   - _OS X:_ [libgosu downloads](http://www.libgosu.org/downloads/). Latest version of the OS X-compatible wrapper is "gosu-mac-wrapper-0.7.41.tar.gz" which uses Ruby 1.9.2 and includes some binary gems: Gosu, Chipmunk and TexPlay.
-* Tested on Ruby 1.9.3 and 1.8.7 on Windows, Lubuntu and OS X.
+* Tested on Ruby 1.9.3 and 1.8.7 on Windows, Lubuntu and OS X. However, since this is an early version, please ensure that you double-check any releases created by Releasy before publishing them!
 
 Output types supported
 ----------------------
