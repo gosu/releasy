@@ -110,7 +110,7 @@ module Relapse
     #         end
     #       end
     #
-    #   @yield [project] self ({Project})
+    #   @yieldparam project [Project] new project
     #
     # @overload initialize
     #   Without using blocks, the {Project} can be accessed directly. It is recommended that a block is used.
