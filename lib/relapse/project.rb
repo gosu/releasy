@@ -78,30 +78,52 @@ module Relapse
 
     # Can be used with or without a block to generate building and packaging tasks.
     #
-    # @overload initialize
-    #   Without using blocks, the {Project} can be accessed directly.
-    #   @example
-    #       project = Relapse::Project.new
-    #       project.name = "My Application"
-    #       project.version = "1.2.4"
-    #       output = project.add_build :source
-    #       output.add_archive :zip
-    #       project.generate_tasks
-    #
     # @overload initialize(&block)
     #   Using a block, the API is more terse and the tasks are automatically generated
-    #   when the block is closed.
+    #   when the block is closed (Uses a {DSLWrapper}). This is the preferred syntax!
     #
     #   @example
     #       Relapse::Project.new do
     #         name "My Application"
     #         version "1.2.4"
     #         add_build :source do
-    #           add_archive :zip
+    #           add_archive :tar_gz do
+    #             extension ".tgz"
+    #           end
     #         end
     #       end
     #
-    #   @yield [] bleh
+    #   @yield [] Block is evaluated in context of a {DSLWrapper} wrapping self.
+    #
+    # @overload initialize(&block)
+    #   Using a block that takes a parameter, self is passed, and so the API is similar to a Gem::Specification.
+    #   The tasks are automatically generated when the block is closed
+    #
+    #   @example
+    #       Relapse::Project.new do |p|
+    #         p.name = "My Application"
+    #         p.version = "1.2.4"
+    #         p.add_build :source do |b|
+    #           b.add_archive :tar_gz do |a|
+    #             a.extension = ".tgz"
+    #           end
+    #         end
+    #       end
+    #
+    #   @yield [project] self ({Project})
+    #
+    # @overload initialize
+    #   Without using blocks, the {Project} can be accessed directly. It is recommended that a block is used.
+    #
+    #   @example
+    #       project = Relapse::Project.new
+    #       project.name = "My Application"
+    #       project.version = "1.2.4"
+    #       builder = project.add_build :source
+    #       archiver = builder.add_archive :zip
+    #       archiver.extension = ".tgz"
+    #       project.generate_tasks # This has to be done manually.
+    #
     def initialize(&block)
       super()
 
@@ -118,7 +140,12 @@ module Relapse
       setup
 
       if block_given?
-        DSLWrapper.new(self, &block)
+        if block.arity == 0
+          DSLWrapper.new(self, &block)
+        else
+          yield self
+        end
+
         generate_tasks
       end
     end
@@ -134,7 +161,13 @@ module Relapse
       builder = Builders[type].new(self)
       @builders << builder
 
-      DSLWrapper.new(builder, &block) if block_given?
+      if block_given?
+        if block.arity == 0
+          DSLWrapper.new(builder, &block)
+        else
+          yield builder
+        end
+      end
 
       builder
     end

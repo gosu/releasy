@@ -88,10 +88,11 @@ context Relapse::Project do
 
         add_build :source
         add_build :osx_app do
-          add_archive :tar_gz
+          add_archive :tar_gz do
+            extension "tgz"
+          end
           wrapper Dir["../wrappers/gosu-mac-wrapper-*.tar.gz"].first
           url "org.url.app"
-          gemspecs Bundler.setup.gems
         end
         add_build :windows_standalone do
           exclude_encoding
@@ -160,6 +161,38 @@ context Relapse::Project do
         mock(topic).generate_archive_tasks
         topic.send :generate_tasks
       end
+    end
+
+    context "defined with Object#tap-like syntax" do
+      setup do
+        Relapse::Project.new do |p|
+          p.name = "Test Project - (2a)"
+          p.version = "v0.1.5"
+
+          p.add_archive :"7z"
+          p.add_archive :zip
+
+          p.add_build :source
+          p.add_build :osx_app do |b|
+            b.add_archive :tar_gz do |a|
+              a.extension = ".tgz"
+            end
+            b.wrapper = Dir["../wrappers/gosu-mac-wrapper-*.tar.gz"].first
+            b.url = "org.url.app"
+          end
+          p.add_build :windows_standalone do |b|
+            b.exclude_encoding
+          end
+
+          p.files = source_files
+
+          p.add_link "www.frog.com", "Frog"
+          p.add_link "www2.fish.com", "Fish"
+        end
+      end
+
+      # Just needed to test that the project was passing into the block.
+      asserts(:name).equals "Test Project - (2a)"
     end
   end
 end

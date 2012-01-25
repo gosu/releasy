@@ -28,6 +28,14 @@ def run_riot(example, index, filename)
   end
 end
 
+def process_method(method)
+  if method.has_tag? :example
+    context method.name do
+      method.tags(:example).each_with_index {|e, i| run_riot e.text, i, "#{method.name} #{e.object}" }
+    end
+  end
+end
+
 context "YARD @examples" do
   YARD.parse('lib/**/*.rb')
 
@@ -35,11 +43,8 @@ context "YARD @examples" do
     context object do
       object.tags(:example).each_with_index {|e, i| run_riot e.text, i, e.object.to_s }
       object.meths(:inherited => false, :included => false).each do |method|
-        if method.has_tag? :example
-          context method.name do
-            method.tags(:example).each_with_index {|e, i| run_riot e.text, i, "#{method.name} #{e.object}" }
-          end
-        end
+        process_method(method)
+        method.tags(:overload).each_with_index {|overload| process_method(overload) }
       end
     end
   end

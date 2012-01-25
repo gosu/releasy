@@ -13,7 +13,13 @@ module Mixins
       archiver = Archivers[type].new(respond_to?(:project) ? project : self)
       archivers << archiver
 
-      DSLWrapper.new(archiver, &block) if block_given?
+      if block_given?
+        if block.arity == 0
+          DSLWrapper.new(archiver, &block)
+        else
+          yield archiver
+        end
+      end
 
       archiver
     end
