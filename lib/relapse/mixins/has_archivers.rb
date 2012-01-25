@@ -3,7 +3,7 @@ module Mixins
   # An object that owns one or more instances of {Archivers::Archiver}
   module HasArchivers
     # Add an archive type to be generated for each of your outputs.
-    #
+    # @see Project#initialize
     # @param type [:exe, :"7z", :tar_bz2, :tar_gz, :zip]
     # @return [Project] self
     def add_archive(type, &block)

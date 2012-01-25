@@ -151,7 +151,7 @@ module Relapse
     end
 
     # Add a type of output to produce. Must define at least one of these.
-    #
+    # @see #initialize
     # @param type [:osx_app, :source, :windows_folder, :windows_folder_from_ruby_dist, :windows_installer, :windows_standalone]
     # @return [Project] self
     def add_build(type, &block)
