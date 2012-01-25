@@ -45,7 +45,7 @@ context Relapse::Builders::WindowsInstaller do
         end
 
         context "generate folder" do
-          hookup { redirect_bundler_gemfile { Rake::Task["build:windows:installer"].invoke } }
+          hookup { clear_bundler_env { Rake::Task["build:windows:installer"].invoke } }
 
           asserts("readme copied to folder") { same_contents? "#{folder}/README.txt", "README.txt" }
           asserts("license copied to folder") {  same_contents? "#{folder}/LICENSE.txt", "LICENSE.txt" }

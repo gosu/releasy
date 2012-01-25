@@ -39,12 +39,12 @@ context Relapse::Builders::WindowsFolder do
         end
 
         context "generate folder" do
-          hookup { redirect_bundler_gemfile { Rake::Task["build:windows:folder"].invoke } }
+          hookup { clear_bundler_env { Rake::Task["build:windows:folder"].invoke } }
 
           asserts("files copied to folder") { source_files.all? {|f| same_contents? "#{folder}/src/#{f}", f } }
           asserts("folder includes link") { File.read("#{folder}/Relapse website.url") == link_file }
           asserts("executable created in folder and is of reasonable size") { File.size("#{folder}/test_app.exe") > 0 }
-          asserts("program output") { redirect_bundler_gemfile { %x[#{folder}/test_app.exe] } }.equals "test run!\n"
+          asserts("program output") { %x[#{folder}/test_app.exe] }.equals "test run!\n"
         end
       end
     else

@@ -36,6 +36,8 @@ module Relapse
         sb.setenv('RUBYOPT', options[:rubyopt])
         sb.setenv('RUBYLIB', options[:rubylib])
         sb.setenv('GEM_PATH', (root / options[:gem_path]).to_native)
+        sb.setenv('BUNDLE_GEMFILE', '')
+        sb.setenv('BUNDLE_BIN_PATH', '')
 
         ruby_executable = options[:windows] ? "rubyw.exe" : "ruby.exe"
         exe = root / 'bin' / ruby_executable

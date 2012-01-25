@@ -14,11 +14,19 @@ def new_project
 end
 
 # Hack to allow test to work using a different gemfile than Relapse's.
-def redirect_bundler_gemfile
-  bundle_gemfile = ENV['BUNDLE_GEMFILE']
-  ENV['BUNDLE_GEMFILE'] = File.expand_path('test_project/Gemfile', $original_path)
+def clear_bundler_env
+  gemfile, bin_path = ENV['BUNDLE_GEMFILE'], ENV['BUNDLE_BIN_PATH']
+  ENV['BUNDLE_GEMFILE'], ENV['BUNDLE_BIN_PATH'] = '', ''
   ret_val = yield
-  ENV['BUNDLE_GEMFILE'] = bundle_gemfile
+  ENV['BUNDLE_GEMFILE'], ENV['BUNDLE_BIN_PATH'] = gemfile, bin_path
+  ret_val
+end
+
+def clear_all_env
+  rubylib, rubyopts = ENV['RUBYLIB'], ENV['RUBYOPTS']
+  ENV['RUBYLIB'], ENV['RUBYOPTS'] = '', ''
+  ret_val = clear_bundler_env { yield }
+  ENV['RUBYLIB'], ENV['RUBYOPTS'] = rubylib, rubyopts
   ret_val
 end
 

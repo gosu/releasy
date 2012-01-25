@@ -97,7 +97,7 @@ Dir[File.expand_path("wrappers/ruby-*.7z", $original_path)].each do |path_to_rub
         end
 
         if Gem.win_platform?
-          asserts("program output") { redirect_bundler_gemfile { %x[#{folder}/test_app.exe] } }.equals "test run!\n"
+          asserts("program output") { %x[#{folder}/test_app.exe] }.equals "test run!\n"
         end
       end
     end
