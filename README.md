@@ -5,41 +5,37 @@ _Releasy_ automates the release of Ruby applications (name comes from "Release +
 By configuring a {Releasy::Project} in your application's rakefile, Releasy can generates a number of Rake tasks for use
 when there is a need to release a new version of the application.
 
-Releasy allows cross-platform releases, relying on pre-made OS X or Windows wrappers to act as templates
-(Releasy is able to make the latter type of wrapper itself).
+Releasy allows cross-platform releases, relying on OS X or Windows "wrappers" to act as templates.
 
 * Author: [Bil Bas (Spooner)](https://github.com/Spooner)
 * Licence: [MIT](http://www.opensource.org/licenses/mit-license.php)
 * [Github project](https://github.com/Spooner/releasy)
 * [Reporting issues](https://github.com/Spooner/releasy/issues)
-* Wrappers used to build cross-platform releases:
-  - _Windows:_ [RubyInstaller 7-ZIP archives](http://rubyinstaller.org/downloads/); Ruby 1.8.7, 1.9.2 or 1.9.3
-  - _OS X:_ [libgosu downloads](http://www.libgosu.org/downloads/). Latest version of the OS X-compatible wrapper is "gosu-mac-wrapper-0.7.41.tar.gz" which uses Ruby 1.9.2 and includes some binary gems: Gosu, Chipmunk and TexPlay.
-* Tested on Ruby 1.9.3 and 1.8.7 on Windows, Lubuntu and OS X. However, since this is an early version, please ensure that you double-check any releases created by Releasy before publishing them!
+* Relapse has been tested on Ruby 1.9.3 and 1.8.7 on Windows, Lubuntu and OS X. However, since this is an early version, please ensure that you double-check any releases created by Releasy before publishing them!
 
 Output types supported
 ----------------------
 
-The project can create one or more release folders:
+The project can build one or more release folders:
 
 * `:source` - Plain source folder, which can be used by anyone with Ruby already installed.
-* `:osx_app` - OS X application bundle (.app) build, requiring a pre-made Ruby OS X wrapper [Note that this only contains binary gems for Gosu, TexPlay and Chipmunk, but will work with applications using any other source gems].
-* `:windows_folder` - A folder containing Ruby, application source files and an EXE to run them [creation on Windows only]
-* `:windows_folder_from_ruby_dist` - A folder containing Ruby, application source files and an EXE to run them, requiring a copy of a RubyInstaller archive [creation on OSX/Linux]
-* `:windows_installer` - A regular Windows installer [creation on Windows only and requires InnoSetup to be installed]
-* `:windows_standalone` - Standalone EXE file that self-extracts to a temporary directory - slower startup than the other Windows options [creation on Windows only]
+* `:osx_app` - OS X application bundle (.app) build, requiring a pre-made Ruby OS X wrapper. Note that this only contains binary gems for Gosu, TexPlay and Chipmunk, but will work with applications using any other source gems.
+* `:windows_folder` - A folder containing Ruby, application source files and an EXE to run them [creation on Windows only].
+* `:windows_folder_from_ruby_dist` - A folder containing Ruby, application source files and an EXE to run them, requiring a copy of a RubyInstaller archive [creation on OSX/Linux].
+* `:windows_installer` - A regular Windows installer [creation on Windows only and requires InnoSetup to be installed].
+* `:windows_standalone` - Standalone EXE file that self-extracts to a temporary directory - slower startup than the other Windows options [creation on Windows only].
 
 Archive types supported
 -----------------------
 
 Optionally, release folders can be archived using one or more of:
 
-* `:dmg` - OS X self-extractor (.dmg - requires `hdiutil` to be installed, so only available on OS X)
-* `:exe` - Windows self-extractor (.exe - Includes a 7z decompression module, so not efficient for small releases)
-* `:"7z"` - 7Zip format (.7z - Best compression)
-* `:tar_bz2` - BZip2 tarball (.tar.bz2)
-* `:tar_gz` - GZip tarball (.tar.gz)
-* `:zip` - Standard zip format (.zip - Poor compression, but best compatibility)
+* `:dmg` - OS X self-extractor (.dmg - requires `hdiutil` to be installed, so only available on OS X).
+* `:exe` - Windows self-extractor (.exe - Includes a 7z decompression module, so not efficient for small releases).
+* `:"7z"` - 7Zip format (.7z - Best compression).
+* `:tar_bz2` - BZip2 tarball (.tar.bz2).
+* `:tar_gz` - GZip tarball (.tar.gz).
+* `:zip` - Standard zip format (.zip - Poor compression, but best compatibility).
 
 Example
 -------
@@ -126,12 +122,12 @@ Releasy also provides some supplementary commands:
 * `releasy install-sfx [options]` - Installs a copy of the Windows self-extractor in the local 7z installation, to allow use of the `:exe` archive format (it comes with the Windows version of 7z, so only need to use this command on OS X/Linux).
 
 
-External Requirements (Optional, but recommended)
---------------------------------
+External Requirements
+---------------------
 
-### To create package archives (except `:dmg`)
+### 7-Zip
 
-[7z](http://www.7-zip.org) must be installed.
+[7z](http://www.7-zip.org) must be installed on your system for Releasy to work:
 
   - Installing on OS X homebrew:
 
@@ -145,9 +141,17 @@ External Requirements (Optional, but recommended)
 
     * [Download](http://www.7-zip.org/download.html)
 
-### To create `:windows_installer` output (Windows only)
+### To build `:windows_installer` release (Windows only)
 
-[InnoSetup](http://www.jrsoftware.org/isdl.php) must be installed.
+[InnoSetup](http://www.jrsoftware.org/isdl.php) is used to create an installer for the application.
+
+### To build `:windows_folder_from_ruby_dist` release (OS X/Linux)
+
+[RubyInstaller 7-ZIP archives](http://rubyinstaller.org/downloads/) for Ruby 1.8.7, 1.9.2 or 1.9.3. Used as a wrapper for a Windows release built on non-Windows systems.
+
+### To build `:osx_app` application bundle release (any platform)
+
+[libgosu app wrapper](http://www.libgosu.org/downloads/). Latest version of the OS X-compatible wrapper is "gosu-mac-wrapper-0.7.41.tar.gz" which uses Ruby 1.9.2 and includes some binary gems: Gosu, Chipmunk and TexPlay.
 
 Credits
 -------
@@ -161,5 +165,5 @@ Credits
 Third Party Assets included
 ---------------------------
 
-* bin/7z.sfx - Windows [7z 9.20](http://www.7-zip.org) self-extractor module [License: [GNU LGPL](http://www.7-zip.org/license.txt)]
+* bin/7z.sfx - Windows [7z 9.20](http://www.7-zip.org) self-extractor module, which can be installed using `releasy install-sfx` [License: [GNU LGPL](http://www.7-zip.org/license.txt)]
 
