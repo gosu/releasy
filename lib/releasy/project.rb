@@ -1,6 +1,7 @@
 require 'releasy/dsl_wrapper'
 require 'releasy/builders'
 require 'releasy/archivers'
+require 'releasy/deployers'
 require "releasy/mixins/has_archivers"
 
 module Releasy
@@ -130,6 +131,7 @@ module Releasy
       super()
 
       @builders = []
+      @deployers = []
       @links = {}
       @files = Rake::FileList.new
       @exposed_files = Rake::FileList.new
@@ -152,7 +154,7 @@ module Releasy
       end
     end
 
-    # Add a type of output to produce. Must define at least one of these.
+    # Add a type of build to produce. Must define at least one of these.
     # @see #initialize
     # @param type [:osx_app, :source, :windows_folder, :windows_folder_from_ruby_dist, :windows_installer, :windows_standalone]
     # @return [Project] self
@@ -172,6 +174,28 @@ module Releasy
       end
 
       builder
+    end
+
+    # Add a deployment method for archived packages.
+    # @see #initialize
+    # @param type [:github]
+    # @return [Project] self
+    def add_deploy(type, &block)
+      raise ArgumentError, "Unsupported deploy type #{type}" unless Deployers.has_type? type
+      raise ArgumentError, "Already have deploy #{type.inspect}" if @deployers.any? {|b| b.type == type }
+
+      deployer = Deployers[type].new(self)
+      @deployers << deployer
+
+      if block_given?
+        if block.arity == 0
+          DSLWrapper.new(deployer, &block)
+        else
+          yield deployer
+        end
+      end
+
+      deployer
     end
 
     # Add a link file to be included in the win32 releases. Will create the file _title.url_ for you.
@@ -210,11 +234,11 @@ module Releasy
       end
 
       build_groups.each_pair do |group, tasks|
-        desc "Build all #{group} outputs"
+        desc "Build all #{group}"
         task "build:#{group}" => tasks
       end
 
-      desc "Build all outputs"
+      desc "Build #{description}"
       task "build" => build_outputs
 
       generate_archive_tasks
@@ -222,10 +246,12 @@ module Releasy
       self
     end
 
-
-    def folder_base
-      File.join(output_path, "#{underscored_name}#{version ? "_#{underscored_version}" : ""}")
-    end
+    # Full name of the project, including the version name E.g. "My Application" or "My Application 0.1"
+    def description; name ? "#{name}#{version ? " #{version}" : ""}" : nil; end
+    # Full underscored name of the project. E.g. "my_application" or "my_application_0_1"
+    def underscored_description; underscored_name ? "#{underscored_name}#{version ? "_#{underscored_version}" : ""}" : nil; end
+    # Base name of folders that will be created, such as "pkg/my_application" or "pkg/my_application_0_1"
+    def folder_base; File.join(output_path, underscored_description.to_s); end
 
     protected
     # Only allow access to this from Builder
@@ -249,43 +275,78 @@ module Releasy
       windows_tasks = []
       osx_tasks = []
       top_level_tasks = []
+
       active_builders.each do |builder|
         output_task = builder.type.to_s.sub '_', ':'
 
         archivers = active_archivers(builder)
         archivers.each do |archiver|
-          archiver.send :generate_tasks, output_task, builder.send(:folder)
+          archiver.send :generate_tasks, output_task, builder.send(:folder), @deployers
+
+          task "deploy:#{output_task}:#{archiver.type}" => @deployers.map {|d| "deploy:#{output_task}:#{archiver.type}:#{d.type}" }
         end
 
-        desc "Package all #{builder.type}"
-        task "package:#{output_task}" => archivers.map {|c| "package:#{output_task}:#{c.type}" }
+        @deployers.each do |deployer|
+          task "deploy:#{output_task}:#{deployer.type}" => archivers.map {|a| "deploy:#{output_task}:#{a.type}:#{deployer.type}" }
+        end
+
+        task "package:#{output_task}" => archivers.map {|a| "package:#{output_task}:#{a.type}" }
 
         case output_task
           when /^windows:/
-            windows_tasks << "package:#{output_task}"
-            top_level_tasks << "package:windows" unless top_level_tasks.include? "package:windows"
+            windows_tasks << "#{output_task}"
+            top_level_tasks << "windows" unless top_level_tasks.include? "windows"
           when /^osx:/
             osx_tasks << "package:#{output_task}"
-            top_level_tasks << "package:osx" unless top_level_tasks.include? "package:osx"
+            top_level_tasks << "osx" unless top_level_tasks.include? "osx"
           else
-            top_level_tasks << "package:#{output_task}"
+            top_level_tasks << "#{output_task}"
         end
       end
 
+      # Windows tasks.
       unless windows_tasks.empty?
-        desc "Package all Windows"
-        task "package:windows" => windows_tasks
+        task "package:windows" => windows_tasks.map {|t| "package:#{t}" }
+
+        generate_deploy_tasks "windows", windows_tasks
       end
 
+      # OS X tasks.
       unless osx_tasks.empty?
-        desc "Package all OS X"
-        task "package:osx" => osx_tasks
+        task "package:osx" => osx_tasks.map {|t| "package:#{t}" }
+
+        generate_deploy_tasks "osx", osx_tasks
       end
 
-      desc "Package all"
-      task "package" => top_level_tasks
+      # Top level tasks.
+      desc "Package #{description}"
+      task "package" => top_level_tasks.map {|t| "package:#{t}" }
+
+      unless @deployers.empty?
+        desc "Deploy #{description}"
+        task "deploy" => top_level_tasks.map {|t| "deploy:#{t}" }
+
+        generate_deploy_tasks "", top_level_tasks
+      end
 
       self
+    end
+
+    protected
+    def generate_deploy_tasks(task_name, tasks)
+      deploy_task = task_name.empty? ? "deploy" : "deploy:#{task_name}"
+
+      unless @deployers.empty?
+        task deploy_task => tasks.map {|t| "deploy:#{t}" }
+
+        @deployers.each do |deployer|
+          task "#{deploy_task}:#{deployer.type}" => tasks.map {|t| "deploy:#{t}:#{deployer.type}" }
+        end
+
+        tasks.each do |t|
+          task "deploy:#{t}" => @deployers.map {|d| "deploy:#{t}:#{d.type}" }
+        end
+      end
     end
 
     protected

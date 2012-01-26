@@ -3,7 +3,7 @@ Releasy
 
 _Releasy_ automates the release of Ruby applications (name comes from "Release + easy").
 By configuring a {Releasy::Project} in your application's rakefile, Releasy can generates a number of Rake tasks for use
-when there is a need to release a new version of the application.
+when there is a need to build, archive and/or deploy a new version of the application.
 
 Releasy allows cross-platform releases, relying on OS X or Windows "wrappers" to act as templates.
 
@@ -13,7 +13,7 @@ Releasy allows cross-platform releases, relying on OS X or Windows "wrappers" to
 * [Reporting issues](https://github.com/Spooner/releasy/issues)
 * Relapse has been tested on Ruby 1.9.3 and 1.8.7 on Windows, Lubuntu and OS X. However, since this is an early version, please ensure that you double-check any releases created by Releasy before publishing them!
 
-Output types supported
+Build types supported
 ----------------------
 
 The project can build one or more release folders:
@@ -37,33 +37,40 @@ Optionally, release folders can be archived using one or more of:
 * `:tar_gz` - GZip tarball (.tar.gz).
 * `:zip` - Standard zip format (.zip - Poor compression, but best compatibility).
 
+Deploy types supported
+----------------------
+
+Optionally, archived releases can be deployed using one or more of:
+
+* `:github` - Upload to Github downloads.
+* Others, such as `:dropbox`, when I get around to implementing them.
+
 Example
 -------
 
 ### Project's Rakefile
 
-    # Example is from my game, Alpha Channel.
     require 'rubygems'
     require 'bundler/setup' # Releasy doesn't require that your application uses bundler, but it does make things easier.
     require 'releasy'
-    require 'lib/alpha_channel/version'
+    require 'lib/my_application/version'
 
     #<<<
     Releasy::Project.new do
-      name "Alpha Channel"
-      version AlphaChannel::VERSION
+      name "My Application"
+      version MyApplication::VERSION
 
-      executable "bin/alpha_channel.rbw"
+      executable "bin/my_application.rbw"
       files `git ls-files`.split("\n")
       files.exclude '.gitignore'
 
       exposed_files ["README.html", "LICENSE.txt"]
-      add_link "http://spooner.github.com/games/alpha_channel", "Alpha Channel website"
+      add_link "http://my_application.github.com", "My Application website"
 
       # Create a variety of releases, for all platforms.
       add_build :osx_app do
         add_archive :tar_gz
-        url "com.github.spooner.games.alpha_channel"
+        url "com.github.my_application"
         wrapper "../osx_app/gosu-mac-wrapper-0.7.41.tar.gz"
         icon "media/icon.icns"
       end
@@ -72,8 +79,8 @@ Example
 
       add_build :windows_folder do
         icon "media/icon.ico"
-        add_archive :exe
         exclude_encoding
+        add_archive :exe        
       end
 
       add_build :windows_installer do
@@ -85,6 +92,8 @@ Example
       end
 
       add_archive :zip # All outputs given this archive format.
+      
+      add_deploy :github
     end
     #>>>
 
@@ -93,26 +102,27 @@ Example
 Note: The `windows:folder`, `windows:installer` and `windows:standalone` will be created only if running on Windows.
 The `windows:folder_from_ruby_dist` task will not be created if running on Windows.
 
-    rake build                         # Build all outputs
-    rake build:osx                     # Build all osx outputs
-    rake build:osx:app                 # Build OS X app
-    rake build:source                  # Build source folder
-    rake build:windows                 # Build all Windows outputs
-    rake build:windows:folder          # Build source/exe folder 1.4.0
-    rake build:windows:installer       # Build installer 1.4.0 [Innosetup]
-    rake package                       # Package all
-    rake package:osx                   # Package all OS X
-    rake package:osx:app               # Package all :osx_app
-    rake package:osx:app:tar_gz        # Create pkg/alpha_channel_1_4_0_OSX.tar.gz
-    rake package:osx:app:zip           # Create pkg/alpha_channel_1_4_0_OSX.zip
-    rake package:source                # Package all :source
-    rake package:source:zip            # Create pkg/alpha_channel_1_4_0_SOURCE.zip
-    rake package:windows               # Package all Windows outputs
-    rake package:windows:folder        # Package all :windows_folder outputs
-    rake package:windows:folder:exe    # Create pkg/alpha_channel_1_4_0_WIN32.exe
-    rake package:windows:folder:zip    # Create pkg/alpha_channel_1_4_0_WIN32.zip
-    rake package:windows:installer     # Package all :windows_installer
-    rake package:windows:installer:zip # Create pkg/alpha_channel_1_4_0_WIN32_I...
+    rake build                                # Build My Application 1.4.0
+    rake build:osx                            # Build all osx
+    rake build:osx:app                        # Build OS X app
+    rake build:source                         # Build source
+    rake build:windows                        # Build all windows
+    rake build:windows:folder                 # Build windows folder
+    rake build:windows:installer              # Build windows installer
+    rake deploy                               # Deploy My Application 1.4.0
+    rake deploy:osx:app:zip:github            # github <= osx app zip
+    rake deploy:source:zip:github             # github <= source zip
+    rake deploy:windows:folder:zip:github     # github <= windows folder zip
+    rake deploy:windows:installer:zip:github  # github <= windows installer zip
+    rake generate:images                      # Generate images
+    rake package                              # Package My Application 1.4.0
+    rake package:osx:app:zip                  # Package osx app zip
+    rake package:source:zip                   # Package source zip
+    rake package:windows:folder:zip           # Package windows folder zip
+    rake package:windows:installer:zip        # Package windows installer zip
+
+A variety of unlisted tasks are also created, that allow for more control, such as `deploy:github` (Deploy all packages to Github only),
+`deploy:windows:folder` (deploy all windows folder packages all destinations) or `package:windows` (Package all windows builds).
 
 CLI Commands
 ------------

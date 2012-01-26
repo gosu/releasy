@@ -11,7 +11,7 @@ module Releasy
 
       protected
       def generate_tasks
-        desc "Build source folder"
+        desc "Build source"
         task "build:source" => folder
 
         directory folder

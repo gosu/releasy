@@ -28,6 +28,8 @@ context "Source in all formats" do
 
       add_archive :tar_gz
       add_archive :tar_bz2
+
+      add_deploy :github
     end
   end
 
@@ -46,6 +48,23 @@ context "Source in all formats" do
 
   context "tasks" do
     tasks = [
+        [ :Task, "deploy", %w[deploy:source] ],
+        [ :Task, "deploy:github", %w[deploy:source:github] ],
+        [ :Task, "deploy:source", %w[deploy:source:github] ],
+        [ :Task, "deploy:source:github", %w[deploy:source:dmg:github deploy:source:7z:github deploy:source:exe:github deploy:source:tar_gz:github deploy:source:tar_bz2:github deploy:source:zip:github] ],
+        [ :Task, "deploy:source:dmg", %w[deploy:source:dmg:github] ],
+        [ :Task, "deploy:source:dmg:github", %w[package:source:dmg] ],
+        [ :Task, "deploy:source:7z", %w[deploy:source:7z:github] ],
+        [ :Task, "deploy:source:7z:github", %w[package:source:7z] ],
+        [ :Task, "deploy:source:exe", %w[deploy:source:exe:github] ],
+        [ :Task, "deploy:source:exe:github", %w[package:source:exe] ],
+        [ :Task, "deploy:source:tar_gz", %w[deploy:source:tar_gz:github] ],
+        [ :Task, "deploy:source:tar_gz:github", %w[package:source:tar_gz] ],
+        [ :Task, "deploy:source:tar_bz2", %w[deploy:source:tar_bz2:github] ],
+        [ :Task, "deploy:source:tar_bz2:github", %w[package:source:tar_bz2] ],
+        [ :Task, "deploy:source:zip", %w[deploy:source:zip:github] ],
+        [ :Task, "deploy:source:zip:github", %w[package:source:zip] ],
+
         [ :Task, "package", %w[package:source] ],
         [ :Task, "package:source", %w[package:source:dmg package:source:7z package:source:exe package:source:tar_gz package:source:tar_bz2 package:source:zip] ],
         [ :Task, "package:source:dmg", ["#{folder}.dmg"] ],

@@ -40,7 +40,7 @@ require File.expand_path("../teststrap", File.dirname(__FILE__))
     end
 
     context "generated tasks" do
-      hookup { topic.send :generate_tasks, "source", "frog" }
+      hookup { topic.send :generate_tasks, "source", "frog", [] }
 
       tasks = [
           [:FileTask, "frog#{extension}", %w[frog]],

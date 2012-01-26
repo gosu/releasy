@@ -27,10 +27,12 @@ module Archivers
 
     protected
     # Generate tasks to create the archive of this file.
-    def generate_tasks(output_task, folder)
+    def generate_tasks(output_task, folder, deployers)
       pkg = package folder
 
-      desc "Create #{pkg}"
+      deployers.each {|d| d.send :generate_tasks, "#{output_task}:#{type}", pkg }
+
+      desc "Package #{output_task.tr(":", " ")} #{type}"
       task "package:#{output_task}:#{type}" => pkg
 
       file pkg => folder do

@@ -20,6 +20,8 @@ context Releasy::Project do
     asserts(:name).nil
     asserts(:underscored_name).nil
     asserts(:version).nil
+    asserts(:description).nil
+    asserts(:underscored_description).nil
     asserts(:executable).nil
     asserts(:files).empty
     asserts(:files).kind_of Rake::FileList
@@ -111,6 +113,8 @@ context Releasy::Project do
     asserts(:version).equals "v0.1.5"
     asserts("file") { topic.files.to_a }.same_elements source_files
     asserts(:underscored_version).equals "v0_1_5"
+    asserts(:description).equals "Test Project - (2a) v0.1.5"
+    asserts(:underscored_description).equals "test_project_2a_v0_1_5"
     asserts(:executable).equals "bin/test_project_2a"
     asserts(:folder_base).equals "pkg/test_project_2a_v0_1_5"
     asserts(:links).equals "www.frog.com" => "Frog", "www2.fish.com" => "Fish"
@@ -143,7 +147,7 @@ context Releasy::Project do
 
       should "call generate_tasks on all archivers" do
         topic.send(:active_builders).each do |builder|
-          topic.send(:active_archivers, builder).each {|a| mock(a).generate_tasks(builder.type.to_s.sub('_', ':'), builder.send(:folder)) }
+          topic.send(:active_archivers, builder).each {|a| mock(a).generate_tasks(builder.type.to_s.sub('_', ':'), builder.send(:folder), []) }
         end
         topic.send :generate_archive_tasks
       end

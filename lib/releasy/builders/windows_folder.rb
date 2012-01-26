@@ -36,7 +36,7 @@ module Releasy
           project.exposed_files.each {|file| cp file, folder }
         end
 
-        desc "Build source/exe folder #{project.version}"
+        desc "Build windows folder"
         task "build:windows:folder" => folder
       end
 

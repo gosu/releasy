@@ -34,7 +34,7 @@ module Releasy
           rm temp_installer_script
         end
 
-        desc "Build installer #{project.version} [Innosetup]"
+        desc "Build windows installer"
         task "build:windows:installer" => folder
       end
 

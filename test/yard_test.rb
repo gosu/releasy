@@ -50,7 +50,7 @@ context "YARD @examples" do
   end
 end
 
-module AlphaChannel
+module MyApplication
   VERSION = "1.2.2"
 end
 
