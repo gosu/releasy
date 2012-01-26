@@ -127,7 +127,7 @@ External Requirements
 
 ### 7-Zip
 
-[7z](http://www.7-zip.org) must be installed on your system for Releasy to work:
+The [7z](http://www.7-zip.org) command must be installed on your system for Releasy to work:
 
   - Installing on OS X homebrew:
 
@@ -139,7 +139,7 @@ External Requirements
 
   - Installing on Windows (or other OS)
 
-    * [Download](http://www.7-zip.org/download.html)
+    * [Download 7-Zip](http://www.7-zip.org/download.html) - Either the full version or the command line version will work with Releasy.
 
 ### To build `:windows_installer` release (Windows only)
 
