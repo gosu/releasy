@@ -20,7 +20,6 @@ context Releasy::Mixins::Register do
   end
 
   asserts("trying to register a non-class") { topic.register 12 }.raises TypeError, /Can only register classes/
-  asserts("trying to register a class not within the module") { topic.register NotInModule }.raises ArgumentError, /Can't register a class not within this module/
   asserts("trying to register a class without TYPE, even if in the module") { topic.register topic::Untyped }.raises ArgumentError, /To register, a class must have TYPE defined/
 
   context "with registered classes (blue and red frogs)" do

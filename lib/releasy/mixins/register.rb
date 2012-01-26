@@ -35,7 +35,6 @@ module Releasy
       # @param klass [Object] Object, which is defined within the namespace being registered with.
       def register(klass)
         raise TypeError, "Can only register classes" unless klass.is_a? Class
-        raise ArgumentError, "Can't register a class not within this module" unless klass.name.split('::')[0...-1].join('::') == name
         raise ArgumentError, "To register, a class must have TYPE defined" unless klass.const_defined? :TYPE
         registered[klass::TYPE] = klass
       end
