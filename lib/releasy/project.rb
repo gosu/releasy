@@ -210,7 +210,7 @@ module Releasy
     # Generates all tasks required by the user. Automatically called at the end of the block, if {#initialize} is given a block.
     # @return [Project] self
     def generate_tasks
-      raise ConfigError, "Must specify at least one valid output for this OS with #add_build before tasks can be generated" if @builders.empty?
+      raise ConfigError, "Must use #add_build at least once before tasks can be generated" if @builders.empty?
 
       # Even if there are builders specified, none may work on this platform.
       return if active_builders.empty?

@@ -35,7 +35,7 @@ context Releasy::Project do
     asserts(:output_path).equals "pkg"
     asserts(:folder_base).equals "pkg/" # Would be more, but dependent on name.
 
-    asserts("attempting to generate tasks without any outputs") { topic.send :generate_tasks }.raises Releasy::ConfigError, /must specify at least one valid output/i
+    asserts("attempting to generate tasks without any outputs") { topic.send :generate_tasks }.raises Releasy::ConfigError, /Must use #add_build at least once before tasks can be generated/i
 
     asserts(:active_builders).empty
     asserts(:add_build, :source).kind_of Releasy::Builders::Source
