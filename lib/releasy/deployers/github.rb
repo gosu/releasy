@@ -1,4 +1,3 @@
-require 'net/github-upload'
 require 'releasy/deployers/deployer'
 
 module Releasy
@@ -83,6 +82,8 @@ module Releasy
       def deploy(file)
         raise ConfigError, "#user must be set manually if it is not configured on the system" unless user
         raise ConfigError, "#token must be set manually if it is not configured on the system" unless token
+
+        require 'net/github-upload' # Hold off requiring this unless needed, so it doesn't slow down creating tasks.
 
         uploader = Net::GitHub::Upload.new(:login => user, :token => token)
 
