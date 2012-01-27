@@ -20,14 +20,14 @@ context "Source in all formats" do
       create_md5s
 
       add_build :source do
-        add_archive :dmg
-        add_archive :exe
-        add_archive :zip
-        add_archive :"7z"
+        add_package :dmg
+        add_package :exe
+        add_package :zip
+        add_package :"7z"
       end
 
-      add_archive :tar_gz
-      add_archive :tar_bz2
+      add_package :tar_gz
+      add_package :tar_bz2
 
       add_deploy :github
     end

@@ -1,4 +1,4 @@
-require "releasy/mixins/has_archivers"
+require "releasy/mixins/has_packagers"
 require "releasy/mixins/exec"
 require "releasy/mixins/log"
 
@@ -8,7 +8,7 @@ module Builders
   # @abstract
   class Builder
     include Rake::DSL
-    include Mixins::HasArchivers
+    include Mixins::HasPackagers
     include Mixins::Exec
     include Mixins::Log
 

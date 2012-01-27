@@ -1,22 +1,22 @@
 require File.expand_path("../teststrap", File.dirname(__FILE__))
 
-# Test all archivers at once, since they are pretty much identical.
+# Test all packagers at once, since they are pretty much identical.
 [
-    [:dmg,     Releasy::Archivers::Dmg,      %[GZIP=-9 hdiutil create -fs HFS+ -srcfolder "f" -volname "Test App 0.1" "f.dmg"]],
-    [:exe,     Releasy::Archivers::Exe,      %[7z a -mmt -bd -t7z -mx9 -sfx7z.sfx "f.exe" "f"]],
-    [:"7z",    Releasy::Archivers::SevenZip, %[7z a -mmt -bd -t7z -mx9 "f.7z" "f"]],
-    [:tar_bz2, Releasy::Archivers::TarBzip2, %[7z a -so -mmt -bd -ttar "f.tar" "f" | 7z a -si -bd -tbzip2 -mx9 "f.tar.bz2"]],
-    [:tar_gz,  Releasy::Archivers::TarGzip,  %[7z a -so -mmt -bd -ttar "f.tar" "f" | 7z a -si -bd -tgzip -mx9 "f.tar.gz"]],
-    [:zip,     Releasy::Archivers::Zip,      %[7z a -mmt -bd -tzip -mx9 "f.zip" "f"]],
-].each do |type, archiver, command|
+    [:dmg,     Releasy::Packagers::Dmg,      %[GZIP=-9 hdiutil create -fs HFS+ -srcfolder "f" -volname "Test App 0.1" "f.dmg"]],
+    [:exe,     Releasy::Packagers::Exe,      %[7z a -mmt -bd -t7z -mx9 -sfx7z.sfx "f.exe" "f"]],
+    [:"7z",    Releasy::Packagers::SevenZip, %[7z a -mmt -bd -t7z -mx9 "f.7z" "f"]],
+    [:tar_bz2, Releasy::Packagers::TarBzip2, %[7z a -so -mmt -bd -ttar "f.tar" "f" | 7z a -si -bd -tbzip2 -mx9 "f.tar.bz2"]],
+    [:tar_gz,  Releasy::Packagers::TarGzip,  %[7z a -so -mmt -bd -ttar "f.tar" "f" | 7z a -si -bd -tgzip -mx9 "f.tar.gz"]],
+    [:zip,     Releasy::Packagers::Zip,      %[7z a -mmt -bd -tzip -mx9 "f.zip" "f"]],
+].each do |type, packager, command|
   extension = "." + type.to_s.tr("_", ".")
 
-  context archiver do
+  context packager do
     setup do
       project = Releasy::Project.new
       project.name = "Test App"
       project.version = "0.1"
-      archiver.new project
+      packager.new project
     end
     teardown { Rake::Task.clear }
 
@@ -50,11 +50,11 @@ require File.expand_path("../teststrap", File.dirname(__FILE__))
     context "class" do
       setup { topic.class }
 
-      asserts("#{archiver}::TYPE") { topic::TYPE }.equals type
+      asserts("#{packager}::TYPE") { topic::TYPE }.equals type
 
       if type == :exe
-        asserts("#{archiver}::SFX_NAME") { topic::SFX_NAME }.equals "7z.sfx"
-        asserts("#{archiver}::SFX_FILE") { topic::SFX_FILE }.equals File.expand_path("bin/7z.sfx", $original_path)
+        asserts("#{packager}::SFX_NAME") { topic::SFX_NAME }.equals "7z.sfx"
+        asserts("#{packager}::SFX_FILE") { topic::SFX_FILE }.equals File.expand_path("bin/7z.sfx", $original_path)
         asserts("sfx file included") { File.exists? topic::SFX_FILE }
       end
     end

@@ -1,13 +1,13 @@
-require "releasy/archivers/archiver"
+require "releasy/packagers/packager"
 
 module Releasy
-  module Archivers
+  module Packagers
     # OS X .dmg format (self-extractor).
-    class Dmg < Archiver
+    class Dmg < Packager
       TYPE = :dmg
       DEFAULT_EXTENSION = ".dmg"
 
-      Archivers.register self
+      Packagers.register self
 
       protected
       def command(folder)

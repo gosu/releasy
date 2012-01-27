@@ -11,7 +11,7 @@ def new_project
 
   project.add_build :source
 
-  project.add_archive :"7z"
+  project.add_package :"7z"
 
   project
 end

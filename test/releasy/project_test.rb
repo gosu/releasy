@@ -43,11 +43,11 @@ context Releasy::Project do
     asserts(:add_build, :source).raises(Releasy::ConfigError, /already have output :source/i)
     asserts(:add_build, :unknown).raises(ArgumentError, /unsupported output/i)
 
-    asserts("active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).first) }.empty
-    asserts(:add_archive, :zip).kind_of Releasy::Archivers::Zip
-    asserts("active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).first) }.size 1
-    asserts(:add_archive, :zip).raises(Releasy::ConfigError, /already have archive format :zip/i)
-    asserts(:add_archive, :unknown).raises(ArgumentError, /unsupported archive/i)
+    asserts("active_packagers") { topic.send(:active_packagers, topic.send(:active_builders).first) }.empty
+    asserts(:add_package, :zip).kind_of Releasy::Packagers::Zip
+    asserts("active_packagers") { topic.send(:active_packagers, topic.send(:active_builders).first) }.size 1
+    asserts(:add_package, :zip).raises(Releasy::ConfigError, /already have archive format :zip/i)
+    asserts(:add_package, :unknown).raises(ArgumentError, /unsupported archive/i)
 
     context "#verbose" do
       hookup { topic.verbose }
@@ -83,13 +83,13 @@ context Releasy::Project do
         name "Test Project - (2a)"
         version "v0.1.5"
 
-        add_archive :"7z"
-        add_archive :zip
+        add_package :"7z"
+        add_package :zip
         exclude_encoding
 
         add_build :source
         add_build :osx_app do
-          add_archive :tar_gz do
+          add_package :tar_gz do
             extension ".tgz"
           end
           wrapper Dir["../wrappers/gosu-mac-wrapper-*.tar.gz"].first
@@ -120,10 +120,10 @@ context Releasy::Project do
     asserts(:links).equals "www.frog.com" => "Frog", "www2.fish.com" => "Fish"
 
     asserts(:active_builders).size(Gem.win_platform? ? 3 : 2)
-    asserts("source active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).find {|b| b.type == :source }) }.size 2
-    asserts("osx app active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).find {|b| b.type == :osx_app }) }.size 3
+    asserts("source active_packagers") { topic.send(:active_packagers, topic.send(:active_builders).find {|b| b.type == :source }) }.size 2
+    asserts("osx app active_packagers") { topic.send(:active_packagers, topic.send(:active_builders).find {|b| b.type == :osx_app }) }.size 3
     if Gem.win_platform?
-      asserts("Windows standalone active_archivers") { topic.send(:active_archivers, topic.send(:active_builders).find {|b| b.type == :windows_standalone }) }.size 2
+      asserts("Windows standalone active_packagers") { topic.send(:active_packagers, topic.send(:active_builders).find {|b| b.type == :windows_standalone }) }.size 2
     end
 
     asserts "add_build yields an instance_eval-ed Releasy::DSLWrapper" do
@@ -134,10 +134,10 @@ context Releasy::Project do
       correct
     end
 
-    asserts "add_archive yields an instance_eval-ed Releasy::DSLWrapper" do
+    asserts "add_package yields an instance_eval-ed Releasy::DSLWrapper" do
       correct = false
-      topic.add_archive :tar_gz do
-        correct = (is_a?(Releasy::DSLWrapper) and owner.is_a?(Releasy::Archivers::TarGzip))
+      topic.add_package :tar_gz do
+        correct = (is_a?(Releasy::DSLWrapper) and owner.is_a?(Releasy::Packagers::TarGzip))
       end
       correct
     end
@@ -145,9 +145,9 @@ context Releasy::Project do
     context "#generate_archive_tasks" do
       asserts(:generate_archive_tasks).equals { topic }
 
-      should "call generate_tasks on all archivers" do
+      should "call generate_tasks on all packagers" do
         topic.send(:active_builders).each do |builder|
-          topic.send(:active_archivers, builder).each {|a| mock(a).generate_tasks(builder.type.to_s.sub('_', ':'), builder.send(:folder), []) }
+          topic.send(:active_packagers, builder).each {|a| mock(a).generate_tasks(builder.type.to_s.sub('_', ':'), builder.send(:folder), []) }
         end
         topic.send :generate_archive_tasks
       end
@@ -173,12 +173,12 @@ context Releasy::Project do
           p.name = "Test Project - (2a)"
           p.version = "v0.1.5"
 
-          p.add_archive :"7z"
-          p.add_archive :zip
+          p.add_package :"7z"
+          p.add_package :zip
 
           p.add_build :source
           p.add_build :osx_app do |b|
-            b.add_archive :tar_gz do |a|
+            b.add_package :tar_gz do |a|
               a.extension = ".tgz"
             end
             b.wrapper = Dir["../wrappers/gosu-mac-wrapper-*.tar.gz"].first

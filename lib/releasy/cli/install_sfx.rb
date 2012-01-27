@@ -1,9 +1,9 @@
 require 'cri'
-require "releasy/archivers/exe"
+require "releasy/packagers/exe"
 
 command = 'install-sfx'
-sfx_file = Releasy::Archivers::Exe::SFX_NAME
-sfx_path = Releasy::Archivers::Exe::SFX_FILE
+sfx_file = Releasy::Packagers::Exe::SFX_NAME
+sfx_path = Releasy::Packagers::Exe::SFX_FILE
 
 Releasy::Cli.define_command do
   name        command

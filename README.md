@@ -25,10 +25,10 @@ The project can build one or more release folders:
 * `:windows_installer` - A regular Windows installer [creation on Windows only and requires InnoSetup to be installed].
 * `:windows_standalone` - Standalone EXE file that self-extracts to a temporary directory - slower startup than the other Windows options [creation on Windows only].
 
-Archive types supported
+Package types supported
 -----------------------
 
-Optionally, release folders can be archived using one or more of:
+Optionally, release folders can be packaged into an archive using one or more of:
 
 * `:dmg` - OS X self-extractor (.dmg - requires `hdiutil` to be installed, so only available on OS X).
 * `:exe` - Windows self-extractor (.exe - Includes a 7z decompression module, so not efficient for small releases).
@@ -40,7 +40,7 @@ Optionally, release folders can be archived using one or more of:
 Deploy types supported
 ----------------------
 
-Optionally, archived releases can be deployed using one or more of:
+Optionally, packaged releases can be deployed using one or more of:
 
 * `:github` - Upload to Github downloads.
 * Others, such as `:dropbox`, when I get around to implementing them.
@@ -73,16 +73,16 @@ Example
         url "com.github.my_application"
         wrapper "../osx_app/gosu-mac-wrapper-0.7.41.tar.gz"
         icon "media/icon.icns"
-        add_archive :tar_gz
+        add_package :tar_gz
       end
 
       add_build :source do
-        add_archive :zip
+        add_package :zip
       end
 
       add_build :windows_folder do
         icon "media/icon.ico"
-        add_archive :exe
+        add_package :exe
       end
 
       add_build :windows_installer do
@@ -90,7 +90,7 @@ Example
         start_menu_group "Spooner Games"
         readme "README.html" # User asked if they want to view readme after install.
         license "LICENSE.txt" # User asked to read this and confirm before installing.
-        add_archive :zip
+        add_package :zip
       end
 
       add_deploy :github # Upload to a github project.

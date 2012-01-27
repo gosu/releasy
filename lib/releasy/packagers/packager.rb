@@ -4,19 +4,19 @@ require "releasy/mixins/exec"
 require "releasy/mixins/log"
 
 module Releasy
-module Archivers
+module Packagers
   # Archives a build folder.
   #
   # @abstract
   # @attr extension [String] Extension of archive to be created (such as ".zip").
-  class Archiver
+  class Packager
     include Rake::DSL
     include Mixins::Exec
     include Mixins::Log
 
     MD5_READ_SIZE = 128 * 64 # MD5 likes 128 byte chunks.
 
-    # @return [Project] Project this Archiver was created by.
+    # @return [Project] Project this Packager was created by.
     attr_reader :project
 
     attr_reader :extension

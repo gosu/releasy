@@ -1,13 +1,13 @@
-require "releasy/archivers/tar_archiver"
+require "releasy/packagers/tar_packager"
 
 module Releasy
-  module Archivers
+  module Packagers
     # Archives with tar and Bzip2 formats.
-    class TarBzip2 < TarArchiver
+    class TarBzip2 < TarPackager
       TYPE = :tar_bz2
       DEFAULT_EXTENSION = ".tar.bz2"
       FORMAT = "bzip2"
-      Archivers.register self
+      Packagers.register self
     end
   end
 end

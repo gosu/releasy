@@ -1,18 +1,18 @@
-require "releasy/archivers/archiver"
+require "releasy/packagers/packager"
 
 module Releasy
-  module Archivers
+  module Packagers
     # Windows self-extracting archive.
     #
     # If not on Windows, run "releasy install-sfx" after installing 7z, before you can use this.
-    class Exe < Archiver
+    class Exe < Packager
       TYPE = :exe
       DEFAULT_EXTENSION = ".exe"
 
       SFX_NAME = "7z.sfx"
       SFX_FILE = File.expand_path("../../../../bin/#{SFX_NAME}", __FILE__)
 
-      Archivers.register self
+      Packagers.register self
 
       protected
       def command(folder)

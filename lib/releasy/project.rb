@@ -1,8 +1,8 @@
 require 'releasy/dsl_wrapper'
 require 'releasy/builders'
-require 'releasy/archivers'
+require 'releasy/packagers'
 require 'releasy/deployers'
-require "releasy/mixins/has_archivers"
+require "releasy/mixins/has_packagers"
 require "releasy/mixins/can_exclude_encoding"
 require "releasy/mixins/log"
 
@@ -17,7 +17,7 @@ module Releasy
   # @attr exposed_files [Rake::FileList] Files which should always be copied into the archive folder root, so they are always visible to the user. e.g readme, change-log and/or license files.
   class Project
     include Rake::DSL
-    include Mixins::HasArchivers
+    include Mixins::HasPackagers
     include Mixins::CanExcludeEncoding
     include Mixins::Log
 
@@ -89,7 +89,7 @@ module Releasy
     #         name "My Application"
     #         version "1.2.4"
     #         add_build :source do
-    #           add_archive :tar_gz do
+    #           add_package :tar_gz do
     #             extension ".tgz"
     #           end
     #         end
@@ -106,7 +106,7 @@ module Releasy
     #         p.name = "My Application"
     #         p.version = "1.2.4"
     #         p.add_build :source do |b|
-    #           b.add_archive :tar_gz do |a|
+    #           b.add_package :tar_gz do |a|
     #             a.extension = ".tgz"
     #           end
     #         end
@@ -122,8 +122,8 @@ module Releasy
     #       project.name = "My Application"
     #       project.version = "1.2.4"
     #       builder = project.add_build :source
-    #       archiver = builder.add_archive :zip
-    #       archiver.extension = ".tgz"
+    #       packager = builder.add_package :zip
+    #       packager.extension = ".tgz"
     #       project.generate_tasks # This has to be done manually.
     #
     def initialize(&block)
@@ -277,18 +277,18 @@ module Releasy
       active_builders.each do |builder|
         output_task = builder.type.to_s.sub '_', ':'
 
-        archivers = active_archivers(builder)
-        archivers.each do |archiver|
-          archiver.send :generate_tasks, output_task, builder.send(:folder), @deployers
+        packagers = active_packagers(builder)
+        packagers.each do |packager|
+          packager.send :generate_tasks, output_task, builder.send(:folder), @deployers
 
-          task "deploy:#{output_task}:#{archiver.type}" => @deployers.map {|d| "deploy:#{output_task}:#{archiver.type}:#{d.type}" }
+          task "deploy:#{output_task}:#{packager.type}" => @deployers.map {|d| "deploy:#{output_task}:#{packager.type}:#{d.type}" }
         end
 
         @deployers.each do |deployer|
-          task "deploy:#{output_task}:#{deployer.type}" => archivers.map {|a| "deploy:#{output_task}:#{a.type}:#{deployer.type}" }
+          task "deploy:#{output_task}:#{deployer.type}" => packagers.map {|a| "deploy:#{output_task}:#{a.type}:#{deployer.type}" }
         end
 
-        task "package:#{output_task}" => archivers.map {|a| "package:#{output_task}:#{a.type}" }
+        task "package:#{output_task}" => packagers.map {|a| "package:#{output_task}:#{a.type}" }
 
         case output_task
           when /^windows:/
@@ -348,12 +348,12 @@ module Releasy
     end
 
     protected
-    def active_archivers(builder)
-      # Use archivers specifically set on the builder and those set globally that aren't on the builder.
-      archivers = builder.send(:active_archivers)
-      archiver_types = archivers.map(&:type)
+    def active_packagers(builder)
+      # Use packagers specifically set on the builder and those set globally that aren't on the builder.
+      packagers = builder.send(:active_packagers)
+      packager_types = packagers.map(&:type)
 
-      archivers + super().reject {|a| archiver_types.include? a.type }
+      packagers + super().reject {|a| packager_types.include? a.type }
     end
   end
 end
