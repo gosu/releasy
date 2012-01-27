@@ -1,5 +1,5 @@
 require File.expand_path("helpers/helper", File.dirname(__FILE__))
-
+require 'net/github-upload' # Because this isn't otherwise loaded until it is needed.
 
 context Releasy::Deployers::Github do
   setup do
