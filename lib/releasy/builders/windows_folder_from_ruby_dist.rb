@@ -28,6 +28,8 @@ module Releasy
       # Encoding files that are required, even if we don't need most of them if we select to {#exclude_encoding}.
       REQUIRED_ENCODING_FILES = %w[encdb.so iso_8859_1.so utf_16le.so trans/single_byte.so trans/transdb.so trans/utf_16_32.so]
 
+      VALID_RUBY_DIST = /ruby-1\.[89]\.\d-p\d+-i386-mingw32.7z/
+
       Builders.register self
 
       # @return [String] Path to windows distribution archive that has been manually downloaded from http://rubyinstaller.org/downloads/ (e.g. "rubies/ruby-1.9.2-p290-i386-mingw32.7z").
@@ -44,7 +46,7 @@ module Releasy
       # FOLDER containing EXE, Ruby + source.
       def generate_tasks
         raise ConfigError, "#ruby_dist not set" unless ruby_dist
-        raise ConfigError, "#ruby_dist not valid: #{ruby_dist}" unless File.exist?(ruby_dist) and File.extname(ruby_dist) == ".7z"
+        raise ConfigError, "#ruby_dist not valid ruby_dist: #{ruby_dist}" unless File.basename(ruby_dist) =~ VALID_RUBY_DIST
 
         directory project.output_path
 
@@ -58,6 +60,8 @@ module Releasy
 
       protected
       def build
+        raise ConfigError, "#ruby_dist does not exist: #{ruby_dist}" unless File.exist?(ruby_dist)
+
         copy_ruby_distribution
         delete_excluded_files
 

@@ -40,13 +40,13 @@ context Releasy::Project do
     asserts(:active_builders).empty
     asserts(:add_build, :source).kind_of Releasy::Builders::Source
     asserts(:active_builders).size 1
-    asserts(:add_build, :source).raises(Releasy::ConfigError, /already have output :source/i)
+    asserts(:add_build, :source).raises(ArgumentError, /already have output :source/i)
     asserts(:add_build, :unknown).raises(ArgumentError, /unsupported output/i)
 
     asserts("active_packagers") { topic.send(:active_packagers, topic.send(:active_builders).first) }.empty
     asserts(:add_package, :zip).kind_of Releasy::Packagers::Zip
     asserts("active_packagers") { topic.send(:active_packagers, topic.send(:active_builders).first) }.size 1
-    asserts(:add_package, :zip).raises(Releasy::ConfigError, /already have archive format :zip/i)
+    asserts(:add_package, :zip).raises(ArgumentError, /already have archive format :zip/i)
     asserts(:add_package, :unknown).raises(ArgumentError, /unsupported archive/i)
 
     context "#verbose" do

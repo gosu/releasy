@@ -25,6 +25,8 @@ module Releasy
       # Encoding files that are required, even if we don't need most of them if we select to {#exclude_encoding}.
       REQUIRED_ENCODING_FILES = %w[encdb.bundle iso_8859_1.bundle utf_16le.bundle trans/single_byte.bundle trans/transdb.bundle trans/utf_16_32.bundle]
 
+      VALID_GOSU_WRAPPER = /gosu-mac-wrapper-\d\.\d\.\d+.tar.gz/
+
       Builders.register self
 
       # @return [String] Name of .app directory used as the framework for osx app release.
@@ -36,17 +38,16 @@ module Releasy
       attr_reader :icon
 
       def icon=(icon)
-        raise ConfigError, "icon must be a #{ICON_EXTENSION} file" unless File.extname(icon) == ICON_EXTENSION
+        raise ArgumentError, "icon must be a #{ICON_EXTENSION} file" unless File.extname(icon) == ICON_EXTENSION
         @icon = icon
       end
 
       protected
       def generate_tasks
         raise ConfigError, "#url not set" unless url
+        raise ConfigError, "#url not valid: #{url}" unless url =~ /\w+(\.\w+)*/i
         raise ConfigError, "#wrapper not set" unless wrapper
-        raise ConfigError, "#wrapper not valid wrapper: #{wrapper}" unless File.basename(wrapper) =~ /gosu-mac-wrapper-[\d\.]+.tar.gz/
-
-        new_app = File.join folder, app_name
+        raise ConfigError, "#wrapper not valid wrapper: #{wrapper}" unless File.basename(wrapper) =~ VALID_GOSU_WRAPPER
 
         directory folder
 
@@ -54,26 +55,35 @@ module Releasy
         task "build:osx:app" => folder
 
         file folder => project.files + [wrapper] do
-          # Copy the app files.
-          exec %[7z x -so -bd "#{wrapper}" | 7z x -si -mmt -bd -ttar -o"#{folder}"]
-          mv File.join(folder, "RubyGosu App.app"), new_app, fileutils_options
-
-          ## Copy my source files.
-          copy_files_relative project.files, File.join(new_app, 'Contents/Resources/application')
-
-          remove_encoding if encoding_excluded?
-
-          # Copy accompanying files.
-          project.exposed_files.each {|file| cp file, folder, fileutils_options }
-
-          copy_gems vendored_gem_names(BINARY_GEMS), File.join(new_app, 'Contents/Resources/vendor')
-          create_main new_app
-          edit_init new_app
-          remove_gems new_app
-          rename_executable new_app
-          update_icon new_app
-          create_executable_setter
+           build
         end
+      end
+
+      protected
+      def build
+        raise ConfigError, "#wrapper file does not exist: #{wrapper}" unless File.exists? wrapper
+
+        new_app = File.join folder, app_name
+
+        # Copy the app files.
+        exec %[7z x -so -bd "#{wrapper}" | 7z x -si -mmt -bd -ttar -o"#{folder}"]
+        mv File.join(folder, "RubyGosu App.app"), new_app, fileutils_options
+
+        ## Copy my source files.
+        copy_files_relative project.files, File.join(new_app, 'Contents/Resources/application')
+
+        remove_encoding if encoding_excluded?
+
+        # Copy accompanying files.
+        project.exposed_files.each {|file| cp file, folder, fileutils_options }
+
+        copy_gems vendored_gem_names(BINARY_GEMS), File.join(new_app, 'Contents/Resources/vendor')
+        create_main new_app
+        edit_init new_app
+        remove_gems new_app
+        rename_executable new_app
+        update_icon new_app
+        create_executable_setter
       end
 
       protected

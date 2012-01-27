@@ -19,17 +19,15 @@ if osx_app_wrapper
 
     asserts(:folder_suffix).equals "OSX"
     asserts(:encoding_excluded?).equals false
-    asserts(:icon=, "test_app.ico").raises Releasy::ConfigError, /icon must be a .icns file/
+    asserts(:icon=, "test_app.ico").raises ArgumentError, /icon must be a .icns file/
     denies(:gemspecs).empty
 
-    context "no wrapper" do
-      hookup do
-        topic.url = "org.frog.fish"
-      end
+    context "#wrapper not set" do
+      hookup { topic.url = "org.frog.fish" }
       asserts(:generate_tasks).raises Releasy::ConfigError, /wrapper not set/
     end
 
-    context "invalid wrapper" do
+    context "#wrapper invalid" do
       hookup do
         topic.url = "org.frog.fish"
         topic.wrapper = "whatever"
@@ -38,10 +36,17 @@ if osx_app_wrapper
       asserts(:generate_tasks).raises Releasy::ConfigError, /wrapper not valid/
     end
 
-    context "no url" do
+    context "#wrapper does not exist" do
       hookup do
-        topic.wrapper = osx_app_wrapper
+        topic.url = "org.frog.fish"
+        topic.wrapper = "gosu-mac-wrapper-0.0.00.tar.gz"
       end
+
+      asserts(:build).raises Releasy::ConfigError, /wrapper file does not exist:/
+    end
+
+    context "no url" do
+      hookup { topic.wrapper = osx_app_wrapper }
       asserts(:generate_tasks).raises Releasy::ConfigError, /url not set/
     end
 

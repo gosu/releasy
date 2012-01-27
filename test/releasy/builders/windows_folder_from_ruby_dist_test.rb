@@ -28,12 +28,14 @@ Dir[File.expand_path("wrappers/ruby-*.7z", $original_path)].each do |path_to_rub
       asserts(:valid_for_platform?)
     end
 
-    context "invalid ruby_dist" do
-      hookup do
-        topic.ruby_dist = "ruby_dist"
-      end
-
+    context "#ruby_dist invalid" do
+      hookup { topic.ruby_dist = "ruby_dist" }
       asserts(:generate_tasks).raises Releasy::ConfigError, /ruby_dist not valid/
+    end
+
+    context "#ruby_dist doesn't exist" do
+      hookup { topic.ruby_dist = "ruby-1.9.0-p999-i386-mingw32.7z" }
+      asserts(:build).raises Releasy::ConfigError, /ruby_dist does not exist/
     end
 
     context "valid" do

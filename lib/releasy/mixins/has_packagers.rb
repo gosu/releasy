@@ -8,7 +8,7 @@ module Mixins
     # @return [Project] self
     def add_package(type, &block)
       raise ArgumentError, "Unsupported archive format #{type.inspect}" unless Packagers.has_type? type
-      raise ConfigError, "Already have archive format #{type.inspect}" if packagers.any? {|a| a.type == type }
+      raise ArgumentError, "Already have archive format #{type.inspect}" if packagers.any? {|a| a.type == type }
 
       packager = Packagers[type].new(respond_to?(:project) ? project : self)
       packagers << packager

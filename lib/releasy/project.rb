@@ -158,7 +158,7 @@ module Releasy
     # @return [Project] self
     def add_build(type, &block)
       raise ArgumentError, "Unsupported output type #{type}" unless Builders.has_type? type
-      raise ConfigError, "Already have output #{type.inspect}" if @builders.any? {|b| b.type == type }
+      raise ArgumentError, "Already have output #{type.inspect}" if @builders.any? {|b| b.type == type }
 
       builder = Builders[type].new(self)
       @builders << builder
