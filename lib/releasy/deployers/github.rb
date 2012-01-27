@@ -86,7 +86,7 @@ module Releasy
 
         uploader = Net::GitHub::Upload.new(:login => user, :token => token)
 
-        puts "Deploying #{file} (#{(File.size(file).fdiv 1024).ceil}k) to Github"
+        heading "Deploying #{file} (#{(File.size(file).fdiv 1024).ceil}k) to Github"
 
         t = Time.now
 
@@ -94,12 +94,12 @@ module Releasy
           uploader.upload(:repos => repository, :file => file, :description => description, :replace => @force_replace)
         rescue => ex
           # Probably failed to overwrite an existing file.
-          puts "Error uploading file #{file}: #{ex.message}"
+          error "Error uploading file #{file}: #{ex.message}"
           exit 1 # This is bad. Lets just die, die, die at this point.
         end
 
         link = "https://github.com/downloads/#{user}/#{repository}/#{File.basename(file)}"
-        puts %[Successfully uploaded to "#{link}" in #{(Time.now - t).ceil}s]
+        heading %[Successfully uploaded to "#{link}" in #{(Time.now - t).ceil}s]
 
         link
       end

@@ -17,9 +17,7 @@ module Releasy
         directory folder
 
         file folder => project.files do
-          Rake::FileUtilsExt.verbose project.verbose?
-
-          project.exposed_files.each {|file| cp file, folder }
+          project.exposed_files.each {|file| cp file, folder, fileutils_options }
 
           create_link_files folder
 

@@ -7,7 +7,6 @@ def new_project
   project.files = source_files
   project.exposed_files = %w[README.txt LICENSE.txt]
   project.add_link "http://spooner.github.com/libraries/releasy/", "Releasy website"
-  project.quiet
   project.output_path = output_path
 
   project

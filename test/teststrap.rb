@@ -39,13 +39,15 @@ $original_path = Dir.pwd
 
 def output_path; "../test_output"; end
 
+Releasy::Mixins::Log.log_level = :silent
+
 # Ensure that the output directory is clean before starting tests, but don't do it for every test.
 output_dir = "test_output"
 if File.directory? output_dir
   puts "Deleting existing test outputs"
   rm_r FileList["#{output_dir}/*"], :verbose => false
 else
-  mkdir output_dir
+  mkdir output_dir, :verbose => false
 end
 
 

@@ -27,7 +27,6 @@ context Releasy::Project do
     asserts(:files).kind_of Rake::FileList
     asserts(:exposed_files).empty
     asserts(:exposed_files).kind_of Rake::FileList
-    asserts(:verbose?).equals true
     asserts(:links).equals Hash.new
     asserts(:create_md5s?).equals false
     asserts(:encoding_excluded?).equals false
@@ -51,15 +50,13 @@ context Releasy::Project do
     asserts(:add_archive, :unknown).raises(ArgumentError, /unsupported archive/i)
 
     context "#verbose" do
-      hookup { topic.quiet }
       hookup { topic.verbose }
-      asserts(:verbose?).equals true
+      asserts(:log_level).equals :verbose
     end
 
-    context "#quiet" do
-      hookup { topic.verbose }
-      hookup { topic.quiet }
-      asserts(:verbose?).equals false
+    context "#silent" do
+      hookup { topic.silent }
+      asserts(:log_level).equals :silent
     end
 
     context "#create_md5s" do

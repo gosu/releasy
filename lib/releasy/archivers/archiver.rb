@@ -1,6 +1,7 @@
 require 'digest/md5'
 
 require "releasy/mixins/exec"
+require "releasy/mixins/log"
 
 module Releasy
 module Archivers
@@ -11,6 +12,7 @@ module Archivers
   class Archiver
     include Rake::DSL
     include Mixins::Exec
+    include Mixins::Log
 
     MD5_READ_SIZE = 128 * 64 # MD5 likes 128 byte chunks.
 
@@ -49,10 +51,9 @@ module Archivers
     protected
     def archive(folder)
       pkg = package folder
-      Rake::FileUtilsExt.verbose project.verbose?
 
-      puts "Creating #{pkg}" if project.verbose?
-      rm pkg if File.exist? pkg
+      heading "Creating #{pkg}"
+      rm pkg, fileutils_options if File.exist? pkg
       cd project.output_path do
         exec command(File.basename folder)
       end

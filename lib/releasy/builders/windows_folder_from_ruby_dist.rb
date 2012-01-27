@@ -58,15 +58,13 @@ module Releasy
 
       protected
       def build
-        Rake::FileUtilsExt.verbose project.verbose?
-
         copy_ruby_distribution
         delete_excluded_files
 
         copy_files_relative project.files, File.join(folder, 'src')
 
         create_link_files folder
-        project.exposed_files.each {|file| cp file, folder }
+        project.exposed_files.each {|file| cp file, folder, fileutils_options }
 
         create_executable
 
@@ -79,13 +77,13 @@ module Releasy
       protected
       def delete_excluded_files
         # Remove TCL/TK dlls, lib folder and source.
-        rm_r Dir[*(TCL_TK_FILES.map {|f| File.join(folder, f) })].uniq.sort if @exclude_tcl_tk
+        rm_r Dir[*(TCL_TK_FILES.map {|f| File.join(folder, f) })].uniq.sort, fileutils_options if @exclude_tcl_tk
 
         # Remove Encoding files on Ruby 1.9
         if encoding_excluded? and ruby_dist =~ /1\.9\.\d/
           encoding_files = Dir[File.join folder, "lib/ruby/1.9.1/i386-mingw32/enc/**/*.so"]
           required_encoding_files = REQUIRED_ENCODING_FILES.map {|f| File.join folder, "lib/ruby/1.9.1/i386-mingw32/enc", f }
-          rm_r encoding_files - required_encoding_files
+          rm_r encoding_files - required_encoding_files, fileutils_options
         end
       end
 
@@ -103,11 +101,11 @@ module Releasy
       def copy_ruby_distribution
         archive_name = File.basename(ruby_dist).chomp(File.extname(ruby_dist))
         exec %[7z x "#{ruby_dist}" -o"#{File.dirname folder}"]
-        mv File.join(File.dirname(folder), archive_name), folder
-        rm_r File.join(folder, "share")
-        rm_r File.join(folder, "include") if File.exists? File.join(folder, "include")
+        mv File.join(File.dirname(folder), archive_name), folder, fileutils_options
+        rm_r File.join(folder, "share"), fileutils_options
+        rm_r File.join(folder, "include"), fileutils_options if File.exists? File.join(folder, "include")
         unused_exe = effective_executable_type == :windows ? "ruby.exe" : "rubyw.exe"
-        rm File.join(folder, "bin", unused_exe)
+        rm File.join(folder, "bin", unused_exe), fileutils_options
       end
 
       protected
@@ -119,10 +117,10 @@ module Releasy
 
       protected
       def install_binary_gems(destination)
-        puts "Checking gems to see if any are binary" if project.verbose?
+        info "Checking gems to see if any are binary"
         binary_gems = []
         gemspecs.reject {|s| false }.each do |spec|
-          puts "Checking gem #{spec.name} #{spec.version} to see if there is a Windows binary version" if project.verbose?
+          info "Checking gem #{spec.name} #{spec.version} to see if there is a Windows binary version"
           # Find out what versions are available and if the required version is available as a windows binary, download and install that.
           versions = %x[gem list "#{spec.name}" --remote --all --prerelease]
           if versions =~ /#{spec.name} \(([^\)]*)\)/m
@@ -132,7 +130,7 @@ module Releasy
             raise "Gem #{spec.name} is binary, but #{spec.version} does not have a published binary" if version_string =~ /mingw|mswin/ and not windows_platform
 
             if windows_platform
-              puts "Installing Windows version of binary gem #{spec.name} #{spec.version}"
+              info "Installing Windows version of binary gem #{spec.name} #{spec.version}"
               # If we have a bundle file specified, then gem will _only_ install the version specified by it and not the one we request.
               bundle_gemfile = ENV['BUNDLE_GEMFILE']
               ENV['BUNDLE_GEMFILE'] = ''

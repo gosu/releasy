@@ -4,9 +4,6 @@ require 'ocra'
 module Releasy
   # Creates wrappers and executables by wrapping Ocra's functionality.
   class WindowsWrapperMaker
-    include FileUtils
-    include FileUtils::Verbose
-
     # Creates an win32 executable file (xxx.exe) that runs via a Ruby executable at bin/ruby(w).exe
     # Paths given to the executable are relative to the directory that the executable is in.
     # Assumes that user's source will be put into _./src/_ and that ruby executables will be in _./bin/_

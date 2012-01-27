@@ -1,5 +1,6 @@
 require "releasy/mixins/has_archivers"
 require "releasy/mixins/exec"
+require "releasy/mixins/log"
 
 module Releasy
 module Builders
@@ -9,6 +10,7 @@ module Builders
     include Rake::DSL
     include Mixins::HasArchivers
     include Mixins::Exec
+    include Mixins::Log
 
     # @return [Project] that this Builder belongs to.
     attr_reader :project
@@ -43,8 +45,8 @@ module Builders
     def copy_files_relative(files, folder)
       files.each do |file|
         destination = File.join(folder, File.dirname(file))
-        mkdir_p destination unless File.exists? destination
-        cp file, destination
+        mkdir_p destination, fileutils_options unless File.exists? destination
+        cp file, destination, fileutils_options
       end
     end
   end

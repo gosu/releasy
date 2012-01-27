@@ -4,6 +4,7 @@ require 'releasy/archivers'
 require 'releasy/deployers'
 require "releasy/mixins/has_archivers"
 require "releasy/mixins/can_exclude_encoding"
+require "releasy/mixins/log"
 
 module Releasy
   # A description of the Ruby application that is being build for release and what packages to make from it.
@@ -18,6 +19,7 @@ module Releasy
     include Rake::DSL
     include Mixins::HasArchivers
     include Mixins::CanExcludeEncoding
+    include Mixins::Log
 
     DEFAULT_PACKAGE_FOLDER = "pkg"
 
@@ -32,21 +34,16 @@ module Releasy
 
     # Make the tasks give more detailed output.
     # @return [nil]
-    def verbose; @verbose = true; nil; end
-    # Make the tasks give less detailed output.
+    def verbose; Mixins::Log.log_level = :verbose; end
+    # Make the tasks give no output at all.
     # @return [nil]
-    def quiet; @verbose = false; nil; end
-    def verbose?; @verbose; end
+    def silent; Mixins::Log.log_level = :silent; end
 
     # Create MD5 hashes for created archives.
     # @return [nil]
     def create_md5s; @create_md5s = true; nil; end
     def create_md5s?; @create_md5s; end
     protected :create_md5s?
-
-    # Verbosity of the console output.
-    # @return [Boolean] True to make the tasks output more information.
-    def verbose?; @verbose; end
 
     def exposed_files; @exposed_files; end
     def exposed_files=(files); @exposed_files = Rake::FileList.new files; end
@@ -138,7 +135,6 @@ module Releasy
       @files = Rake::FileList.new
       @exposed_files = Rake::FileList.new
       @output_path = DEFAULT_PACKAGE_FOLDER
-      @verbose = true
       @create_md5s = false
       @name = @underscored_name = @underscored_version = nil
       @version = @executable = nil

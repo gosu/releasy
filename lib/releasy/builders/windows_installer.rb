@@ -24,14 +24,12 @@ module Releasy
         directory folder
 
         file folder => project.files do
-          Rake::FileUtilsExt.verbose project.verbose?
-
           create_link_files folder
-          project.exposed_files.each {|file| cp file, folder }
+          project.exposed_files.each {|file| cp file, folder, fileutils_options }
 
           create_installer installer_name, :links => true
 
-          rm temp_installer_script
+          rm temp_installer_script, fileutils_options
         end
 
         desc "Build windows installer"

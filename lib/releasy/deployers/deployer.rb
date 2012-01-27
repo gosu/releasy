@@ -1,8 +1,11 @@
+require "releasy/mixins/log"
+
 module Releasy
   module Deployers
     # @abstract
     class Deployer
       include Rake::DSL
+      include Mixins::Log
 
       attr_reader :project
 

@@ -4,9 +4,9 @@ module Releasy
     module Exec
       protected
       def exec(command)
-        puts command if project.verbose?
+        info command
         result = %x[#{command}]
-        puts result if project.verbose?
+        info result
         result
       end
     end

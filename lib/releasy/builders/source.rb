@@ -17,8 +17,6 @@ module Releasy
         directory folder
 
         file folder => project.files do
-          Rake::FileUtilsExt.verbose project.verbose?
-
           copy_files_relative project.files, folder
         end
       end
