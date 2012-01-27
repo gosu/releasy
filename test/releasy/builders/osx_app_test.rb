@@ -18,6 +18,7 @@ if osx_app_wrapper
     end
 
     asserts(:folder_suffix).equals "OSX"
+    asserts(:encoding_excluded?).equals false
     asserts(:icon=, "test_app.ico").raises Releasy::ConfigError, /icon must be a .icns file/
     denies(:gemspecs).empty
 
@@ -50,6 +51,7 @@ if osx_app_wrapper
         topic.wrapper = osx_app_wrapper
         topic.icon = "test_app.icns"
         topic.gemspecs = gemspecs_to_use
+        topic.exclude_encoding
         topic.send :generate_tasks
       end
 
@@ -97,6 +99,9 @@ if osx_app_wrapper
         end
 
         denies("default chingu gem left in app")  { File.exists?("#{app_folder}/Contents/Resources/lib/chingu") }
+
+        helper(:enc_folder) { "#{app_folder}/Contents/Resources/lib/enc" }
+        asserts("remaining encoding files") { Dir["#{enc_folder}/**/*.bundle"].map {|f| f[(enc_folder.size + 1)..-1] } }.same_elements %w[encdb.bundle iso_8859_1.bundle utf_16le.bundle trans/single_byte.bundle trans/transdb.bundle trans/utf_16_32.bundle]
 
         if RUBY_PLATFORM =~ /darwin/
           asserts("program output") { clear_all_env { %x["./#{app_folder}/Contents/MacOS/Test App"] } }.equals "test run!\n"

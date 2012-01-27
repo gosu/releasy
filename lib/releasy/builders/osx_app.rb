@@ -20,6 +20,9 @@ module Releasy
       # Source gems included in app that we should remove.
       SOURCE_GEMS_TO_REMOVE = %w[chingu]
 
+      # Encoding files that are required, even if we don't need most of them if we select to {#exclude_encoding}.
+      REQUIRED_ENCODING_FILES = %w[encdb.bundle iso_8859_1.bundle utf_16le.bundle trans/single_byte.bundle trans/transdb.bundle trans/utf_16_32.bundle]
+
       Builders.register self
 
       # @return [String] Name of .app directory used as the framework for osx app release.
@@ -34,6 +37,15 @@ module Releasy
         raise ConfigError, "icon must be a #{ICON_EXTENSION} file" unless File.extname(icon) == ICON_EXTENSION
         @icon = icon
       end
+
+      # Excludes encoding files from release.
+      def exclude_encoding
+        @exclude_encoding = true
+      end
+
+      # Should encoding files be excluded?
+      def encoding_excluded?; @exclude_encoding; end
+      protected :encoding_excluded?
 
       protected
       def generate_tasks
@@ -58,6 +70,8 @@ module Releasy
           ## Copy my source files.
           copy_files_relative project.files, File.join(new_app, 'Contents/Resources/application')
 
+          remove_encoding if encoding_excluded?
+
           # Copy accompanying files.
           project.exposed_files.each {|file| cp file, folder }
 
@@ -73,6 +87,7 @@ module Releasy
 
       protected
       def setup
+        @exclude_encoding = false
         @icon = nil
         @url = nil
         @wrapper = nil
@@ -95,6 +110,13 @@ END
 
           end
         end
+      end
+
+      protected
+      def remove_encoding
+        encoding_files = Dir[File.join folder, "#{app_name}/Contents/Resources/lib/enc/**/*.bundle"]
+        required_encoding_files = REQUIRED_ENCODING_FILES.map {|f| File.join folder, "#{app_name}/Contents/Resources/lib/enc", f }
+        rm_r encoding_files - required_encoding_files
       end
 
       protected
