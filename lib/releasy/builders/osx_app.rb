@@ -1,5 +1,6 @@
 require "releasy/builders/builder"
 require "releasy/mixins/has_gemspecs"
+require "releasy/mixins/can_exclude_encoding"
 
 module Releasy
   module Builders
@@ -8,6 +9,7 @@ module Releasy
     # @attr icon [String] Optional filename of icon to show on executable/installer (.icns).
     class OsxApp < Builder
       include Mixins::HasGemspecs
+      include Mixins::CanExcludeEncoding
 
       TYPE = :osx_app
 
@@ -37,15 +39,6 @@ module Releasy
         raise ConfigError, "icon must be a #{ICON_EXTENSION} file" unless File.extname(icon) == ICON_EXTENSION
         @icon = icon
       end
-
-      # Excludes encoding files from release.
-      def exclude_encoding
-        @exclude_encoding = true
-      end
-
-      # Should encoding files be excluded?
-      def encoding_excluded?; @exclude_encoding; end
-      protected :encoding_excluded?
 
       protected
       def generate_tasks
@@ -87,7 +80,6 @@ module Releasy
 
       protected
       def setup
-        @exclude_encoding = false
         @icon = nil
         @url = nil
         @wrapper = nil

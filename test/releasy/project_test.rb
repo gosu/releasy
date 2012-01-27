@@ -30,6 +30,7 @@ context Releasy::Project do
     asserts(:verbose?).equals true
     asserts(:links).equals Hash.new
     asserts(:create_md5s?).equals false
+    asserts(:encoding_excluded?).equals false
 
     asserts(:to_s).equals "<Releasy::Project>"
     asserts(:output_path).equals "pkg"
@@ -87,6 +88,7 @@ context Releasy::Project do
 
         add_archive :"7z"
         add_archive :zip
+        exclude_encoding
 
         add_build :source
         add_build :osx_app do
@@ -107,6 +109,7 @@ context Releasy::Project do
       end
     end
 
+    asserts(:encoding_excluded?).equals true
     asserts(:to_s).equals %[<Releasy::Project Test Project - (2a) v0.1.5>]
     asserts(:name).equals "Test Project - (2a)"
     asserts(:underscored_name).equals "test_project_2a"

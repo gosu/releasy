@@ -66,6 +66,7 @@ Example
 
       exposed_files ["README.html", "LICENSE.txt"]
       add_link "http://my_application.github.com", "My Application website"
+      exclude_encoding
 
       # Create a variety of releases, for all platforms.
       add_build :osx_app do
@@ -81,13 +82,11 @@ Example
 
       add_build :windows_folder do
         icon "media/icon.ico"
-        exclude_encoding
         add_archive :exe
       end
 
       add_build :windows_installer do
         icon "media/icon.ico"
-        exclude_encoding
         start_menu_group "Spooner Games"
         readme "README.html" # User asked if they want to view readme after install.
         license "LICENSE.txt" # User asked to read this and confirm before installing.

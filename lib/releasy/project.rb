@@ -3,6 +3,7 @@ require 'releasy/builders'
 require 'releasy/archivers'
 require 'releasy/deployers'
 require "releasy/mixins/has_archivers"
+require "releasy/mixins/can_exclude_encoding"
 
 module Releasy
   # A description of the Ruby application that is being build for release and what packages to make from it.
@@ -16,6 +17,7 @@ module Releasy
   class Project
     include Rake::DSL
     include Mixins::HasArchivers
+    include Mixins::CanExcludeEncoding
 
     DEFAULT_PACKAGE_FOLDER = "pkg"
 

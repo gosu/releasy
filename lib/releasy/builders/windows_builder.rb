@@ -1,4 +1,5 @@
 require "releasy/builders/builder"
+require "releasy/mixins/can_exclude_encoding"
 
 module Releasy
 module Builders
@@ -6,19 +7,12 @@ module Builders
   # @abstract
   # @attr icon [String] Optional filename of icon to show on executable/installer (.ico).
   class WindowsBuilder < Builder
+    include Mixins::CanExcludeEncoding
+
     EXECUTABLE_TYPES = [:auto, :windows, :console]
 
     # @return [:auto, :windows, :console] Type of ruby to run executable with. :console means run with 'ruby.exe', :windows means run with 'rubyw.exe',  :auto means determine type from executable extension (.rb => :console or .rbw => :windows).
     attr_accessor :executable_type
-
-    # Excludes encoding files from 1.9 releases (equivalent to using '--no-enc' in Ocra).
-    def exclude_encoding
-       @exclude_encoding = true
-    end
-
-    # Should encoding files be excluded?
-    def encoding_excluded?; @exclude_encoding; end
-    protected :encoding_excluded?
 
     # Executable type, resolving :auto if possible.
     # @return [:windows, :console]
@@ -39,7 +33,6 @@ module Builders
 
     protected
     def setup
-      @exclude_encoding = false
       @executable_type = :auto
       super
     end
