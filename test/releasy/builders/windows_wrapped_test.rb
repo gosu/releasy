@@ -2,11 +2,11 @@ require File.expand_path("helpers/helper", File.dirname(__FILE__))
 
 Dir[File.expand_path("wrappers/ruby-*.7z", $original_path)].each do |path_to_ruby_dist|
   ruby_version = path_to_ruby_dist[/\d\.\d\.\d-p\d+/]
-  suffix = "WIN32_FROM_RUBY_DIST_#{ruby_version.tr(".", "_")}"
+  suffix = "WIN32_WRAPPED_#{ruby_version.tr(".", "_")}"
   folder = File.join(output_path, "test_app_0_1_#{suffix}")
 
-  context "#{Releasy::Builders::WindowsFolderFromRubyDist} for #{ruby_version}" do
-    setup { Releasy::Builders::WindowsFolderFromRubyDist.new new_project }
+  context "#{Releasy::Builders::WindowsWrapped} for #{ruby_version}" do
+    setup { Releasy::Builders::WindowsWrapped.new new_project }
 
     teardown do
       Dir.chdir $original_path
@@ -17,9 +17,9 @@ Dir[File.expand_path("wrappers/ruby-*.7z", $original_path)].each do |path_to_rub
       Dir.chdir project_path
     end
 
-    asserts(:ruby_dist).nil
+    asserts(:wrapper).nil
     asserts(:folder_suffix).equals "WIN32"
-    asserts(:generate_tasks).raises Releasy::ConfigError, /ruby_dist not set/
+    asserts(:generate_tasks).raises Releasy::ConfigError, /wrapper not set/
     denies(:gemspecs).empty
 
     if Gem.win_platform?
@@ -28,20 +28,20 @@ Dir[File.expand_path("wrappers/ruby-*.7z", $original_path)].each do |path_to_rub
       asserts(:valid_for_platform?)
     end
 
-    context "#ruby_dist invalid" do
-      hookup { topic.ruby_dist = "ruby_dist" }
-      asserts(:generate_tasks).raises Releasy::ConfigError, /ruby_dist not valid/
+    context "#wrapper invalid" do
+      hookup { topic.wrapper = "wrapper" }
+      asserts(:generate_tasks).raises Releasy::ConfigError, /wrapper not valid/
     end
 
-    context "#ruby_dist doesn't exist" do
-      hookup { topic.ruby_dist = "ruby-1.9.0-p999-i386-mingw32.7z" }
-      asserts(:build).raises Releasy::ConfigError, /ruby_dist does not exist/
+    context "#wrapper doesn't exist" do
+      hookup { topic.wrapper = "ruby-1.9.0-p999-i386-mingw32.7z" }
+      asserts(:build).raises Releasy::ConfigError, /wrapper does not exist/
     end
 
     context "valid" do
       hookup do
         stub(topic).valid_for_platform?.returns(true) # Need to do this so we can test on all platforms.
-        topic.ruby_dist = path_to_ruby_dist
+        topic.wrapper = path_to_ruby_dist
         topic.folder_suffix = suffix
         topic.executable_type = :console
         topic.gemspecs = gemspecs_to_use
@@ -52,12 +52,12 @@ Dir[File.expand_path("wrappers/ruby-*.7z", $original_path)].each do |path_to_rub
 
       asserts(:output_path).equals output_path
       asserts(:folder_suffix).equals suffix
-      asserts(:ruby_dist).equals path_to_ruby_dist
+      asserts(:wrapper).equals path_to_ruby_dist
       asserts("gemspecs correct") { topic.gemspecs == gemspecs_to_use }
 
       context "tasks" do
         tasks = [
-            [ :Task, "build:windows:folder_from_ruby_dist", [folder] ],
+            [ :Task, "build:windows:wrapped", [folder] ],
             [ :FileTask, '..', [] ], # byproduct of using #directory
             [ :FileTask, output_path, [] ], # byproduct of using #directory
             [ :FileTask, folder, source_files + [path_to_ruby_dist]],
@@ -67,7 +67,7 @@ Dir[File.expand_path("wrappers/ruby-*.7z", $original_path)].each do |path_to_rub
       end
 
       context "generate" do
-        hookup { Rake::Task["build:windows:folder_from_ruby_dist"].invoke }
+        hookup { Rake::Task["build:windows:wrapped"].invoke }
 
         asserts("files copied to folder") { source_files.all? {|f| same_contents? "#{folder}/src/#{f}", f } }
         asserts("readme copied to folder") { same_contents? "#{folder}/README.txt", "README.txt" }

@@ -7,6 +7,6 @@ module Releasy
   end
 end
 
-%w[osx_app source windows_folder windows_folder_from_ruby_dist windows_installer windows_standalone].each do |builder|
+%w[osx_app source windows_folder windows_wrapped windows_installer windows_standalone].each do |builder|
   require "releasy/builders/#{builder}"
 end

@@ -154,7 +154,7 @@ module Releasy
 
     # Add a type of build to produce. Must define at least one of these.
     # @see #initialize
-    # @param type [:osx_app, :source, :windows_folder, :windows_folder_from_ruby_dist, :windows_installer, :windows_standalone]
+    # @param type [:osx_app, :source, :windows_folder, :windows_wrapped, :windows_installer, :windows_standalone]
     # @return [Project] self
     def add_build(type, &block)
       raise ArgumentError, "Unsupported output type #{type}" unless Builders.has_type? type

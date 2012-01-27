@@ -21,7 +21,7 @@ The project can build one or more release folders:
 * `:source` - Plain source folder, which can be used by anyone with Ruby already installed.
 * `:osx_app` - OS X application bundle (.app) build, requiring a pre-made Ruby OS X wrapper. Note that this only contains binary gems for Gosu, TexPlay and Chipmunk, but will work with applications using any other source gems.
 * `:windows_folder` - A folder containing Ruby, application source files and an EXE to run them [creation on Windows only].
-* `:windows_folder_from_ruby_dist` - A folder containing Ruby, application source files and an EXE to run them, requiring a copy of a RubyInstaller archive [creation on OSX/Linux].
+* `:windows_wrapped` - A folder containing Ruby, application source files and an EXE to run them, requiring a copy of a RubyInstaller archive [creation on OSX/Linux].
 * `:windows_installer` - A regular Windows installer [creation on Windows only and requires InnoSetup to be installed].
 * `:windows_standalone` - Standalone EXE file that self-extracts to a temporary directory - slower startup than the other Windows options [creation on Windows only].
 
@@ -100,7 +100,7 @@ Example
 ### Tasks created
 
 Note: The `windows:folder`, `windows:installer` and `windows:standalone` will be created only if running on Windows.
-The `windows:folder_from_ruby_dist` task will not be created if running on Windows.
+The `windows:wrapped` task will not be created if running on Windows.
 
     rake build                                # Build My Application 1.4.0
     rake build:osx                            # Build all osx
@@ -155,7 +155,7 @@ The [7z](http://www.7-zip.org) command must be installed on your system for Rele
 
 [InnoSetup](http://www.jrsoftware.org/isdl.php) is used to create an installer for the application.
 
-### To build `:windows_folder_from_ruby_dist` release (OS X/Linux)
+### To build `:windows_wrapped` release (OS X/Linux)
 
 [RubyInstaller 7-ZIP archives](http://rubyinstaller.org/downloads/) for Ruby 1.8.7, 1.9.2 or 1.9.3. Used as a wrapper for a Windows release built on non-Windows systems.
 

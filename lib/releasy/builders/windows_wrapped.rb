@@ -11,10 +11,10 @@ module Releasy
     # Limitations:
     #   * Does not DLLs loaded from the system, which will have to be included manually if any are required by the application and no universally available in Windows installations.
     #   * Unless a gem is in pure Ruby or available as a pre-compiled binary gem, it won't work!
-    class WindowsFolderFromRubyDist < WindowsBuilder
+    class WindowsWrapped < WindowsBuilder
       include Mixins::HasGemspecs
 
-      TYPE = :windows_folder_from_ruby_dist
+      TYPE = :windows_wrapped
       DEFAULT_FOLDER_SUFFIX = "WIN32"
 
       # Files that are required for Tcl/Tk, but which are unlikely to be used in many applications.
@@ -33,7 +33,7 @@ module Releasy
       Builders.register self
 
       # @return [String] Path to windows distribution archive that has been manually downloaded from http://rubyinstaller.org/downloads/ (e.g. "rubies/ruby-1.9.2-p290-i386-mingw32.7z").
-      attr_accessor :ruby_dist
+      attr_accessor :wrapper
 
       # Remove TCL/TK from package, which can save a significant amount of space if the application does not require them.
       # This is over 6MB uncompressed, which is a saving of 1.6MB when compressed with 7z format (LZMA).
@@ -45,22 +45,22 @@ module Releasy
       protected
       # FOLDER containing EXE, Ruby + source.
       def generate_tasks
-        raise ConfigError, "#ruby_dist not set" unless ruby_dist
-        raise ConfigError, "#ruby_dist not valid ruby_dist: #{ruby_dist}" unless File.basename(ruby_dist) =~ VALID_RUBY_DIST
+        raise ConfigError, "#wrapper not set" unless wrapper
+        raise ConfigError, "#wrapper not valid wrapper: #{wrapper}" unless File.basename(wrapper) =~ VALID_RUBY_DIST
 
         directory project.output_path
 
-        file folder => project.files + [ruby_dist] do
+        file folder => project.files + [wrapper] do
           build
         end
 
         desc "Build source/exe folder #{project.version} from wrapper"
-        task "build:windows:folder_from_ruby_dist" => folder
+        task "build:windows:wrapped" => folder
       end
 
       protected
       def build
-        raise ConfigError, "#ruby_dist does not exist: #{ruby_dist}" unless File.exist?(ruby_dist)
+        raise ConfigError, "#wrapper does not exist: #{wrapper}" unless File.exist?(wrapper)
 
         copy_ruby_distribution
         delete_excluded_files
@@ -84,7 +84,7 @@ module Releasy
         rm_r Dir[*(TCL_TK_FILES.map {|f| File.join(folder, f) })].uniq.sort, fileutils_options if @exclude_tcl_tk
 
         # Remove Encoding files on Ruby 1.9
-        if encoding_excluded? and ruby_dist =~ /1\.9\.\d/
+        if encoding_excluded? and wrapper =~ /1\.9\.\d/
           encoding_files = Dir[File.join folder, "lib/ruby/1.9.1/i386-mingw32/enc/**/*.so"]
           required_encoding_files = REQUIRED_ENCODING_FILES.map {|f| File.join folder, "lib/ruby/1.9.1/i386-mingw32/enc", f }
           rm_r encoding_files - required_encoding_files, fileutils_options
@@ -94,7 +94,7 @@ module Releasy
       protected
       def setup
         @exclude_tcl_tk = false
-        @ruby_dist = nil
+        @wrapper = nil
         super
       end
 
@@ -103,8 +103,8 @@ module Releasy
 
       protected
       def copy_ruby_distribution
-        archive_name = File.basename(ruby_dist).chomp(File.extname(ruby_dist))
-        exec %[7z x "#{ruby_dist}" -o"#{File.dirname folder}"]
+        archive_name = File.basename(wrapper).chomp(File.extname(wrapper))
+        exec %[7z x "#{wrapper}" -o"#{File.dirname folder}"]
         mv File.join(File.dirname(folder), archive_name), folder, fileutils_options
         rm_r File.join(folder, "share"), fileutils_options
         rm_r File.join(folder, "include"), fileutils_options if File.exists? File.join(folder, "include")

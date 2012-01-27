@@ -10,7 +10,7 @@ v0.2.0
   * Included gems in osx-app more safely, so that no files will be missing.
   * Added `:exe` archive format (Windows self-extractor, used on any OS).
   * Added `:dmg` archive format (OS X self-extractor, used on OS X only).
-  * Added `:windows_folder_from_ruby_dist` output (windows folder made from a RubyInstaller archive, used on OSX/Linux).
+  * Added `:windows_wrapped` output (windows folder made from a RubyInstaller archive, used on OSX/Linux).
   * Allowed project and outputs to have archive formats (when called on Project, affecting all outputs).
   * Archive formats can have a different `#extension` set.
   * Output formats can have a different `#folder_suffix` set.
