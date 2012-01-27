@@ -7,6 +7,7 @@ module Archivers
   # Archives a build folder.
   #
   # @abstract
+  # @attr extension [String] Extension of archive to be created (such as ".zip").
   class Archiver
     include Rake::DSL
     include Mixins::Exec
@@ -15,8 +16,13 @@ module Archivers
 
     # @return [Project] Project this Archiver was created by.
     attr_reader :project
-    # @return [String] Extension of archive to be created (such as ".zip").
-    attr_accessor :extension
+
+    attr_reader :extension
+    def extension=(extension)
+      raise TypeError "extension must be a String" unless extension.is_a? String
+      raise ArgumentError, "extension must be valid, such as '.zip'" unless extension =~ /^\.[a-z0-9\.]+$/
+      @extension = extension
+    end
 
     def type; self.class::TYPE; end
 
@@ -30,9 +36,9 @@ module Archivers
     def generate_tasks(output_task, folder, deployers)
       pkg = package folder
 
-      deployers.each {|d| d.send :generate_tasks, "#{output_task}:#{type}", pkg }
+      deployers.each {|d| d.send :generate_tasks, "#{output_task}:#{type}", folder, extension }
 
-      desc "Package #{output_task.tr(":", " ")} #{type}"
+      desc "Package #{output_task.tr(":", " ")} #{extension}"
       task "package:#{output_task}:#{type}" => pkg
 
       file pkg => folder do
@@ -55,7 +61,7 @@ module Archivers
     end
 
     protected
-    def package(folder); "#{folder}#{extension[0, 1] == '.' ? '' : '.'}#{extension}"; end
+    def package(folder); "#{folder}#{extension}"; end
 
     protected
     def command(folder)

@@ -14,10 +14,10 @@ module Releasy
       end
 
       protected
-      def generate_tasks(archive_task, file)
-        desc "#{type} <= #{archive_task.tr(":", " ")}"
+      def generate_tasks(archive_task, folder, extension)
+        desc "#{type} <= #{archive_task.split(":")[0..-2].join(" ")} #{extension}"
         task "deploy:#{archive_task}:#{type}" => "package:#{archive_task}" do
-          deploy file
+          deploy(folder + extension)
         end
       end
     end

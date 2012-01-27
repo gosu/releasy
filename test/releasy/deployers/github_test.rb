@@ -56,7 +56,7 @@ context Releasy::Deployers::Github do
 
   context "valid" do
     context "#generate_tasks" do
-      hookup { topic.send :generate_tasks, "source:7z", "SOURCE.7z" }
+      hookup { topic.send :generate_tasks, "source:7z", "SOURCE.7z", ".7z" }
       tasks = [
           [ :Task, "deploy:source:7z:github", %w[package:source:7z] ],
       ]

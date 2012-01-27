@@ -91,7 +91,7 @@ context Releasy::Project do
         add_build :source
         add_build :osx_app do
           add_archive :tar_gz do
-            extension "tgz"
+            extension ".tgz"
           end
           wrapper Dir["../wrappers/gosu-mac-wrapper-*.tar.gz"].first
           url "org.url.app"

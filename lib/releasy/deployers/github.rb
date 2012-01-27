@@ -60,7 +60,7 @@ module Releasy
       protected
       # @param file [String] Path to file to deploy.
       # @return [String] A link to download the file.
-      # @raises [SystemError] If file fails to upload.
+      # @raise SystemError If file fails to upload.
       def deploy(file)
         raise ConfigError, "#user must be set manually if it is not configured on the system" unless user
         raise ConfigError, "#token must be set manually if it is not configured on the system" unless token

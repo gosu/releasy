@@ -69,18 +69,20 @@ Example
 
       # Create a variety of releases, for all platforms.
       add_build :osx_app do
-        add_archive :tar_gz
         url "com.github.my_application"
         wrapper "../osx_app/gosu-mac-wrapper-0.7.41.tar.gz"
         icon "media/icon.icns"
+        add_archive :tar_gz
       end
 
-      add_build :source
+      add_build :source do
+        add_archive :zip
+      end
 
       add_build :windows_folder do
         icon "media/icon.ico"
         exclude_encoding
-        add_archive :exe        
+        add_archive :exe
       end
 
       add_build :windows_installer do
@@ -89,11 +91,10 @@ Example
         start_menu_group "Spooner Games"
         readme "README.html" # User asked if they want to view readme after install.
         license "LICENSE.txt" # User asked to read this and confirm before installing.
+        add_archive :zip
       end
 
-      add_archive :zip # All outputs given this archive format.
-      
-      add_deploy :github
+      add_deploy :github # Upload to a github project.
     end
     #>>>
 
@@ -110,16 +111,16 @@ The `windows:folder_from_ruby_dist` task will not be created if running on Windo
     rake build:windows:folder                 # Build windows folder
     rake build:windows:installer              # Build windows installer
     rake deploy                               # Deploy My Application 1.4.0
-    rake deploy:osx:app:zip:github            # github <= osx app zip
-    rake deploy:source:zip:github             # github <= source zip
-    rake deploy:windows:folder:zip:github     # github <= windows folder zip
-    rake deploy:windows:installer:zip:github  # github <= windows installer zip
+    rake deploy:osx:app:tar_gz:github         # github <= osx app .tar.gz
+    rake deploy:source:zip:github             # github <= source .zip
+    rake deploy:windows:folder:exe:github     # github <= windows folder .exe
+    rake deploy:windows:installer:exe:github  # github <= windows installer .zip
     rake generate:images                      # Generate images
     rake package                              # Package My Application 1.4.0
-    rake package:osx:app:zip                  # Package osx app zip
-    rake package:source:zip                   # Package source zip
-    rake package:windows:folder:zip           # Package windows folder zip
-    rake package:windows:installer:zip        # Package windows installer zip
+    rake package:osx:app:tar_gz               # Package osx app .tar.gz
+    rake package:source:zip                   # Package source .zip
+    rake package:windows:folder:exe           # Package windows folder .exe
+    rake package:windows:installer:zip        # Package windows installer .zip
 
 A variety of unlisted tasks are also created, that allow for more control, such as `deploy:github` (Deploy all packages to Github only),
 `deploy:windows:folder` (deploy all windows folder packages all destinations) or `package:windows` (Package all windows builds).

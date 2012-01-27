@@ -32,11 +32,8 @@ require File.expand_path("../teststrap", File.dirname(__FILE__))
       asserts(:package, "f").equals "f.wobble"
     end
 
-    context "setting extension without a . still adds one" do
-      hookup { topic.extension = "wobble" }
-
-      asserts(:extension).equals "wobble"
-      asserts(:package, "f").equals "f.wobble"
+    context "setting extension without a . raises an error" do
+      asserts(:extension=, "wobble").raises ArgumentError, /extension must be valid/
     end
 
     context "generated tasks" do
