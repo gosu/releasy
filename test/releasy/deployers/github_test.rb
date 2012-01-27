@@ -4,8 +4,8 @@ require File.expand_path("helpers/helper", File.dirname(__FILE__))
 context Releasy::Deployers::Github do
   setup do
     any_instance_of Releasy::Deployers::Github do |github|
-      mock(github, :`).with("git config github.user").returns "test_user"
-      mock(github, :`).with("git config github.token").returns "0" * 32
+      stub(github, :`).with("git config github.user").returns "test_user"
+      stub(github, :`).with("git config github.token").returns "0" * 32
     end
 
     Releasy::Deployers::Github.new new_project
@@ -23,7 +23,30 @@ context Releasy::Deployers::Github do
   asserts(:user).equals "test_user"
   asserts(:token).equals "0" * 32
   asserts(:description).equals "Test App 0.1"
-  asserts(:repository).equals "test_app"
+
+  context "repository not configured" do
+    setup do
+      any_instance_of Releasy::Deployers::Github do |github|
+        mock(github, :`).with("git config remote.origin.url").returns { raise Errno::ENOENT }
+      end
+
+      Releasy::Deployers::Github.new new_project
+    end
+
+    asserts(:repository).equals "test_app"
+  end
+
+  context "repository configured" do
+    setup do
+      any_instance_of Releasy::Deployers::Github do |github|
+        mock(github, :`).with("git config remote.origin.url").returns "git@github.com:test_user/test-app.git"
+      end
+
+      Releasy::Deployers::Github.new new_project
+    end
+
+    asserts(:repository).equals "test-app"
+  end
 
   context "user not configured" do
     setup do
@@ -31,6 +54,7 @@ context Releasy::Deployers::Github do
         mock(github, :`).with("git config github.user").returns { raise Errno::ENOENT }
         mock(github, :`).with("git config github.token").returns "0" * 32
       end
+
       Releasy::Deployers::Github.new new_project
     end
 

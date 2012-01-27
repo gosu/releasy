@@ -6,8 +6,8 @@ module Releasy
     # Deploys to a Github project's downloads page.
     #
     # @attr description [String] Description of file (defaults to: "#{project.description")
-    # @attr login [String] Github user name that has write access to {#repository} (defaults to: `git config github.user`).
-    # @attr repository [String] Name of Github repository (defaults to: _project.underscored_name_).
+    # @attr login [String] Github user name that has write access to {#repository} (defaults to: `git config github.user` or user name in `git config remote.origin.url`).
+    # @attr repository [String] Name of Github repository (defaults to: the repository name in `git config remote.origin.url` or _project.underscored_name_).
     # @attr token [String] Github token associated with {#login} - a 32-digit hexadecimal string - DO NOT COMMIT A FILE CONTAINING YOUR GITHUB TOKEN (defaults to: `git config github.token`)
     class Github < Deployer
       TYPE = :github
@@ -51,10 +51,29 @@ module Releasy
       protected
       def setup
         @force_replace = false
-        @repository = nil
         @description = nil
-        @user = `git config github.user`.chomp rescue nil # user login for github
-        @token = `git config github.token`.chomp rescue nil # user token for github
+
+        # Get username from github.user, otherwise use the name taken from the git_url.
+        @user = from_config 'github.user'
+        @token = from_config 'github.token'
+
+        # Try to guess the repository name from git config.
+        git_url = from_config 'remote.origin.url'
+        if git_url and git_url =~ %r<^git@github.com:(.+)/([^/]+)\.git$>
+          @user ||= $1 # May have already been set from github.user
+          @repository = $2
+        else
+          @repository = nil
+        end
+      end
+
+      protected
+      # Get a value from git config.
+      #
+      # @param key [String] Name of setting in git config.
+      # @return [String, nil] Value of setting, else nil if it isn't defined.
+      def from_config(key)
+        `git config #{key}`.chomp rescue nil
       end
 
       protected
