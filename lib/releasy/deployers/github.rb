@@ -9,96 +9,6 @@ module Releasy
     # @attr repository [String] Name of Github repository (defaults to: the repository name in `git config remote.origin.url` or _project.underscored_name_).
     # @attr token [String] Github token associated with {#login} - a 32-digit hexadecimal string - DO NOT COMMIT A FILE CONTAINING YOUR GITHUB TOKEN (defaults to: `git config github.token`)
     class Github < Deployer
-      # Patch to add an asynchronous version of upload, that also yields every second and takes into account timeout.
-      module UploaderUploadAsync
-        def upload_async(info)
-          unless info[:repos]
-            raise "required repository name"
-          end
-          info[:repos] = @login + '/' + info[:repos] unless info[:repos].include? '/'
-
-          if info[:file]
-            file = info[:file]
-            unless File.exist?(file) && File.readable?(file)
-              raise "file does not exsits or readable"
-            end
-            info[:name] ||= File.basename(file)
-          end
-          unless  info[:file] || info[:data]
-            raise "required file or data parameter to upload"
-          end
-
-          unless info[:name]
-            raise "required name parameter for filename with data parameter"
-          end
-
-          if info[:replace]
-            list_files(info[:repos]).each { |obj|
-              next unless obj[:name] == info[:name]
-              delete info[:repos], obj[:id]
-            }
-          elsif list_files(info[:repos]).any?{|obj| obj[:name] == info[:name]}
-            raise "file '#{info[:name]}' is already uploaded. please try different name"
-          end
-
-          info[:content_type] ||= 'application/octet-stream'
-          stat = HTTPClient.post("https://github.com/#{info[:repos]}/downloads", {
-              "file_size"    => info[:file] ? File.stat(info[:file]).size : info[:data].size,
-              "content_type" => info[:content_type],
-              "file_name"    => info[:name],
-              "description"  => info[:description] || '',
-              "login"        => @login,
-              "token"        => @token
-          })
-
-          unless stat.code == 200
-            raise "Failed to post file info"
-          end
-
-          upload_info = JSON.parse(stat.content)
-          if info[:file]
-            f = File.open(info[:file], 'rb')
-          else
-            f = Tempfile.open('net-github-upload')
-            f << info[:data]
-            f.flush
-          end
-
-          client = HTTPClient.new
-          client.send_timeout = info[:upload_timeout] if info[:upload_timeout]
-
-          res = begin
-            connection = client.post_async("http://github.s3.amazonaws.com/", [
-                ['Filename', info[:name]],
-                ['policy', upload_info['policy']],
-                ['success_action_status', 201],
-                ['key', upload_info['path']],
-                ['AWSAccessKeyId', upload_info['accesskeyid']],
-                ['Content-Type', upload_info['content_type'] || 'application/octet-stream'],
-                ['signature', upload_info['signature']],
-                ['acl', upload_info['acl']],
-                ['file', f]
-            ])
-
-            until connection.finished?
-              yield if block_given?
-              sleep info[:yield_interval] || 1
-            end
-
-            connection.pop
-          ensure
-            f.close
-          end
-
-          if res.status == 201
-            return FasterXmlSimple.xml_in(res.body.read)['PostResponse']['Location']
-          else
-            raise 'Failed to upload' + extract_error_message(res.body)
-          end
-        end
-      end
-
-
       TYPE = :github
       # Maximum time to allow an upload to continue. An hour to upload a file isn't unreasonable. Better than the default 2 minutes, which uploads about 4MB for me.
       UPLOAD_TIMEOUT = 60 * 60
@@ -176,9 +86,7 @@ module Releasy
         raise ConfigError, "#token must be set manually if it is not configured on the system" unless token
 
         # Hold off requiring this unless needed, so it doesn't slow down creating tasks.
-        if require 'net/github-upload'
-          Net::GitHub::Upload.send :include, UploaderUploadAsync
-        end
+        require 'net/github-upload'
 
         uploader = Net::GitHub::Upload.new(:login => user, :token => token)
 
@@ -187,7 +95,7 @@ module Releasy
         t = Time.now
 
         begin
-          uploader.upload_async :repos => repository, :file => file, :description => description, :replace => @force_replace, :upload_timeout => UPLOAD_TIMEOUT do
+          uploader.upload :repos => repository, :file => file, :description => description, :replace => @force_replace, :upload_timeout => UPLOAD_TIMEOUT do
             print '.'
           end
           puts '.'

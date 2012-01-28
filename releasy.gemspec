@@ -29,7 +29,7 @@ END
   s.add_runtime_dependency('rake', '~> 0.9.2.2')
   s.add_runtime_dependency('cri', '~> 2.1.0')
   s.add_runtime_dependency('thor', '~> 0.14.6') # Only needed in Ruby 1.8, since it provides HashWithIndifferentAccess.
-  s.add_runtime_dependency('net-github-upload', '~> 0.0.7')
+  s.add_runtime_dependency('net-github-upload', '~> 0.0.8')
 
   s.add_development_dependency('riot', '~> 0.12.5')
   s.add_development_dependency('rr', '~> 1.0.4')

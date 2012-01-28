@@ -94,7 +94,7 @@ context Releasy::Deployers::Github do
       should "expect an Net::GitHub::Upload to be created and used to upload" do
         stub_file_size
         mock(Net::GitHub::Upload).new :login => "test_user", :token => "0" * 32 do
-          mock!.upload_async :repos => "test_app", :file => "file.zip", :description => "Test App 0.1", :replace => false, :upload_timeout => 3600
+          mock!.upload :repos => "test_app", :file => "file.zip", :description => "Test App 0.1", :replace => false, :upload_timeout => 3600
         end
 
         topic.send :deploy, "file.zip"
@@ -105,7 +105,7 @@ context Releasy::Deployers::Github do
       should "expect an Net::GitHub::Upload to be created and exit (not forcing replacement and file already exists)" do
         stub_file_size
         mock(Net::GitHub::Upload).new :login => "test_user", :token => "0" * 32 do
-          mock!.upload_async :repos => "test_app", :file => "file.zip", :description => "Test App 0.1", :replace => false, :upload_timeout => 3600 do
+          mock!.upload :repos => "test_app", :file => "file.zip", :description => "Test App 0.1", :replace => false, :upload_timeout => 3600 do
             raise "file already exists"
           end
         end
@@ -120,7 +120,7 @@ context Releasy::Deployers::Github do
       should "expect an Net::GitHub::Upload to be created and used to upload (forcing replacement)" do
         stub_file_size
         mock(Net::GitHub::Upload).new :login => "test_user", :token => "0" * 32 do
-          mock!.upload_async :repos => "test_app", :file => "file.zip", :description => "Test App 0.1", :replace => true, :upload_timeout => 3600
+          mock!.upload :repos => "test_app", :file => "file.zip", :description => "Test App 0.1", :replace => true, :upload_timeout => 3600
         end
 
         topic.replace!
