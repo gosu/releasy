@@ -2,6 +2,8 @@ require File.expand_path("../teststrap", File.dirname(__FILE__))
 
 # Change directory into the project, since that is where we work from normally.
 
+folder_base = "pkg/test_project_2a_v0_1_5"
+
 # @author Bil Bas (Spooner)
 context Releasy::Project do
   teardown do
@@ -79,6 +81,8 @@ context Releasy::Project do
 
   context "defined" do
     setup do
+      stub(Releasy).win_platform?.returns true
+      
       Releasy::Project.new do
         name "Test Project - (2a)"
         version "v0.1.5"
@@ -88,21 +92,20 @@ context Releasy::Project do
         exclude_encoding
 
         add_build :source
+        
         add_build :osx_app do
-          add_package :tar_gz do
-            extension ".tgz"
-          end
-          wrapper Dir["../wrappers/gosu-mac-wrapper-*.tar.gz"].first
+          wrapper "../wrappers/gosu-mac-wrapper-0.7.41.tar.gz"
           url "org.url.app"
         end
-        add_build :windows_standalone do
-          exclude_encoding
-        end
+
+        add_build :windows_installer
 
         files source_files
 
         add_link "www.frog.com", "Frog"
         add_link "www2.fish.com", "Fish"
+        
+        add_deploy :github
       end
     end
 
@@ -119,44 +122,79 @@ context Releasy::Project do
     asserts(:folder_base).equals "pkg/test_project_2a_v0_1_5"
     asserts(:links).equals "www.frog.com" => "Frog", "www2.fish.com" => "Fish"
 
-    asserts(:active_builders).size(Gem.win_platform? ? 3 : 2)
+    asserts(:active_builders).size 3
     asserts("source active_packagers") { topic.send(:active_packagers, topic.send(:active_builders).find {|b| b.type == :source }) }.size 2
-    asserts("osx app active_packagers") { topic.send(:active_packagers, topic.send(:active_builders).find {|b| b.type == :osx_app }) }.size 3
-    if Gem.win_platform?
-      asserts("Windows standalone active_packagers") { topic.send(:active_packagers, topic.send(:active_builders).find {|b| b.type == :windows_standalone }) }.size 2
-    end
+    asserts("osx app active_packagers") { topic.send(:active_packagers, topic.send(:active_builders).find {|b| b.type == :osx_app }) }.size 2
+    asserts("Windows standalone active_packagers") { topic.send(:active_packagers, topic.send(:active_builders).find {|b| b.type == :windows_installer }) }.size 2
 
-    asserts "add_build yields an instance_eval-ed Releasy::DSLWrapper" do
-      correct = false
-      topic.add_build :windows_folder do
-        correct = (is_a?(Releasy::DSLWrapper) and owner.is_a?(Releasy::Builders::WindowsFolder))
+    context "adding builds and packages" do
+      asserts "#add_build yields an instance_eval-ed Releasy::DSLWrapper" do
+        correct = false
+        topic.add_build :windows_standalone do
+          correct = (is_a?(Releasy::DSLWrapper) and owner.is_a?(Releasy::Builders::WindowsStandalone))
+        end
+        correct
       end
-      correct
-    end
 
-    asserts "add_package yields an instance_eval-ed Releasy::DSLWrapper" do
-      correct = false
-      topic.add_package :tar_gz do
-        correct = (is_a?(Releasy::DSLWrapper) and owner.is_a?(Releasy::Packagers::TarGzip))
+      asserts "#add_package yields an instance_eval-ed Releasy::DSLWrapper" do
+        correct = false
+        topic.add_package :tar_gz do
+          correct = (is_a?(Releasy::DSLWrapper) and owner.is_a?(Releasy::Packagers::TarGzip))
+        end
+        correct
       end
-      correct
     end
 
     context "#generate_archive_tasks" do
       asserts(:generate_archive_tasks).equals { topic }
 
-      should "call generate_tasks on all packagers" do
+      should "call #generate_tasks on all packagers" do
         topic.send(:active_builders).each do |builder|
-          topic.send(:active_packagers, builder).each {|a| mock(a).generate_tasks(builder.type.to_s.sub('_', ':'), builder.send(:folder), []) }
+          topic.send(:active_packagers, builder).each do |packager|
+            mock(packager).generate_tasks(builder.type.to_s.sub('_', ':'), builder.send(:folder), satisfy {|a| a.size == 1 and a.first.is_a? Releasy::Deployers::Github })
+          end
         end
         topic.send :generate_archive_tasks
+      end
+    end
+
+    context "#generate_deploy_tasks" do
+      context "without namespace" do
+        setup do
+          Rake::Task.clear
+          topic.send :generate_deploy_tasks, %w[a b]
+        end
+
+        tasks = [
+            [ :Task, "deploy", %w[deploy:a deploy:b] ],
+            [ :Task, "deploy:github", %w[deploy:a:github deploy:b:github] ],
+            [ :Task, "deploy:a", %w[deploy:a:github] ],
+            [ :Task, "deploy:b", %w[deploy:b:github] ],
+        ]
+
+        test_tasks tasks
+      end
+
+      context "with namespace" do
+        setup do
+          Rake::Task.clear
+          topic.send :generate_deploy_tasks, %w[c:a c:b]
+        end
+
+        tasks = [
+            [ :Task, "deploy:c:github", %w[deploy:c:a:github deploy:c:b:github] ],
+            [ :Task, "deploy:c:a", %w[deploy:c:a:github] ],
+            [ :Task, "deploy:c:b", %w[deploy:c:b:github] ],
+        ]
+
+        test_tasks tasks
       end
     end
 
     context "#generate_tasks" do
       asserts(:generate_tasks).equals { topic }
 
-      should "call generate_tasks on all builders" do
+      should "call #generate_tasks on all builders" do
         topic.send(:active_builders) {|b| mock(b).generate_tasks }
         topic.send :generate_tasks
       end
@@ -164,6 +202,77 @@ context Releasy::Project do
       should "call #generate_archive_tasks" do
         mock(topic).generate_archive_tasks
         topic.send :generate_tasks
+      end
+
+      context "generated tasks" do
+        tasks = [
+            [ :Task, "deploy", %w[deploy:source deploy:osx deploy:windows] ],
+            [ :Task, "deploy:github", %w[deploy:source:github deploy:osx:github deploy:windows:github] ],
+            [ :Task, "deploy:source", %w[deploy:source:github] ],
+            
+            [ :Task, "deploy:source:github", %w[deploy:source:zip:github deploy:source:7z:github] ],
+            [ :Task, "deploy:source:zip", %w[deploy:source:zip:github] ],
+            [ :Task, "deploy:source:zip:github", %w[package:source:zip] ],
+            [ :Task, "deploy:source:7z", %w[deploy:source:7z:github] ],
+            [ :Task, "deploy:source:7z:github", %w[package:source:7z] ],
+
+            [ :Task, "deploy:osx", %w[deploy:osx:github] ],
+            [ :Task, "deploy:osx:app", %w[deploy:osx:app:github] ],
+            [ :Task, "deploy:osx:github", %w[deploy:osx:app:github] ],
+            [ :Task, "deploy:osx:app:github", %w[deploy:osx:app:zip:github deploy:osx:app:7z:github] ],
+            [ :Task, "deploy:osx:app:zip", %w[deploy:osx:app:zip:github] ],
+            [ :Task, "deploy:osx:app:zip:github", %w[package:osx:app:zip] ],
+            [ :Task, "deploy:osx:app:7z", %w[deploy:osx:app:7z:github] ],
+            [ :Task, "deploy:osx:app:7z:github", %w[package:osx:app:7z] ],
+
+            [ :Task, "deploy:windows", %w[deploy:windows:github] ],
+            [ :Task, "deploy:windows:installer", %w[deploy:windows:installer:github] ],
+            [ :Task, "deploy:windows:github", %w[deploy:windows:installer:github] ],
+            [ :Task, "deploy:windows:installer:github", %w[deploy:windows:installer:zip:github deploy:windows:installer:7z:github] ],
+            [ :Task, "deploy:windows:installer:zip", %w[deploy:windows:installer:zip:github] ],
+            [ :Task, "deploy:windows:installer:zip:github", %w[package:windows:installer:zip] ],
+            [ :Task, "deploy:windows:installer:7z", %w[deploy:windows:installer:7z:github] ],
+            [ :Task, "deploy:windows:installer:7z:github", %w[package:windows:installer:7z] ],
+
+            [ :Task, "package", %w[package:source package:osx package:windows] ],
+                
+            [ :Task, "package:source", %w[package:source:7z package:source:zip] ],
+            [ :Task, "package:source:zip", ["#{folder_base}_SOURCE.zip"] ],
+            [ :Task, "package:source:7z", ["#{folder_base}_SOURCE.7z"] ],
+
+            [ :Task, "package:osx", %w[package:osx:app] ],
+            [ :Task, "package:osx:app", %w[package:osx:app:7z package:osx:app:zip] ],
+            [ :Task, "package:osx:app:zip", ["#{folder_base}_OSX.zip"] ],
+            [ :Task, "package:osx:app:7z", ["#{folder_base}_OSX.7z"] ],
+
+            [ :Task, "package:windows", %w[package:windows:installer] ],
+            [ :Task, "package:windows:installer", %w[package:windows:installer:7z package:windows:installer:zip] ],
+            [ :Task, "package:windows:installer:zip", ["#{folder_base}_WIN32_INSTALLER.zip"] ],
+            [ :Task, "package:windows:installer:7z", ["#{folder_base}_WIN32_INSTALLER.7z"] ],
+
+            [ :Task, "build", %w[build:source build:osx build:windows] ],
+            [ :Task, "build:source", ["#{folder_base}_SOURCE"] ],
+            [ :Task, "build:osx", %w[build:osx:app] ],
+            [ :Task, "build:osx:app", ["#{folder_base}_OSX"] ],
+            [ :Task, "build:windows", %w[build:windows:installer] ],
+            [ :Task, "build:windows:installer", ["#{folder_base}_WIN32_INSTALLER"] ],
+
+            [ :FileCreationTask, 'pkg', [] ],
+
+            [ :FileCreationTask, "#{folder_base}_SOURCE", source_files ],
+            [ :FileTask, "#{folder_base}_SOURCE.7z", ["#{folder_base}_SOURCE"] ],
+            [ :FileTask, "#{folder_base}_SOURCE.zip", ["#{folder_base}_SOURCE"] ],
+
+            [ :FileCreationTask, "#{folder_base}_OSX", source_files + ["../wrappers/gosu-mac-wrapper-0.7.41.tar.gz"] ],
+            [ :FileTask, "#{folder_base}_OSX.7z", ["#{folder_base}_OSX" ] ],
+            [ :FileTask, "#{folder_base}_OSX.zip", ["#{folder_base}_OSX"] ],
+
+            [ :FileCreationTask, "#{folder_base}_WIN32_INSTALLER", source_files ],
+            [ :FileTask, "#{folder_base}_WIN32_INSTALLER.7z", ["#{folder_base}_WIN32_INSTALLER"] ],
+            [ :FileTask, "#{folder_base}_WIN32_INSTALLER.zip", ["#{folder_base}_WIN32_INSTALLER"] ],
+        ]
+
+        test_tasks tasks
       end
     end
 

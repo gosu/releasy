@@ -1,3 +1,5 @@
+require 'set'
+
 require 'releasy/dsl_wrapper'
 require 'releasy/builders'
 require 'releasy/packagers'
@@ -270,9 +272,9 @@ module Releasy
     def generate_archive_tasks
       return if active_builders.empty?
 
-      windows_tasks = []
-      osx_tasks = []
-      top_level_tasks = []
+      windows_tasks = Set.new
+      osx_tasks = Set.new
+      top_level_tasks = Set.new
 
       active_builders.each do |builder|
         output_task = builder.type.to_s.sub '_', ':'
@@ -281,7 +283,9 @@ module Releasy
         packagers.each do |packager|
           packager.send :generate_tasks, output_task, builder.send(:folder), @deployers
 
-          task "deploy:#{output_task}:#{packager.type}" => @deployers.map {|d| "deploy:#{output_task}:#{packager.type}:#{d.type}" }
+          unless @deployers.empty?
+            task "deploy:#{output_task}:#{packager.type}" => @deployers.map {|d| "deploy:#{output_task}:#{packager.type}:#{d.type}" }
+          end
         end
 
         @deployers.each do |deployer|
@@ -292,13 +296,13 @@ module Releasy
 
         case output_task
           when /^windows:/
-            windows_tasks << "#{output_task}"
-            top_level_tasks << "windows" unless top_level_tasks.include? "windows"
+            windows_tasks << output_task
+            top_level_tasks << 'windows'
           when /^osx:/
-            osx_tasks << "package:#{output_task}"
-            top_level_tasks << "osx" unless top_level_tasks.include? "osx"
+            osx_tasks << output_task
+            top_level_tasks << 'osx'
           else
-            top_level_tasks << "#{output_task}"
+            top_level_tasks << output_task
         end
       end
 
@@ -306,44 +310,45 @@ module Releasy
       unless windows_tasks.empty?
         task "package:windows" => windows_tasks.map {|t| "package:#{t}" }
 
-        generate_deploy_tasks "windows", windows_tasks
+        generate_deploy_tasks windows_tasks
       end
 
       # OS X tasks.
       unless osx_tasks.empty?
         task "package:osx" => osx_tasks.map {|t| "package:#{t}" }
 
-        generate_deploy_tasks "osx", osx_tasks
+        generate_deploy_tasks osx_tasks
       end
 
       # Top level tasks.
       desc "Package #{description}"
       task "package" => top_level_tasks.map {|t| "package:#{t}" }
 
-      unless @deployers.empty?
-        desc "Deploy #{description}"
-        task "deploy" => top_level_tasks.map {|t| "deploy:#{t}" }
-
-        generate_deploy_tasks "", top_level_tasks
-      end
+      generate_deploy_tasks top_level_tasks
 
       self
     end
 
     protected
-    def generate_deploy_tasks(task_name, tasks)
-      deploy_task = task_name.empty? ? "deploy" : "deploy:#{task_name}"
+    def generate_deploy_tasks(tasks)
+      return if @deployers.empty?
 
-      unless @deployers.empty?
-        task deploy_task => tasks.map {|t| "deploy:#{t}" }
+      # Work out the namespace first. If there isn't one, then make a described (root) deploy task.
+      tasks.first =~ /(.*):.*/
+      namespace = $1
+      deploy_task = namespace ? "deploy:#{namespace}" : 'deploy'
 
-        @deployers.each do |deployer|
-          task "#{deploy_task}:#{deployer.type}" => tasks.map {|t| "deploy:#{t}:#{deployer.type}" }
-        end
+      unless namespace
+        desc "Deploy #{description}"
+        task 'deploy' => tasks.map {|t| "deploy:#{t}" }
+      end
 
-        tasks.each do |t|
-          task "deploy:#{t}" => @deployers.map {|d| "deploy:#{t}:#{d.type}" }
-        end
+      @deployers.each do |d|
+        task "#{deploy_task}:#{d.type}" => tasks.map {|t| "deploy:#{t}:#{d.type}" }
+      end
+
+      tasks.each do |t|
+        task "deploy:#{t}" => @deployers.map {|d| "deploy:#{t}:#{d.type}" }
       end
     end
 

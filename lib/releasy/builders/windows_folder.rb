@@ -24,7 +24,7 @@ module Releasy
           system tmp_ocra_executable
           rm tmp_ocra_executable, fileutils_options
 
-          mv Dir["#{File.dirname(folder)}/ocr*\.tmp"].first, folder, fileutils_options
+          mv Dir["#{File.dirname(folder)}/ocr*.tmp"].first, folder, fileutils_options
 
           maker = Releasy::WindowsWrapperMaker.new
           maker.build_executable("#{folder}/#{executable_name}", "src/#{project.executable}",
