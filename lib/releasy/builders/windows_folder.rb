@@ -18,7 +18,7 @@ module Releasy
         file folder => project.files do
           tmp_ocra_executable = "#{folder}.exe"
 
-          exec %[#{ocra_command} --output "#{tmp_ocra_executable}" --debug-extract]
+          execute_command %[#{ocra_command} --output "#{tmp_ocra_executable}" --debug-extract]
 
           # Extract the files from the executable.
           system tmp_ocra_executable

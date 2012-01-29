@@ -4,10 +4,10 @@ module Releasy
   module Deployers
     # Deploys to a Github project's downloads page.
     #
-    # @attr description [String] Description of file (defaults to: "#{project.description")
-    # @attr login [String] Github user name that has write access to {#repository} (defaults to: `git config github.user` or user name in `git config remote.origin.url`).
-    # @attr repository [String] Name of Github repository (defaults to: the repository name in `git config remote.origin.url` or _project.underscored_name_).
-    # @attr token [String] Github token associated with {#login} - a 32-digit hexadecimal string - DO NOT COMMIT A FILE CONTAINING YOUR GITHUB TOKEN (defaults to: `git config github.token`)
+    # @attr description [String] (project.description) Description of file.
+    # @attr login [String] (`git config github.user` or user name in `git config remote.origin.url`) Github user name that has write access to {#repository}
+    # @attr repository [String] (repository name in `git config remote.origin.url` or _project.underscored_name_) Name of Github repository.
+    # @attr token [String] (`git config github.token`) Github token associated with {#login} - a 32-digit hexadecimal string - DO NOT COMMIT A FILE CONTAINING YOUR GITHUB TOKEN!
     class Github < Deployer
       TYPE = :github
       # Maximum time to allow an upload to continue. An hour to upload a file isn't unreasonable. Better than the default 2 minutes, which uploads about 4MB for me.
@@ -74,42 +74,37 @@ module Releasy
       # @param key [String] Name of setting in git config.
       # @return [String, nil] Value of setting, else nil if it isn't defined.
       def from_config(key)
-        `git config #{key}`.chomp rescue nil
+        Kernel.`("git config #{key}").chomp rescue nil
       end
 
       protected
       # @param file [String] Path to file to deploy.
-      # @return [String] A link to download the file.
-      # @raise SystemError If file fails to upload.
+      # @return [nil]
       def deploy(file)
         raise ConfigError, "#user must be set manually if it is not configured on the system" unless user
         raise ConfigError, "#token must be set manually if it is not configured on the system" unless token
+
+        info %[Uploading to: https://github.com/downloads/#{user}/#{repository}/#{File.basename(file)}]
 
         # Hold off requiring this unless needed, so it doesn't slow down creating tasks.
         require 'net/github-upload'
 
         uploader = Net::GitHub::Upload.new(:login => user, :token => token)
 
-        heading "Deploying #{file} (#{(File.size(file).fdiv 1024).ceil}k) to Github"
-
-        t = Time.now
-
         begin
           uploader.upload :repos => repository, :file => file, :description => description, :replace => @force_replace, :upload_timeout => UPLOAD_TIMEOUT do
-            print '.'
+            print WORKING_CHARACTER
           end
-          puts '.'
-        rescue => ex
-          # Probably failed to overwrite an existing file.
-          error "Error uploading file #{file}: #{ex.message}"
-          exit 1 # This is bad. Lets just die, die, die at this point.
+          puts WORKING_CHARACTER
+        rescue RuntimeError => ex
+          if ex.message =~ /file .* is already uploaded/i
+            warn "Skipping '#{File.basename file}' as it is already uploaded. Use #replace! to force uploading"
+          else
+            raise ex
+          end
         end
 
-        link = "https://github.com/downloads/#{user}/#{repository}/#{File.basename(file)}"
-        time = "%d:%02d" % (Time.now - t).ceil.divmod(60)
-        heading %[Successfully uploaded to "#{link}" in #{time}]
-
-        link
+        nil
       end
     end
   end

@@ -104,7 +104,7 @@ module Releasy
       protected
       def copy_ruby_distribution
         archive_name = File.basename(wrapper).chomp(File.extname(wrapper))
-        exec %[7z x "#{wrapper}" -o"#{File.dirname folder}"]
+        execute_command %[7z x "#{wrapper}" -o"#{File.dirname folder}"]
         mv File.join(File.dirname(folder), archive_name), folder, fileutils_options
         rm_r File.join(folder, "share"), fileutils_options
         rm_r File.join(folder, "include"), fileutils_options if File.exists? File.join(folder, "include")
@@ -138,7 +138,7 @@ module Releasy
               # If we have a bundle file specified, then gem will _only_ install the version specified by it and not the one we request.
               bundle_gemfile = ENV['BUNDLE_GEMFILE']
               ENV['BUNDLE_GEMFILE'] = ''
-              exec %[gem install "#{spec.name}" --remote --no-rdoc --no-ri --force --ignore-dependencies --platform "#{windows_platform}" --version "#{spec.version}" --install-dir "#{destination}"]
+              execute_command %[gem install "#{spec.name}" --remote --no-rdoc --no-ri --force --ignore-dependencies --platform "#{windows_platform}" --version "#{spec.version}" --install-dir "#{destination}"]
               ENV['BUNDLE_GEMFILE'] = bundle_gemfile
               binary_gems << spec.name
             end

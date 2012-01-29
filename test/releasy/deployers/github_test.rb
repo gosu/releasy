@@ -3,10 +3,8 @@ require 'net/github-upload' # Because this isn't otherwise loaded until it is ne
 
 context Releasy::Deployers::Github do
   setup do
-    any_instance_of Releasy::Deployers::Github do |github|
-      stub(github, :`).with("git config github.user").returns "test_user"
-      stub(github, :`).with("git config github.token").returns "0" * 32
-    end
+    stub(Kernel, :`).with("git config github.user").returns "test_user"
+    stub(Kernel, :`).with("git config github.token").returns "0" * 32
 
     Releasy::Deployers::Github.new new_project
   end
@@ -20,15 +18,14 @@ context Releasy::Deployers::Github do
     Dir.chdir project_path
   end
 
+  asserts(:type).equals :github
   asserts(:user).equals "test_user"
   asserts(:token).equals "0" * 32
   asserts(:description).equals "Test App 0.1"
 
   context "repository not configured" do
     setup do
-      any_instance_of Releasy::Deployers::Github do |github|
-        mock(github, :`).with("git config remote.origin.url").returns { raise Errno::ENOENT }
-      end
+      mock(Kernel, :`).with("git config remote.origin.url").returns { raise Errno::ENOENT }
 
       Releasy::Deployers::Github.new new_project
     end
@@ -38,9 +35,7 @@ context Releasy::Deployers::Github do
 
   context "repository configured" do
     setup do
-      any_instance_of Releasy::Deployers::Github do |github|
-        mock(github, :`).with("git config remote.origin.url").returns "git@github.com:test_user/test-app.git"
-      end
+      mock(Kernel, :`).with("git config remote.origin.url").returns "git@github.com:test_user/test-app.git"
 
       Releasy::Deployers::Github.new new_project
     end
@@ -50,10 +45,8 @@ context Releasy::Deployers::Github do
 
   context "user not configured" do
     setup do
-      any_instance_of Releasy::Deployers::Github do |github|
-        mock(github, :`).with("git config github.user").returns { raise Errno::ENOENT }
-        mock(github, :`).with("git config github.token").returns "0" * 32
-      end
+      mock(Kernel, :`).with("git config github.user").returns { raise Errno::ENOENT }
+      mock(Kernel, :`).with("git config github.token").returns "0" * 32
 
       Releasy::Deployers::Github.new new_project
     end
@@ -65,10 +58,9 @@ context Releasy::Deployers::Github do
 
   context "token not configured" do
     setup do
-      any_instance_of Releasy::Deployers::Github do |github|
-        mock(github, :`).with("git config github.user").returns "test_user"
-        mock(github, :`).with("git config github.token").returns { raise Errno::ENOENT }
-      end
+      mock(Kernel, :`).with("git config github.user").returns "test_user"
+      mock(Kernel, :`).with("git config github.token").returns { raise Errno::ENOENT }
+
       Releasy::Deployers::Github.new new_project
     end
 
@@ -89,10 +81,7 @@ context Releasy::Deployers::Github do
     end
 
     context "#deploy" do
-      helper(:stub_file_size) { stub(File).size("file.zip").returns 1000 }
-
-      should "expect an Net::GitHub::Upload to be created and used to upload" do
-        stub_file_size
+      should "upload the file if it doesn't exist on the server" do
         mock(Net::GitHub::Upload).new :login => "test_user", :token => "0" * 32 do
           mock!.upload :repos => "test_app", :file => "file.zip", :description => "Test App 0.1", :replace => false, :upload_timeout => 3600
         end
@@ -102,23 +91,32 @@ context Releasy::Deployers::Github do
         true
       end
 
-      should "expect an Net::GitHub::Upload to be created and exit (not forcing replacement and file already exists)" do
-        stub_file_size
+      should "give a warning if the file already exists and not in replacement mode" do
         mock(Net::GitHub::Upload).new :login => "test_user", :token => "0" * 32 do
           mock!.upload :repos => "test_app", :file => "file.zip", :description => "Test App 0.1", :replace => false, :upload_timeout => 3600 do
-            raise "file already exists"
+            raise "file 'file.zip' is already uploaded. please try different name"
           end
         end
-
-        mock(topic).exit(1)
+        mock(topic).warn "Skipping 'file.zip' as it is already uploaded. Use #replace! to force uploading"
 
         topic.send :deploy, "file.zip"
 
         true
       end
 
-      should "expect an Net::GitHub::Upload to be created and used to upload (forcing replacement)" do
-        stub_file_size
+      asserts "errors other than file already exists" do
+        mock(Net::GitHub::Upload).new :login => "test_user", :token => "0" * 32 do
+          mock!.upload :repos => "test_app", :file => "file.zip", :description => "Test App 0.1", :replace => false, :upload_timeout => 3600 do
+            raise "something else happened"
+          end
+        end
+
+        dont_allow(topic).warn anything
+
+        topic.send :deploy, "file.zip"
+      end.raises RuntimeError, "something else happened"
+
+      should "upload the file if it exists on the server and in replacement mode" do
         mock(Net::GitHub::Upload).new :login => "test_user", :token => "0" * 32 do
           mock!.upload :repos => "test_app", :file => "file.zip", :description => "Test App 0.1", :replace => true, :upload_timeout => 3600
         end

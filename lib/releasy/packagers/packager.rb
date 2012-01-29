@@ -1,6 +1,6 @@
 require 'digest/md5'
 
-require "releasy/mixins/exec"
+require "releasy/mixins/execute_command"
 require "releasy/mixins/log"
 
 module Releasy
@@ -11,7 +11,7 @@ module Packagers
   # @attr extension [String] Extension of archive to be created (such as ".zip").
   class Packager
     include Rake::DSL
-    include Mixins::Exec
+    include Mixins::ExecuteCommand
     include Mixins::Log
 
     MD5_READ_SIZE = 128 * 64 # MD5 likes 128 byte chunks.
@@ -55,7 +55,7 @@ module Packagers
       heading "Creating #{pkg}"
       rm pkg, fileutils_options if File.exist? pkg
       cd project.output_path do
-        exec command(File.basename folder)
+        execute_command command(File.basename folder)
       end
 
       File.open("#{pkg}.MD5", "w") {|f| f.puts checksum(pkg) } if project.send :create_md5s?

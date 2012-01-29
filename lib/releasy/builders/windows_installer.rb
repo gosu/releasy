@@ -51,7 +51,7 @@ module Releasy
       protected
       def create_installer(file, options = {})
         generate_installer_script file, options
-        exec %[#{ocra_command} --chdir-first --no-lzma --innosetup "#{temp_installer_script}"]
+        execute_command %[#{ocra_command} --chdir-first --no-lzma --innosetup "#{temp_installer_script}"]
       end
 
       # Generate innosetup script to build installer.

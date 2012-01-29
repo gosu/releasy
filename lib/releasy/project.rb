@@ -178,7 +178,7 @@ module Releasy
 
     # Add a deployment method for archived packages.
     # @see #initialize
-    # @param type [:github]
+    # @param type [:github, :local, :rsync]
     # @return [Project] self
     def add_deploy(type, &block)
       raise ArgumentError, "Unsupported deploy type #{type}" unless Deployers.has_type? type

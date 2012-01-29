@@ -47,8 +47,9 @@ Deploy types supported
 
 Optionally, packaged releases can be deployed using one or more of:
 
-* `:github` - Upload to Github downloads.
-* Others, such as `:dropbox`, when I get around to implementing them.
+* `:github` - Upload to a Github project's downloads page.
+* `:local` - Copy files locally, for example into a local web server or dropbox folder.
+* `:rsync` - Upload to remote server with rsync (requires 'rsync' command be installed).
 
 Example
 -------

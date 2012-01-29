@@ -21,7 +21,7 @@ module Releasy
 
           create_link_files folder
 
-          exec %[#{ocra_command} --output "#{folder}/#{executable_name}"]
+          execute_command %[#{ocra_command} --output "#{folder}/#{executable_name}"]
         end
 
         desc "Build standalone exe #{project.version} [Ocra]"

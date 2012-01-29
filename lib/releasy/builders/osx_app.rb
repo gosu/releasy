@@ -66,7 +66,7 @@ module Releasy
         new_app = File.join folder, app_name
 
         # Copy the app files.
-        exec %[7z x -so -bd "#{wrapper}" | 7z x -si -mmt -bd -ttar -o"#{folder}"]
+        execute_command %[7z x -so -bd "#{wrapper}" | 7z x -si -mmt -bd -ttar -o"#{folder}"]
         mv File.join(folder, "RubyGosu App.app"), new_app, fileutils_options
 
         ## Copy my source files.
