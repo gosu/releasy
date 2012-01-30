@@ -17,7 +17,7 @@ task :test do
   Rake::TestTask.new do |t|
     t.libs << "test"
     t.pattern = "test/**/*_test.rb"
-    t.verbose = true
+    #t.options = "--verbose" # Add --verbose to run full descriptive list.
   end
 end
 

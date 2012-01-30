@@ -7,6 +7,12 @@ require 'fileutils'
 $LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
 require 'releasy'
 
+if ARGV.include? "--verbose" or ARGV.include? "-v"
+  Riot.verbose
+else
+  Riot.dots
+end
+
 def source_files
   %w[bin/test_app lib/test_app.rb lib/test_app/stuff.rb README.txt LICENSE.txt Gemfile.lock Gemfile]
 end
