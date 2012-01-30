@@ -4,11 +4,19 @@ module Releasy
       protected
       # Executes command, and prints out command and result only if the project is verbose.
       # Requires {Log} to be included.
+      # Returns true if the command succeeded. False if it failed.
       def execute_command(command)
         info command
-        result = Kernel.` command # Use Kernel.` because it is easily mocked, unlike `command`
-        info result
-        result
+
+        begin
+          IO.popen command do |output|
+            info output.gets.strip until output.eof?
+          end
+
+          true
+        rescue Errno::ENOENT
+          false
+        end
       end
 
       protected

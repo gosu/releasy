@@ -4,7 +4,18 @@ context Releasy::Mixins::Utilities do
   setup { Object.new.extend Releasy::Mixins::Utilities }
 
   context "#execute_command" do
-    asserts_topic.respond_to :execute_command
+    asserts("executing command that exists") do
+      mock(IO).popen("hello").yields StringIO.new("Hello!\nHello!\n")
+      mock(topic).info("hello")
+      mock(topic).info("Hello!").twice
+      topic.send :execute_command, "hello"
+    end.equals true
+
+    asserts("executing command that doesn't exist") do
+      mock(IO).popen("hello") { raise Errno::ENOENT }
+      mock(topic).info("hello")
+      topic.send :execute_command, "hello"
+    end.equals false
   end
 
   context "#command_available?" do

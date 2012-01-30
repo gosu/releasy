@@ -42,7 +42,7 @@ context Releasy::Deployers::Rsync do
     end
 
     should "call rsync correctly" do
-      mock(Kernel, :`).with(%[rsync -xyz "#{File.expand_path "pkg/x.zip"}" "fish:www/frog"])
+      mock(IO).popen(%[rsync -xyz "#{File.expand_path "pkg/x.zip"}" "fish:www/frog"]).yields StringIO.new("done")
 
       topic.options = "-xyz"
       topic.destination = "fish:www/frog"
