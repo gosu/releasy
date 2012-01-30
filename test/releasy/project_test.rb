@@ -290,7 +290,7 @@ context Releasy::Project do
             b.add_package :tar_gz do |a|
               a.extension = ".tgz"
             end
-            b.wrapper = Dir["../wrappers/gosu-mac-wrapper-*.tar.gz"].first
+            b.wrapper = "../wrappers/gosu-mac-wrapper-0.7.41.tar.gz"
             b.url = "org.url.app"
           end
           p.add_build :windows_standalone do |b|
