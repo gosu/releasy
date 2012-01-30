@@ -14,9 +14,8 @@ module Releasy
         desc "Build source"
         task "build:source" => folder
 
-        directory folder
-
         file folder => project.files do
+          mkdir_p folder, fileutils_options
           copy_files_relative project.files, folder
         end
       end

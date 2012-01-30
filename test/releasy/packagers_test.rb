@@ -1,12 +1,13 @@
 require File.expand_path("../teststrap", File.dirname(__FILE__))
 
 # Test all packagers at once, since they are pretty much identical.
+null_file = Gem.win_platform? ? "NUL" : "/dev/null"
 [
     [:dmg,     Releasy::Packagers::Dmg,      %[GZIP=-9 hdiutil create -fs HFS+ -srcfolder "f" -volname "Test App 0.1" "f.dmg"]],
     [:exe,     Releasy::Packagers::Exe,      %[7za a -mmt -bd -t7z -mx9 -sfx7z.sfx "f.exe" "f"]],
     [:"7z",    Releasy::Packagers::SevenZip, %[7za a -mmt -bd -t7z -mx9 "f.7z" "f"]],
-    [:tar_bz2, Releasy::Packagers::TarBzip2, %[7za a -so -mmt -bd -ttar "f.tar" "f" | 7za a -si -bd -tbzip2 -mx9 "f.tar.bz2"]],
-    [:tar_gz,  Releasy::Packagers::TarGzip,  %[7za a -so -mmt -bd -ttar "f.tar" "f" | 7za a -si -bd -tgzip -mx9 "f.tar.gz"]],
+    [:tar_bz2, Releasy::Packagers::TarBzip2, %[7za a -so -mmt -bd -ttar "f.tar" "f" 2>#{null_file} | 7za a -si -bd -tbzip2 -mx9 "f.tar.bz2"]],
+    [:tar_gz,  Releasy::Packagers::TarGzip,  %[7za a -so -mmt -bd -ttar "f.tar" "f" 2>#{null_file} | 7za a -si -bd -tgzip -mx9 "f.tar.gz"]],
     [:zip,     Releasy::Packagers::Zip,      %[7za a -mmt -bd -tzip -mx9 "f.zip" "f"]],
 ].each do |type, packager, command|
   extension = "." + type.to_s.tr("_", ".")

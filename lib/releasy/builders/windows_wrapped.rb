@@ -48,9 +48,8 @@ module Releasy
         raise ConfigError, "#wrapper not set" unless wrapper
         raise ConfigError, "#wrapper not valid wrapper: #{wrapper}" unless File.basename(wrapper) =~ VALID_RUBY_DIST
 
-        directory project.output_path
-
         file folder => project.files + [wrapper] do
+          mkdir_p project.output_path, fileutils_options
           build
         end
 

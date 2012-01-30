@@ -21,9 +21,8 @@ module Releasy
       protected
       # Regular windows installer, but some users consider them evil.
       def generate_tasks
-        directory folder
-
         file folder => project.files do
+          mkdir_p folder, fileutils_options
           create_link_files folder
           project.exposed_files.each {|file| cp file, folder, fileutils_options }
 

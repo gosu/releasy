@@ -69,9 +69,9 @@ if osx_app_wrapper
       context "tasks" do
         tasks = [
             [ :Task, "build:osx:app", [folder] ],
-            [ :FileCreationTask, '..', [] ], # byproduct of using #directory
-            [ :FileCreationTask, output_path, [] ], # byproduct of using #directory
-            [ :FileCreationTask, folder, source_files + [osx_app_wrapper]],
+            [ :FileTask, '..', [] ], # byproduct of using #directory
+            [ :FileTask, output_path, [] ], # byproduct of using #directory
+            [ :FileTask, folder, source_files + [osx_app_wrapper]],
         ]
 
         test_tasks tasks

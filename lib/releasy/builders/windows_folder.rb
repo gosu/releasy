@@ -13,9 +13,8 @@ module Releasy
       protected
       # FOLDER containing EXE, Ruby + source.
       def generate_tasks
-        directory project.output_path
-
         file folder => project.files do
+          mkdir_p project.output_path, fileutils_options
           tmp_ocra_executable = "#{folder}.exe"
 
           execute_command %[#{ocra_command} --output "#{tmp_ocra_executable}" --debug-extract]

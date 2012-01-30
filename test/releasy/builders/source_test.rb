@@ -25,9 +25,9 @@ context Releasy::Builders::Source do
     context "tasks" do
       tasks = [
           [ :Task, "build:source", [folder] ],
-          [ :FileCreationTask, '..', [] ], # byproduct of using #directory
-          [ :FileCreationTask, output_path, [] ], # byproduct of using #directory
-          [ :FileCreationTask, folder, source_files ],
+          [ :FileTask, '..', [] ], # byproduct of using #directory
+          [ :FileTask, output_path, [] ], # byproduct of using #directory
+          [ :FileTask, folder, source_files ],
       ]
 
       test_tasks tasks

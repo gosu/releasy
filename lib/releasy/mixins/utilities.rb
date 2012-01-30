@@ -25,6 +25,10 @@ module Releasy
         find = Releasy.win_platform? ? "where" : "which"
         !!Kernel.`("#{find} #{command}")
       end
+
+      protected
+      def null_file; Releasy.win_platform? ? "NUL" : "/dev/null"; end
+
     end
   end
 end

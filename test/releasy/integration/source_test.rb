@@ -42,6 +42,7 @@ context "Source in all formats" do
   end
 
   helper(:contents_description) { /#{source_files.size} files, 4 folders/m }
+  helper(:null_file) { Gem.win_platform? ? "NUL" : "/dev/null" }
 
   active_builders_valid
 
@@ -76,9 +77,9 @@ context "Source in all formats" do
         [ :Task, "build", %w[build:source] ],
         [ :Task, "build:source", [folder] ],
 
-        [ :FileCreationTask, '..', [] ],
-        [ :FileCreationTask, output_path, [] ], # byproduct of using #directory
-        [ :FileCreationTask, folder, source_files ],
+        [ :FileTask, '..', [] ],
+        [ :FileTask, output_path, [] ], # byproduct of using #directory
+        [ :FileTask, folder, source_files ],
         [ :FileTask, "#{folder}.dmg", [folder] ],
         [ :FileTask, "#{folder}.7z", [folder] ],
         [ :FileTask, "#{folder}.exe", [folder] ],
@@ -110,7 +111,7 @@ context "Source in all formats" do
     hookup { Rake::Task["package:source:tar_gz"].invoke }
 
     asserts("archive created") { File.size("#{folder}.tar.gz") > 0}
-    asserts("archive contains expected files") { `7z x -so -bd -tgzip #{folder}.tar.gz | 7z l -si -bd -ttar` =~ contents_description }
+    asserts("archive contains expected files") { `7z x -so -bd -tgzip #{folder}.tar.gz 2>#{null_file} | 7z l -si -bd -ttar` =~ contents_description }
     md5_created ".tar.gz"
   end
 
@@ -118,7 +119,7 @@ context "Source in all formats" do
     hookup { Rake::Task["package:source:tar_bz2"].invoke }
 
     asserts("archive created") { File.size("#{folder}.tar.bz2") > 0}
-    asserts("archive contains expected files") { `7z x -so -bd -tbzip2 #{folder}.tar.bz2 | 7z l -si -bd -ttar` =~ contents_description }
+    asserts("archive contains expected files") { `7z x -so -bd -tbzip2 #{folder}.tar.bz2 2>#{null_file} | 7z l -si -bd -ttar` =~ contents_description }
     md5_created ".tar.bz2"
   end
 

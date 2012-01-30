@@ -257,17 +257,17 @@ context Releasy::Project do
             [ :Task, "build:windows", %w[build:windows:installer] ],
             [ :Task, "build:windows:installer", ["#{folder_base}_WIN32_INSTALLER"] ],
 
-            [ :FileCreationTask, 'pkg', [] ],
+            [ :FileTask, 'pkg', [] ],
 
-            [ :FileCreationTask, "#{folder_base}_SOURCE", source_files ],
+            [ :FileTask, "#{folder_base}_SOURCE", source_files ],
             [ :FileTask, "#{folder_base}_SOURCE.7z", ["#{folder_base}_SOURCE"] ],
             [ :FileTask, "#{folder_base}_SOURCE.zip", ["#{folder_base}_SOURCE"] ],
 
-            [ :FileCreationTask, "#{folder_base}_OSX", source_files + ["../wrappers/gosu-mac-wrapper-0.7.41.tar.gz"] ],
+            [ :FileTask, "#{folder_base}_OSX", source_files + ["../wrappers/gosu-mac-wrapper-0.7.41.tar.gz"] ],
             [ :FileTask, "#{folder_base}_OSX.7z", ["#{folder_base}_OSX" ] ],
             [ :FileTask, "#{folder_base}_OSX.zip", ["#{folder_base}_OSX"] ],
 
-            [ :FileCreationTask, "#{folder_base}_WIN32_INSTALLER", source_files ],
+            [ :FileTask, "#{folder_base}_WIN32_INSTALLER", source_files ],
             [ :FileTask, "#{folder_base}_WIN32_INSTALLER.7z", ["#{folder_base}_WIN32_INSTALLER"] ],
             [ :FileTask, "#{folder_base}_WIN32_INSTALLER.zip", ["#{folder_base}_WIN32_INSTALLER"] ],
         ]
