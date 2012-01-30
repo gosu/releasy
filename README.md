@@ -11,6 +11,7 @@ when there is a need to build, package (archive) and/or deploy a new version of 
 * [Reporting issues](https://github.com/Spooner/releasy/issues)
 * Releasy has been tested on Ruby 1.9.3 and 1.8.7 on Windows, Lubuntu and OS X. However, since this is an early version, please ensure that you double-check any releases created by Releasy before publishing them!
 
+
 Key features
 ------------
 
@@ -20,81 +21,12 @@ Key features
 * Build Windows installer on Windows only.
 * Build, package (compress) and deploy your executables for all platforms from a single rake command ('rake deploy').
 
+
 Installation
 ------------
 
     gem install releasy
 
-Build types supported
-----------------------
-
-The project can build one or more release folders:
-
-* `:source`
-  - Plain source folder, which can be used by anyone with Ruby already installed.
-  - See {Releasy::Builders::Source}
-* `:osx_app`
-  - OS X application bundle (.app) build, requiring a pre-made Ruby OS X wrapper. Note that this only contains binary gems for Gosu, TexPlay and Chipmunk, but will work with applications using any other source gems.
-  - See {Releasy::Builders::OsxApp}
-* `:windows_folder`
-  - A folder containing Ruby, application source files and an EXE to run them [creation on _Windows only_].
-  - See {Releasy::Builders::WindowsFolder}
-* `:windows_wrapped`
-  - A folder containing Ruby, application source files and an EXE to run them, requiring a copy of a RubyInstaller archive [creation on _OS X/Linux_].
-  - Creates larger release than other Windows build options.
-  - See {Releasy::Builders::WindowsWrapped}
-* `:windows_installer`
-  - A regular Windows installer [creation on _Windows only and requires [InnoSetup](http://www.jrsoftware.org/isinfo.php) to be installed_].
-  - See {Releasy::Builders::WindowsInstaller}
-* `:windows_standalone`
-  - Standalone EXE file that self-extracts to a temporary directory, which is the default behaviour for Ocra [creation on _Windows only_].
-  - Slower startup than the other Windows build options (up to 2s slower).
-  - See {Releasy::Builders::WindowsStandalone}
-
-See {Releasy::Project#add_build}
-
-Package types supported
------------------------
-
-Optionally, release folders can be packaged into an archive using one or more of:
-
-* `:"7z"`
-  - 7Zip format (.7z - Best compression).
-  - See {Releasy::Packagers::SevenZip}
-* `:dmg`
-  - OS X self-extractor (.dmg - requires `hdiutil` to be installed, so only available on OS X).
-  - See {Releasy::Packagers::Dmg}
-* `:exe`
-  - Windows self-extractor (.exe - Includes a 7z decompression module, so not efficient for small releases).
-  - See {Releasy::Packagers::Exe}
-* `:tar_bz2`
-  - Bzip2 tarball (.tar.bz2).
-  - See {Releasy::Packagers::TarBzip2}
-* `:tar_gz`
-  - Gzip tarball (.tar.gz).
-  - See {Releasy::Packagers::TarGzip}
-* `:zip`
-  - Standard zip format (.zip - Poor compression, but best compatibility).
-  - See {Releasy::Packagers::Zip}
-
-See {Releasy::Mixins::HasPackagers#add_package}
-
-Deploy types supported
-----------------------
-
-Optionally, packaged releases can be deployed using one or more of:
-
-* `:github`
-  - Upload to a Github project's downloads page.
-  - See {Releasy::Deployers::Github}
-* `:local`
-  - Copy files locally, for example into a local web server or dropbox folder.
-  - See {Releasy::Deployers::Local}
-* `:rsync`
-  - Upload to remote server with rsync (requires 'rsync' command be installed).
-  - See {Releasy::Deployers::Rsync}
-
-See {Releasy::Project#add_deploy}
 
 Example
 -------
@@ -128,7 +60,7 @@ Example
       end
 
       add_build :source do
-        add_package :zip
+        add_package :"7z"
       end
 
       add_build :windows_folder do
@@ -162,18 +94,98 @@ The `windows:wrapped` task will not be created if running on Windows.
     rake build:windows:installer              # Build windows installer
     rake deploy                               # Deploy My Application 1.4.0
     rake deploy:osx:app:tar_gz:github         # github <= osx app .tar.gz
-    rake deploy:source:zip:github             # github <= source .zip
+    rake deploy:source:7z:github              # github <= source .7z
     rake deploy:windows:folder:exe:github     # github <= windows folder .exe
-    rake deploy:windows:installer:exe:github  # github <= windows installer .zip
+    rake deploy:windows:installer:zip:github  # github <= windows installer .zip
     rake generate:images                      # Generate images
     rake package                              # Package My Application 1.4.0
     rake package:osx:app:tar_gz               # Package osx app .tar.gz
-    rake package:source:zip                   # Package source .zip
+    rake package:source:7z                    # Package source .7z
     rake package:windows:folder:exe           # Package windows folder .exe
     rake package:windows:installer:zip        # Package windows installer .zip
 
 A variety of unlisted tasks are also created, that allow for more control, such as `deploy:github` (Deploy all packages to Github only),
 `deploy:windows:folder` (deploy all windows folder packages all destinations) or `package:windows` (Package all windows builds).
+
+
+Build types supported
+----------------------
+
+The project can build one or more release folders:
+
+* `:source`
+  - Plain source folder, which can be used by anyone with Ruby already installed.
+  - See {Releasy::Builders::Source}
+* `:osx_app`
+  - OS X application bundle (.app) build, requiring a pre-made Ruby OS X wrapper. Note that this only contains binary gems for Gosu, TexPlay and Chipmunk, but will work with applications using any other source gems.
+  - See {Releasy::Builders::OsxApp}
+* `:windows_folder`
+  - A folder containing Ruby, application source files and an EXE to run them.
+  - Available on _Windows only_.
+  - See {Releasy::Builders::WindowsFolder}
+* `:windows_wrapped`
+  - A folder containing Ruby, application source files and an EXE to run them, requiring a copy of a RubyInstaller archive.
+  - Available on _OS X and Linux only_.
+  - Creates larger release than other Windows build options.
+  - See {Releasy::Builders::WindowsWrapped}
+* `:windows_installer`
+  - A Windows installer.
+  - Available on _Windows only and requires [InnoSetup](http://www.jrsoftware.org/isinfo.php) to be installed_.
+  - See {Releasy::Builders::WindowsInstaller}
+* `:windows_standalone`
+  - Standalone EXE file that self-extracts to a temporary directory, which is the default behaviour for [Ocra](https://github.com/larsch/ocra).
+  - Available on _Windows only_.
+  - Slower startup than the other Windows build options (up to 2s slower).
+  - See {Releasy::Builders::WindowsStandalone}
+
+See {Releasy::Project#add_build}
+
+
+Package types supported
+-----------------------
+
+Optionally, release folders can be packaged into an archive using one or more of:
+
+* `:"7z"`
+  - 7Zip format (.7z - Best compression).
+  - See {Releasy::Packagers::SevenZip}
+* `:dmg`
+  - OS X self-extractor (.dmg - requires `hdiutil` to be installed, so only available on OS X).
+  - Available on OS X only (`hdiutils` command required).
+  - See {Releasy::Packagers::Dmg}
+* `:exe`
+  - Windows self-extractor (.exe - Includes a 7z decompression module, so not efficient for small releases).
+  - See {Releasy::Packagers::Exe}
+* `:tar_bz2`
+  - Bzip2 tarball (.tar.bz2).
+  - See {Releasy::Packagers::TarBzip2}
+* `:tar_gz`
+  - Gzip tarball (.tar.gz).
+  - See {Releasy::Packagers::TarGzip}
+* `:zip`
+  - Standard zip format (.zip - Poor compression, but best compatibility).
+  - See {Releasy::Packagers::Zip}
+
+See {Releasy::Mixins::HasPackagers#add_package}
+
+
+Deploy types supported
+----------------------
+
+Optionally, packaged releases can be deployed using one or more of:
+
+* `:github`
+  - Upload to a Github project's downloads page.
+  - See {Releasy::Deployers::Github}
+* `:local`
+  - Copy files locally, for example into a local web server or dropbox folder.
+  - See {Releasy::Deployers::Local}
+* `:rsync`
+  - Upload to remote server with rsync (requires 'rsync' command be installed).
+  - See {Releasy::Deployers::Rsync}
+
+See {Releasy::Project#add_deploy}
+
 
 CLI Commands
 ------------
