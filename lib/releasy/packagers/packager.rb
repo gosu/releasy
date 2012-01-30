@@ -70,7 +70,7 @@ module Packagers
 
       heading "Creating #{pkg}"
       rm pkg, fileutils_options if File.exist? pkg
-      cd project.output_path do
+      cd project.output_path, fileutils_options do
         execute_command command(File.basename folder)
       end
 
