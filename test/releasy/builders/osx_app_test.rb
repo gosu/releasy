@@ -1,4 +1,4 @@
-require File.expand_path("helpers/helper", File.dirname(__FILE__))
+require File.expand_path("helpers/builder_helper", File.dirname(__FILE__))
 
 folder = File.join(output_path, "test_app_0_1_OSX")
 app_folder = File.join(folder, "Test App.app")
@@ -16,6 +16,8 @@ if osx_app_wrapper
     hookup do
       Dir.chdir project_path
     end
+
+    acts_like_a_builder
 
     asserts(:folder_suffix).equals "OSX"
     asserts(:encoding_excluded?).equals false

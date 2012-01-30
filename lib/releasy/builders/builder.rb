@@ -6,6 +6,8 @@ module Releasy
 module Builders
   # Builds release folders.
   # @abstract
+  #
+  # @attr suffix [String] Suffix on the folder generated, after name and version.
   class Builder
     include Rake::DSL
     include Mixins::HasPackagers
@@ -14,8 +16,14 @@ module Builders
 
     # @return [Project] that this Builder belongs to.
     attr_reader :project
-    # @return [String] Suffix on the folder generated, after name and version.
-    attr_accessor :folder_suffix
+
+    attr_reader :suffix
+    def suffix=(suffix)
+      raise TypeError, "suffix must be a String" unless suffix.is_a? String
+      @suffix = suffix
+    end
+    alias_method :folder_suffix, :suffix
+    alias_method :folder_suffix=, :suffix=
 
     # @return [Symbol] Type of builder.
     def type; self.class::TYPE; end
@@ -26,7 +34,7 @@ module Builders
     def initialize(project)
       super()
       @project = project
-      @folder_suffix = self.class::DEFAULT_FOLDER_SUFFIX
+      @suffix = self.class::DEFAULT_FOLDER_SUFFIX
       setup
     end
 
@@ -34,7 +42,7 @@ module Builders
     # @return [String] Called from the project, but users don't need to know about it.
     def task_group; type.to_s.split(/_/).first; end
     # @return [String] Output folder.
-    def folder; "#{project.folder_base}#{folder_suffix.empty? ? '' : '_'}#{folder_suffix}"; end
+    def folder; "#{project.folder_base}#{suffix.empty? ? '' : '_'}#{suffix}"; end
 
     protected
     # Called by {#initalize}

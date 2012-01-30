@@ -1,4 +1,4 @@
-require File.expand_path("helpers/helper", File.dirname(__FILE__))
+require File.expand_path("helpers/windows_builder_helper", File.dirname(__FILE__))
 
 Dir[File.expand_path("wrappers/ruby-*.7z", $original_path)].each do |path_to_ruby_dist|
   ruby_version = path_to_ruby_dist[/\d\.\d\.\d-p\d+/]
@@ -16,6 +16,8 @@ Dir[File.expand_path("wrappers/ruby-*.7z", $original_path)].each do |path_to_rub
     hookup do
       Dir.chdir project_path
     end
+
+    acts_like_a_windows_builder
 
     asserts(:wrapper).nil
     asserts(:folder_suffix).equals "WIN32"

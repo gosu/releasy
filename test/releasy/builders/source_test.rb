@@ -1,4 +1,5 @@
-require File.expand_path("helpers/helper", File.dirname(__FILE__))
+require File.expand_path("helpers/builder_helper", File.dirname(__FILE__))
+
 
 folder = File.join(output_path, "test_app_0_1_SOURCE")
 context Releasy::Builders::Source do
@@ -12,6 +13,8 @@ context Releasy::Builders::Source do
   hookup do
     Dir.chdir project_path
   end
+
+  acts_like_a_builder
 
   context "valid" do
     hookup do

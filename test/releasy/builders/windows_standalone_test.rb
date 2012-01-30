@@ -1,4 +1,4 @@
-require File.expand_path("helpers/helper", File.dirname(__FILE__))
+require File.expand_path("helpers/ocra_builder_helper", File.dirname(__FILE__))
 
 folder = File.join(output_path, "test_app_0_1_WIN32_EXE")
 
@@ -11,6 +11,8 @@ context Releasy::Builders::WindowsStandalone do
   end
 
   hookup { Dir.chdir project_path }
+
+  acts_like_an_ocra_builder
 
   context "valid" do
     if Gem.win_platform?
