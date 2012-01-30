@@ -4,6 +4,16 @@ require 'releasy/windows_wrapper_maker'
 module Releasy
   module Builders
     # Builds a folder containing Ruby + your source + a small Windows executable to run your executable script.
+    #
+    # @example
+    #   Releasy::Project.new do
+    #     name "My App"
+    #     add_build :windows_folder do
+    #       icon "media/icon.ico"  # Optional
+    #       exclude_encoding       # Optional
+    #       add_package :zip       # Optional
+    #     end
+    #   end
     class WindowsFolder < OcraBuilder
       TYPE = :windows_folder
       DEFAULT_FOLDER_SUFFIX = "WIN32"

@@ -4,6 +4,16 @@ module Releasy
   module Deployers
     # Deploys (copies) to a local destination, such as into your Dropbox folder.
     #
+    # @example
+    #   Releasy::Project.new do
+    #     name "My App"
+    #     add_build :source
+    #     add_package :zip
+    #     add_deploy :local do
+    #       path "C:/Users/X/Dropbox/Public" # Required.
+    #     end
+    #   end
+    #
     # @attr path [String] Path to copy files to.
     class Local < Deployer
       TYPE = :local

@@ -11,6 +11,47 @@ require "releasy/mixins/log"
 module Releasy
   # A description of the Ruby application that is being build for release and what packages to make from it.
   #
+  # @example
+  #   Releasy::Project.new do
+  #     name "My Application"
+  #     version MyApplication::VERSION
+  #
+  #     executable "bin/my_application.rbw"
+  #     files `git ls-files`.split("\n")
+  #     files.exclude '.gitignore'
+  #
+  #     exposed_files ["README.html", "LICENSE.txt"]
+  #     add_link "http://my_application.github.com", "My Application website"
+  #     exclude_encoding
+  #
+  #     # Create a variety of releases, for all platforms.
+  #     add_build :osx_app do
+  #       url "com.github.my_application"
+  #       wrapper "../osx_app/gosu-mac-wrapper-0.7.41.tar.gz"
+  #       icon "media/icon.icns"
+  #       add_package :tar_gz
+  #     end
+  #
+  #     add_build :source do
+  #       add_package :"7z"
+  #     end
+  #
+  #     add_build :windows_folder do
+  #       icon "media/icon.ico"
+  #       add_package :exe
+  #     end
+  #
+  #     add_build :windows_installer do
+  #       icon "media/icon.ico"
+  #       start_menu_group "Spooner Games"
+  #       readme "README.html" # User asked if they want to view readme after install.
+  #       license "LICENSE.txt" # User asked to read this and confirm before installing.
+  #       add_package :zip
+  #     end
+  #
+  #     add_deploy :github # Upload to a github project.
+  #   end
+
   # @attr underscored_name [String] Project name underscored (as used in file names), which will be derived from {#name}, but can be manually set.
   # @attr underscored_version [String] Version number, underscored so it can be used in file names, which will be derived from {#version}, but can be manually set.
   # @attr executable [String] Name of executable to run (defaults to 'bin/<underscored_name>')

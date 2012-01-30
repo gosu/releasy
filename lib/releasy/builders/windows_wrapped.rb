@@ -11,6 +11,17 @@ module Releasy
     # Limitations:
     #   * Does not DLLs loaded from the system, which will have to be included manually if any are required by the application and no universally available in Windows installations.
     #   * Unless a gem is in pure Ruby or available as a pre-compiled binary gem, it won't work!
+    #
+    # @example
+    #   Releasy::Project.new do
+    #     name "My App"
+    #     add_build :windows_wrapped do
+    #       wrapper "ruby-1.9.3-p0-i386-mingw32.7z" # Required
+    #       exclude_encoding                        # Optional
+    #       exclude_tcl_tk                          # Optional
+    #       add_package :zip                        # Optional
+    #     end
+    #   end
     class WindowsWrapped < WindowsBuilder
       include Mixins::HasGemspecs
 

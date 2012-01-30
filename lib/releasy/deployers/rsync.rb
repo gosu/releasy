@@ -5,6 +5,16 @@ module Releasy
   module Deployers
     # Deploys to a remote server, using the rsync command.
     #
+    # @example
+    #   Releasy::Project.new do
+    #     name "My App"
+    #     add_build :source
+    #     add_package :zip
+    #     add_deploy :rsync do
+    #       destination "example.com:/var/www/sites/mysite/downloads" # Required.
+    #     end
+    #   end
+    #
     # @attr destination [String] Location to deploy to, such as "example.com:/var/www/sites/mysite/downloads".
     # @attr options [String] ('-glpPrtvz') Options to pass to rsync.
     class Rsync < Deployer

@@ -4,6 +4,14 @@ module Releasy
   module Deployers
     # Deploys to a Github project's downloads page.
     #
+    # @example
+    #   Releasy::Project.new do
+    #     name "My App"
+    #     add_build :source
+    #     add_package :zip
+    #     add_deploy :github # Should be enough if git is configured correctly.
+    #   end
+    #
     # @attr description [String] (project.description) Description of file.
     # @attr login [String] (`git config github.user` or user name in `git config remote.origin.url`) Github user name that has write access to {#repository}
     # @attr repository [String] (repository name in `git config remote.origin.url` or _project.underscored_name_) Name of Github repository.

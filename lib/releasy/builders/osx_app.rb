@@ -6,6 +6,18 @@ module Releasy
   module Builders
     # Builds an OS X application bundle.
     #
+    # @example
+    #   Releasy::Project.new do
+    #     name "My App"
+    #     add_build :osx_app do
+    #       wrapper "gosu-mac-wrapper-0.7.41.tar.gz" # Required, see {#wrapper=}.
+    #       url "com.cheese.myapp"                   # Required
+    #       icon "media/icon.icns"                   # Optional
+    #       exclude_encoding                         # Optional
+    #       add_package :dmg                         # Optional
+    #     end
+    #   end
+    #
     # @attr icon [String] Optional filename of icon to show on executable/installer (.icns).
     class OsxApp < Builder
       include Mixins::HasGemspecs
