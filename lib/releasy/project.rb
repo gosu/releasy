@@ -51,7 +51,7 @@ module Releasy
   #
   #     add_deploy :github # Upload to a github project.
   #   end
-
+  #
   # @attr underscored_name [String] Project name underscored (as used in file names), which will be derived from {#name}, but can be manually set.
   # @attr underscored_version [String] Version number, underscored so it can be used in file names, which will be derived from {#version}, but can be manually set.
   # @attr executable [String] Name of executable to run (defaults to 'bin/<underscored_name>')
