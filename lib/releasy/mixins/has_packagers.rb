@@ -14,7 +14,7 @@ module Mixins
       packagers << packager
 
       if block_given?
-        if block.arity == 0
+        if block.arity <= 0
           DSLWrapper.new(packager, &block)
         else
           yield packager

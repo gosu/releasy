@@ -144,7 +144,7 @@ module Releasy
       setup
 
       if block_given?
-        if block.arity == 0
+        if block.arity <= 0
           DSLWrapper.new(self, &block)
         else
           yield self
@@ -166,7 +166,7 @@ module Releasy
       @builders << builder
 
       if block_given?
-        if block.arity == 0
+        if block.arity <= 0
           DSLWrapper.new(builder, &block)
         else
           yield builder
@@ -188,7 +188,7 @@ module Releasy
       @deployers << deployer
 
       if block_given?
-        if block.arity == 0
+        if block.arity <= 0
           DSLWrapper.new(deployer, &block)
         else
           yield deployer

@@ -23,7 +23,7 @@ context Releasy::Packagers::Packager do
   asserts(:respond_to?, :archive)
 
   context "#seven_zip_command" do
-    helper(:setup) do |windows, za, z = nil|
+    helper(:setup) do |windows, za, z|
       stub(Releasy).win_platform?.returns windows
       find = windows ? "where" : "which"
       mock(Kernel, :`).with("#{find} 7za").returns za
@@ -33,7 +33,7 @@ context Releasy::Packagers::Packager do
     context "on Windows" do
       context "7za command available" do
         asserts :seven_zip_command do
-          setup true, true
+          setup true, true, nil
           topic.send :seven_zip_command
         end.equals "7za"
       end
@@ -56,7 +56,7 @@ context Releasy::Packagers::Packager do
     context "not on Windows" do
       context "7za command available" do
         asserts :seven_zip_command do
-          setup false, true
+          setup false, true, nil
           topic.send :seven_zip_command
         end.equals "7za"
       end

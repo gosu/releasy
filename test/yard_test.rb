@@ -44,7 +44,7 @@ context "YARD @examples" do
       object.tags(:example).each_with_index {|e, i| run_riot e.text, i, e.object.to_s }
       object.meths(:inherited => false, :included => false).each do |method|
         process_method(method)
-        method.tags(:overload).each_with_index {|overload| process_method(overload) }
+        method.tags(:overload).each {|overload| process_method(overload) }
       end
     end
   end

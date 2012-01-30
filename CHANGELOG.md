@@ -6,6 +6,7 @@ v0.2.1
 
   * Added new deployers: :rsync and :local
   * Removed 7z installation dependency on Windows (included 7za.exe in gem).
+  * Fixes for Ruby 1.8.7
 
 v0.2.0
 ------
