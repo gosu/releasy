@@ -18,9 +18,9 @@ context Releasy::Packagers::Packager do
   asserts(:extension=, "frog").raises ArgumentError, /extension must be valid/
   asserts(:package, "fish").equals "fish.bleh"
 
-  asserts(:respond_to?, :checksum)
-  asserts(:respond_to?, :generate_tasks)
-  asserts(:respond_to?, :archive)
+  asserts_topic.respond_to :checksum
+  asserts_topic.respond_to :generate_tasks
+  asserts_topic.respond_to :archive
 
   context "#seven_zip_command" do
     helper(:setup) do |windows, za, z|
