@@ -9,6 +9,9 @@ module Releasy
   # An error caused when Releasy configuration is incorrect or inconsistent.
   class ConfigError < StandardError; end
 
+  # Failed to find a particular CLI command on the system.
+  class CommandNotFoundError < StandardError; end
+
   # Modules used to extend Releasy classes.
   module Mixins; end
 end

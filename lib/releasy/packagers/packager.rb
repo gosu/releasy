@@ -1,6 +1,6 @@
 require 'digest/md5'
 
-require "releasy/mixins/execute_command"
+require "releasy/mixins/utilities"
 require "releasy/mixins/log"
 
 module Releasy
@@ -11,7 +11,7 @@ module Packagers
   # @attr extension [String] Extension of archive to be created (such as ".zip").
   class Packager
     include Rake::DSL
-    include Mixins::ExecuteCommand
+    include Mixins::Utilities
     include Mixins::Log
 
     MD5_READ_SIZE = 128 * 64 # MD5 likes 128 byte chunks.
@@ -21,7 +21,7 @@ module Packagers
 
     attr_reader :extension
     def extension=(extension)
-      raise TypeError "extension must be a String" unless extension.is_a? String
+      raise TypeError, "extension must be a String" unless extension.is_a? String
       raise ArgumentError, "extension must be valid, such as '.zip'" unless extension =~ /^\.[a-z0-9\.]+$/
       @extension = extension
     end
@@ -31,6 +31,22 @@ module Packagers
     def initialize(project)
       @project = project
       @extension = self.class::DEFAULT_EXTENSION
+    end
+
+    protected
+    # Finds
+    def seven_zip_command
+      @seven_zip_command ||= begin
+        if command_available? "7za"
+          "7za" # Installed standalone command line version. Included with CLI and GUI releases.
+        elsif command_available? "7z"
+          "7z" # Installed CLI version only included with gui version.
+        elsif Releasy.win_platform?
+          %["#{File.expand_path("../../../../bin/7za.exe", __FILE__)}"]
+        else
+          raise CommandNotFoundError, "Failed to find 7-ZIP; see readme for details of how to install"
+        end
+      end
     end
 
     protected
@@ -66,7 +82,7 @@ module Packagers
 
     protected
     def command(folder)
-      %[7z a -mmt -bd -t#{type} -mx9 "#{package(folder)}" "#{folder}"]
+      %[#{seven_zip_command} a -mmt -bd -t#{type} -mx9 "#{package(folder)}" "#{folder}"]
     end
 
     protected

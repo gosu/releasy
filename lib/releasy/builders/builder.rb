@@ -1,5 +1,5 @@
 require "releasy/mixins/has_packagers"
-require "releasy/mixins/execute_command"
+require "releasy/mixins/utilities"
 require "releasy/mixins/log"
 
 module Releasy
@@ -9,7 +9,7 @@ module Builders
   class Builder
     include Rake::DSL
     include Mixins::HasPackagers
-    include Mixins::ExecuteCommand
+    include Mixins::Utilities
     include Mixins::Log
 
     # @return [Project] that this Builder belongs to.

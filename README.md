@@ -1,17 +1,24 @@
 Releasy
 =======
 
-_Releasy_ automates the release of Ruby applications (name comes from "Release + easy").
-By configuring a {Releasy::Project} in your application's rakefile, Releasy can generate a number of Rake tasks for use
-when there is a need to build, archive and/or deploy a new version of the application.
-
-Releasy allows cross-platform releases, relying on OS X or Windows "wrappers" to act as templates.
+_Releasy_ automates the release of Ruby applications for non-Ruby users, such as games or GUI applications.
+By configuring a {Releasy::Project} in your application's Rakefile, Releasy can generate Rake tasks for use
+when there is a need to build, package (archive) and/or deploy a new version of the application.
 
 * Author: [Bil Bas (Spooner)](https://github.com/Spooner)
 * Licence: [MIT](http://www.opensource.org/licenses/mit-license.php)
 * [Github project](https://github.com/Spooner/releasy)
 * [Reporting issues](https://github.com/Spooner/releasy/issues)
-* Relapse has been tested on Ruby 1.9.3 and 1.8.7 on Windows, Lubuntu and OS X. However, since this is an early version, please ensure that you double-check any releases created by Releasy before publishing them!
+
+Key features
+------------
+
+* Package up Ruby applications (Games, GUI applications, etc.) for non-ruby users.
+* Build OSX application bundle (.app) on any platform.
+* Build Windows executable (.exe) on any platform.
+* Build Windows installer on Windows only.
+* Build, package (compress) and deploy your executables for all platforms from a single rake command ('rake deploy').
+* _Since this is an early version, please ensure that you double-check by testing releases created by Releasy before publishing them!_
 
 Installation
 ------------
@@ -23,33 +30,71 @@ Build types supported
 
 The project can build one or more release folders:
 
-* `:source` - Plain source folder, which can be used by anyone with Ruby already installed.
-* `:osx_app` - OS X application bundle (.app) build, requiring a pre-made Ruby OS X wrapper. Note that this only contains binary gems for Gosu, TexPlay and Chipmunk, but will work with applications using any other source gems.
-* `:windows_folder` - A folder containing Ruby, application source files and an EXE to run them [creation on Windows only].
-* `:windows_wrapped` - A folder containing Ruby, application source files and an EXE to run them, requiring a copy of a RubyInstaller archive [creation on OSX/Linux].
-* `:windows_installer` - A regular Windows installer [creation on Windows only and requires InnoSetup to be installed].
-* `:windows_standalone` - Standalone EXE file that self-extracts to a temporary directory - slower startup than the other Windows options [creation on Windows only].
+* `:source`
+  - Plain source folder, which can be used by anyone with Ruby already installed.
+  - See {Releasy::Builders::Source}
+* `:osx_app`
+  - OS X application bundle (.app) build, requiring a pre-made Ruby OS X wrapper. Note that this only contains binary gems for Gosu, TexPlay and Chipmunk, but will work with applications using any other source gems.
+  - See {Releasy::Builders::OsxApp}
+* `:windows_folder`
+  - A folder containing Ruby, application source files and an EXE to run them [creation on _Windows only_].
+  - See {Releasy::Builders::WindowsFolder}
+* `:windows_wrapped`
+  - A folder containing Ruby, application source files and an EXE to run them, requiring a copy of a RubyInstaller archive [creation on _OS X/Linux_].
+  - Creates larger release than other Windows build options.
+  - See {Releasy::Builders::WindowsWrapped}
+* `:windows_installer`
+  - A regular Windows installer [creation on _Windows only and requires [InnoSetup](http://www.jrsoftware.org/isinfo.php) to be installed_].
+  - See {Releasy::Builders::WindowsInstaller}
+* `:windows_standalone`
+  - Standalone EXE file that self-extracts to a temporary directory, which is the default behaviour for Ocra [creation on _Windows only_].
+  - Slower startup than the other Windows build options (up to 2s slower).
+  - See {Releasy::Builders::WindowsStandalone}
+
+See {Releasy::Project#add_build}
 
 Package types supported
 -----------------------
 
 Optionally, release folders can be packaged into an archive using one or more of:
 
-* `:dmg` - OS X self-extractor (.dmg - requires `hdiutil` to be installed, so only available on OS X).
-* `:exe` - Windows self-extractor (.exe - Includes a 7z decompression module, so not efficient for small releases).
-* `:"7z"` - 7Zip format (.7z - Best compression).
-* `:tar_bz2` - BZip2 tarball (.tar.bz2).
-* `:tar_gz` - GZip tarball (.tar.gz).
-* `:zip` - Standard zip format (.zip - Poor compression, but best compatibility).
+* `:"7z"`
+  - 7Zip format (.7z - Best compression).
+  - See {Releasy::Packagers::SevenZip}
+* `:dmg`
+  - OS X self-extractor (.dmg - requires `hdiutil` to be installed, so only available on OS X).
+  - See {Releasy::Packagers::Dmg}
+* `:exe`
+  - Windows self-extractor (.exe - Includes a 7z decompression module, so not efficient for small releases).
+  - See {Releasy::Packagers::Exe}
+* `:tar_bz2`
+  - Bzip2 tarball (.tar.bz2).
+  - See {Releasy::Packagers::TarBzip2}
+* `:tar_gz`
+  - Gzip tarball (.tar.gz).
+  - See {Releasy::Packagers::TarGzip}
+* `:zip`
+  - Standard zip format (.zip - Poor compression, but best compatibility).
+  - See {Releasy::Packagers::Zip}
+
+See {Releasy::Mixins::HasPackagers#add_package}
 
 Deploy types supported
 ----------------------
 
 Optionally, packaged releases can be deployed using one or more of:
 
-* `:github` - Upload to a Github project's downloads page.
-* `:local` - Copy files locally, for example into a local web server or dropbox folder.
-* `:rsync` - Upload to remote server with rsync (requires 'rsync' command be installed).
+* `:github`
+  - Upload to a Github project's downloads page.
+  - See {Releasy::Deployers::Github}
+* `:local`
+  - Copy files locally, for example into a local web server or dropbox folder.
+  - See {Releasy::Deployers::Local}
+* `:rsync`
+  - Upload to remote server with rsync (requires 'rsync' command be installed).
+  - See {Releasy::Deployers::Rsync}
+
+See {Releasy::Project#add_deploy}
 
 Example
 -------
@@ -141,7 +186,7 @@ Releasy also provides some supplementary commands:
 External Requirements
 ---------------------
 
-### 7-Zip
+### 7-Zip (OS X/Linux only - Windows `7za` executable included in Windows)
 
 The [7z](http://www.7-zip.org) command must be installed on your system for Releasy to work:
 
@@ -153,9 +198,9 @@ The [7z](http://www.7-zip.org) command must be installed on your system for Rele
 
     <pre>sudo apt-get install p7zip-full</pre>
 
-  - Installing on Windows (or other OS)
+  - Installing on other OS
 
-    * [Download 7-Zip](http://www.7-zip.org/download.html) - Either the full version or the command line version will work with Releasy.
+    * [Download 7-Zip](http://www.7-zip.org/download.html)
 
 ### To build `:windows_installer` release (Windows only)
 
@@ -181,5 +226,5 @@ Credits
 Third Party Assets included
 ---------------------------
 
-* bin/7z.sfx - Windows [7z 9.20](http://www.7-zip.org) self-extractor module, which can be installed using `releasy install-sfx` [License: [GNU LGPL](http://www.7-zip.org/license.txt)]
-
+* bin/7z.sfx - Windows [7-ZIP](http://www.7-zip.org) self-extractor module, which can be installed using `releasy install-sfx` [License: [GNU LGPL](http://www.7-zip.org/license.txt)]
+* bin/7za.exe - Windows [7-ZIP](http://www.7-zip.org) CLI executable.

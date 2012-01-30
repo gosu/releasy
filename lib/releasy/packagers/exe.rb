@@ -16,7 +16,7 @@ module Releasy
 
       protected
       def command(folder)
-        %[7z a -mmt -bd -t7z -mx9 -sfx#{SFX_NAME} "#{package(folder)}" "#{folder}"]
+        %[#{seven_zip_command} a -mmt -bd -t7z -mx9 -sfx#{SFX_NAME} "#{package(folder)}" "#{folder}"]
       end
     end
   end

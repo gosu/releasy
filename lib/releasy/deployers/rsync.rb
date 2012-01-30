@@ -1,5 +1,5 @@
 require 'releasy/deployers/deployer'
-require "releasy/mixins/execute_command"
+require "releasy/mixins/utilities"
 
 module Releasy
   module Deployers
@@ -8,7 +8,7 @@ module Releasy
     # @attr destination [String] Location to deploy to, such as "example.com:/var/www/sites/mysite/downloads".
     # @attr options [String] ('-glpPrtvz') Options to pass to rsync.
     class Rsync < Deployer
-      include Mixins::ExecuteCommand
+      include Mixins::Utilities
 
       TYPE = :rsync
       DEFAULT_OPTIONS = '-glpPrtvz'

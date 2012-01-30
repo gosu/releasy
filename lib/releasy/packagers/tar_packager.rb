@@ -7,7 +7,7 @@ module Packagers
   class TarPackager < Packager
     protected
     def command(folder)
-      %[7z a -so -mmt -bd -ttar "#{folder}.tar" "#{folder}" | 7z a -si -bd -t#{self.class::FORMAT} -mx9 "#{folder}#{extension}"]
+      %[#{seven_zip_command} a -so -mmt -bd -ttar "#{folder}.tar" "#{folder}" | #{seven_zip_command} a -si -bd -t#{self.class::FORMAT} -mx9 "#{folder}#{extension}"]
     end
   end
 end
