@@ -16,7 +16,6 @@ context "Source in all formats" do
       version "0.1"
       files source_files
       output_path _output_path
-      verbose
       create_md5s
 
       add_build :source do
