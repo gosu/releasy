@@ -10,7 +10,7 @@ require 'releasy'
 if ARGV.include? "--verbose" or ARGV.include? "-v"
   Riot.verbose
 else
-  Riot.dots
+  Riot.pretty_dots
 end
 
 def source_files
