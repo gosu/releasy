@@ -2,14 +2,16 @@ require "releasy/builders/windows_builder"
 
 module Releasy
 module Builders
-  # Functionality for a {WindowsBuilder} that use Ocra and runs on Windows.
+  # Functionality for a {WindowsBuilder} that use Ocra to build on Windows.
+  #
   # @attr icon [String] Optional filename of icon to show on executable/installer (.ico).
+  #
   # @abstract
   class OcraBuilder < WindowsBuilder
     OCRA_COMMAND = "ocra"
     ICON_EXTENSION = ".ico"
 
-    # @return [String] Extra options to send to Ocra (Windows outputs only).
+    # @return [String] Extra options to send to Ocra, but they are unlikely to be needed explicitly. '_--no-enc_' is automatically used if {#exclude_encoding} is called and '_--console_' or '_--window_' is used based on {#executable_type}
     attr_accessor :ocra_parameters
 
     def valid_for_platform?; Releasy.win_platform?; end
