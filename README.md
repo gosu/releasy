@@ -2,7 +2,7 @@ Releasy
 =======
 
 _Releasy_ automates the release of Ruby applications (name comes from "Release + easy").
-By configuring a {Releasy::Project} in your application's rakefile, Releasy can generates a number of Rake tasks for use
+By configuring a {Releasy::Project} in your application's rakefile, Releasy can generate a number of Rake tasks for use
 when there is a need to build, archive and/or deploy a new version of the application.
 
 Releasy allows cross-platform releases, relying on OS X or Windows "wrappers" to act as templates.
