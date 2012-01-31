@@ -13,9 +13,9 @@ module Releasy
     #   end
     #
     # @attr description [String] (project.description) Description of file.
-    # @attr login [String] (`git config github.user` or user name in `git config remote.origin.url`) Github user name that has write access to {#repository}
+    # @attr user [String] (`git config github.user` or user name in `git config remote.origin.url`) Github user name that has write access to {#repository}
     # @attr repository [String] (repository name in `git config remote.origin.url` or _project.underscored_name_) Name of Github repository.
-    # @attr token [String] (`git config github.token`) Github token associated with {#login} - a 32-digit hexadecimal string - DO NOT COMMIT A FILE CONTAINING YOUR GITHUB TOKEN!
+    # @attr token [String] (`git config github.token`) Github token associated with {#user} - a 32-digit hexadecimal string - DO NOT COMMIT A FILE CONTAINING YOUR GITHUB TOKEN!
     class Github < Deployer
       TYPE = :github
       # Maximum time to allow an upload to continue. An hour to upload a file isn't unreasonable. Better than the default 2 minutes, which uploads about 4MB for me.
@@ -23,30 +23,26 @@ module Releasy
 
       Deployers.register self
 
-      def repository
-        @repository || project.underscored_name
-      end
+      def repository; @repository || project.underscored_name; end
       def repository=(repository)
         raise TypeError, "repository must be a String, but received #{repository.class}" unless repository.is_a? String
         @repository = repository
       end
 
-      attr_reader :user
+      def user; @user; end
       def user=(user)
         raise TypeError, "user must be a String, but received #{user.class}" unless user.is_a? String
         @user = user
       end
 
-      attr_reader :token
+      def token; @token; end
       def token=(token)
         raise TypeError, "token must be a String, but received #{token.class}" unless token.is_a? String
         raise ArgumentError, "token invalid (expected 32-character hex string)" unless token =~ /^[0-9a-f]{32}$/i
         @token = token
       end
 
-      def description
-        @description || project.description
-      end
+      def description; @description || project.description; end
       def description=(description)
         raise TypeError, "description must be a String, but received #{description.class}" unless description.is_a? String
         @description = description
@@ -101,9 +97,9 @@ module Releasy
 
         begin
           uploader.upload :repos => repository, :file => file, :description => description, :replace => @force_replace, :upload_timeout => UPLOAD_TIMEOUT do
-            print WORKING_CHARACTER
+            print WORKING_CHARACTER unless log_level == :silent
           end
-          puts WORKING_CHARACTER
+          info WORKING_CHARACTER
         rescue RuntimeError => ex
           if ex.message =~ /file .* is already uploaded/i
             warn "Skipping '#{File.basename file}' as it is already uploaded. Use #replace! to force uploading"
