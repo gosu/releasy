@@ -6,7 +6,8 @@ OSX_EXECUTABLE_FOLDER = File.expand_path("../../..", __FILE__)
 
 # Really hacky fudge-fix for something oddly missing in the .app.
 class Encoding
-  UTF_7 = UTF_16BE = UTF_16LE = UTF_32BE = UTF_32LE = Encoding.list.first
+  BINARY = UTF_7 = UTF_16BE = UTF_16LE = UTF_32BE = UTF_32LE = Encoding.list.first
 end
 
-load 'application/bin/test_app'
+Dir.chdir 'application'
+load 'bin/test_app'

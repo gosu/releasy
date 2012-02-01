@@ -7,6 +7,8 @@ v0.2.1
   * Added new deployers: :rsync and :local
   * Removed 7z installation dependency on Windows (included 7za.exe in gem).
   * Fixes for Ruby 1.8.7
+  * :osx_app build - Change directory into application directory before running app.
+  * :osx_app build - Add BINARY to list of "fake" encodings.
 
 v0.2.0
 ------
