@@ -226,6 +226,8 @@ The [7z](http://www.7-zip.org) command must be installed on your system for Rele
 
 [libgosu app wrapper](http://www.libgosu.org/downloads/). Latest version of the OS X-compatible wrapper is "gosu-mac-wrapper-0.7.41.tar.gz" which uses Ruby 1.9.2 and includes some binary gems: Gosu, Chipmunk and TexPlay.
 
+Warning: "gosu-mac-0.7.41.tar.gz" is NOT the complete OS X app wrapper, but rather just the Gosu gem pre-compiled for OS X!
+
 Credits
 -------
 
