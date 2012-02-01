@@ -54,7 +54,7 @@ Example
       # Create a variety of releases, for all platforms.
       add_build :osx_app do
         url "com.github.my_application"
-        wrapper "../osx_app/gosu-mac-wrapper-0.7.41.tar.gz"
+        wrapper "wrappers/gosu-mac-wrapper-0.7.41.tar.gz" # Assuming this is where you downloaded this file.
         icon "media/icon.icns"
         add_package :tar_gz
       end
@@ -76,6 +76,12 @@ Example
         add_package :zip
       end
 
+      add_build :windows_wrapped do
+        wrapper "wrappers/ruby-1.9.3-p0-i386-mingw32.7z" # Assuming this is where you downloaded this file.
+        exclude_tcl_tk
+        add_package :zip
+      end
+
       add_deploy :github # Upload to a github project.
     end
     #>>>
@@ -84,6 +90,8 @@ Example
 
 Note: The `windows:folder`, `windows:installer` and `windows:standalone` will be created only if running on Windows.
 The `windows:wrapped` task will not be created if running on Windows.
+
+The output from "rake -T" on Windows would be:
 
     rake build                                # Build My Application 1.4.0
     rake build:osx                            # Build all osx
