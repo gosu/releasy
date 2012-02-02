@@ -18,9 +18,9 @@ Features and Limitations
 ### Features
 
 * Package up Ruby applications (Games, GUI applications, etc.) for non-ruby users.
-* Build OSX application bundle (.app) on any platform.
+* Build OS X application bundle (.app) on any platform.
 * Build Windows executable (.exe) on any platform.
-* Build Windows installer on Windows only.
+* Build Windows installer (Windows only).
 * Build, package (compress) and deploy your executables for all platforms from a single rake command ('rake deploy').
 
 ### Limitations
@@ -259,7 +259,7 @@ Credits
 
 * Thanks to jlnr for creating "RubyGosu App.app", an OS X application bundle used to wrap application code.
 * Thanks to larsh for the [Ocra gem](http://ocra.rubyforge.org/), which is used for generating Win32 executables.
-* Thanks to jlnr and shawn42 for help testing on OS X; without you I would have been screwed!
+* Thanks to jlnr, SukiSan and shawn42 for help testing on OS X; without you I would have been screwed!
 * Thanks to shawn42 and everyone at #gosu and #rubylang for suggestions on how to improve the API.
 * Thanks to kyrylo for coming up with the name, Releasy!
 
