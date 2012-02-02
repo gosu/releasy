@@ -1,7 +1,7 @@
 Releasy
 =======
 
-_Releasy_ automates the release of Ruby applications for non-Ruby users, such as games or GUI applications.
+_Releasy_ automates the release of Ruby applications, such as games or GUI applications, for non-Ruby users.
 By configuring a {Releasy::Project} in your application's Rakefile, Releasy can generate Rake tasks for use
 when there is a need to build, package (archive) and/or deploy a new version of the application.
 
@@ -12,8 +12,10 @@ when there is a need to build, package (archive) and/or deploy a new version of 
 * Releasy has been tested on Ruby 1.9.3 and 1.8.7 on Windows, Lubuntu and OS X. However, since this is an early version, please ensure that you double-check any releases created by Releasy before publishing them!
 
 
-Key features
+Features and Limitations
 ------------
+
+### Features
 
 * Package up Ruby applications (Games, GUI applications, etc.) for non-ruby users.
 * Build OSX application bundle (.app) on any platform.
@@ -21,6 +23,11 @@ Key features
 * Build Windows installer on Windows only.
 * Build, package (compress) and deploy your executables for all platforms from a single rake command ('rake deploy').
 
+### Limitations
+
+* Building Windows executable on non-Windows systems will not work with compiled gems that aren't published as pre-compiled for Windows (_i386-mingw_ or _x86-mingw_).
+* Building OS X apps on non-OS X systems will not currently work with compiled gems at all (other than Gosu, Chipmunk & TexPlay).
+* One or more external applications need to be installed, separate to the Releasy gem (see below for details).
 
 Installation
 ------------
