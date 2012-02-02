@@ -206,21 +206,32 @@ Releasy also provides some supplementary commands:
 External Requirements
 ---------------------
 
-### 7-Zip (OS X/Linux only - Windows `7za` executable included in Windows)
+### 7-Zip
 
 The [7z](http://www.7-zip.org) command must be installed on your system for Releasy to work:
 
-  - Installing on OS X homebrew:
+  * OS X homebrew:
 
     <pre>brew install p7zip</pre>
 
-  - Installing on Ubuntu/Debian:
+  * Ubuntu/Debian:
 
     <pre>sudo apt-get install p7zip-full</pre>
 
-  - Installing on other OS
+  * Windows
 
-    * [Download 7-Zip](http://www.7-zip.org/download.html)
+    - 32-bit
+
+      * 7z 32-bit executable included in gem.
+
+    - 64-bit
+
+      * 7z 32-bit executable included in gem, which will work fine.
+      * If compression/decompression speed is really important to you, install the 64-bit .msi version of [7-Zip](http://www.7-zip.org/download.html)
+
+  * Other OS
+
+    - [Download 7-Zip](http://www.7-zip.org/download.html)
 
 ### To build `:windows_installer` release (Windows only)
 
