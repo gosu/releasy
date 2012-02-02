@@ -80,9 +80,10 @@ context Releasy::Project do
   end
 
   context "defined" do
+    helper(:pretend_windows) { stub(Releasy).win_platform?.returns true }
+    helper(:pretend_not_windows) { stub(Releasy).win_platform?.returns false }
+
     setup do
-      stub(Releasy).win_platform?.returns true
-      
       Releasy::Project.new do
         name "Test Project - (2a)"
         version "v0.1.5"
@@ -122,10 +123,22 @@ context Releasy::Project do
     asserts(:folder_base).equals "pkg/test_project_2a_v0_1_5"
     asserts(:links).equals "www.frog.com" => "Frog", "www2.fish.com" => "Fish"
 
-    asserts(:active_builders).size 3
+    asserts(:active_builders) do
+      pretend_windows
+      topic.send :active_builders
+    end.size 3
+
+    asserts(:active_builders) do
+      pretend_not_windows
+      topic.send :active_builders
+    end.size 2
+
     asserts("source active_packagers") { topic.send(:active_packagers, topic.send(:active_builders).find {|b| b.type == :source }) }.size 2
     asserts("osx app active_packagers") { topic.send(:active_packagers, topic.send(:active_builders).find {|b| b.type == :osx_app }) }.size 2
-    asserts("Windows standalone active_packagers") { topic.send(:active_packagers, topic.send(:active_builders).find {|b| b.type == :windows_installer }) }.size 2
+    asserts("Windows standalone active_packagers") do
+      pretend_windows
+      topic.send(:active_packagers, topic.send(:active_builders).find {|b| b.type == :windows_installer })
+    end.size 2
 
     context "adding builds and packages" do
       asserts "#add_build yields an instance_eval-ed Releasy::DSLWrapper" do
@@ -205,6 +218,11 @@ context Releasy::Project do
       end
 
       context "generated tasks" do
+        hookup do
+          pretend_windows
+          topic.send :generate_tasks
+        end
+
         tasks = [
             [ :Task, "deploy", %w[deploy:source deploy:osx deploy:windows] ],
             [ :Task, "deploy:github", %w[deploy:source:github deploy:osx:github deploy:windows:github] ],
