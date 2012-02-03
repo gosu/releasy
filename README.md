@@ -255,6 +255,25 @@ The [7z](http://www.7-zip.org) command must be installed on your system for Rele
 
 Warning: "gosu-mac-0.7.41.tar.gz" is NOT the complete OS X app wrapper, but rather just the Gosu gem pre-compiled for OS X!
 
+Similar tools
+-------------
+
+* [Ocra](https://github.com/larsch/ocra): Builds standalone Windows executable or a Windows installer. Releasy uses Ocra, but greatly extends its capabilities.
+  - Advantages: Creating a standalone executable requires just a simple command.
+  - Disadvantages: Can't build except on Windows; standalone executable slow to load; more difficult to create an installer.
+
+* [Crate](https://github.com/copiousfreetime/crate): Cross-platform executable builder.
+  - Advantages: Probably faster to load, since all source files are stored in an SQLite database; works _anywhere_ Ruby can be compiled.
+  - Disadvantages: Requires C compiler; not compatible with Ruby 1.9; may not be supported any more.
+
+* [exerb-mingw](https://github.com/snaury/exerb-mingw/)
+  - Advantages: Unsure.
+  - Disadvantages: Unsure; no English documentation; may not be supported any more.
+
+* [rubyscript2exe](http://www.erikveen.dds.nl/rubyscript2exe/): Builds a standalone Windows executable.
+  - Advantages: None.
+  - Disadvantages: Not compatible with Ruby 1.9; may not be supported any more.
+
 Credits
 -------
 
