@@ -50,10 +50,6 @@ context "YARD @examples" do
   end
 end
 
-module MyApplication
-  VERSION = "1.2.2"
-end
-
 ['README.md'].each do |filename|
   context "#{filename} examples" do
     File.read(filename).scan(/#<<<.*#>>>/m).each_with_index {|e, i| run_riot e, i, filename }

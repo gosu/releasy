@@ -1,6 +1,11 @@
 Releasy Change Log
 ==================
 
+Next release
+------------
+
+  * _Project#file_ and _Project#exposed_files_ no longer require the argument to be an array (can take multiple arguments instead).
+
 v0.2.2
 ------
 

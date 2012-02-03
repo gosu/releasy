@@ -14,13 +14,12 @@ module Releasy
   # @example
   #   Releasy::Project.new do
   #     name "My Application"
-  #     version MyApplication::VERSION
+  #     version "1.2.4"
   #
   #     executable "bin/my_application.rbw"
-  #     files `git ls-files`.split("\n")
-  #     files.exclude '.gitignore'
+  #     files "lib/**/*.rb", "config/**/*.yml", "media/**/*.*"
   #
-  #     exposed_files ["README.html", "LICENSE.txt"]
+  #     exposed_files "README.html", "LICENSE.txt"
   #     add_link "http://my_application.github.com", "My Application website"
   #     exclude_encoding
   #
@@ -89,10 +88,10 @@ module Releasy
     protected :create_md5s?
 
     def exposed_files; @exposed_files; end
-    def exposed_files=(files); @exposed_files = Rake::FileList.new files; end
+    def exposed_files=(*files); @exposed_files = Rake::FileList.new *files; end
 
     def files; @files; end
-    def files=(files); @files = Rake::FileList.new files; end
+    def files=(*files); @files = Rake::FileList.new *files; end
 
     # @return [String]
     def to_s; "<#{self.class}#{name ? " #{name}" : ""}#{version ? " #{version}" : ""}>"; end

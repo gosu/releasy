@@ -43,18 +43,15 @@ Example
     require 'rubygems'
     require 'bundler/setup' # Releasy doesn't require that your application uses bundler, but it does make things easier.
     require 'releasy'
-    require 'lib/my_application/version'
 
     #<<<
     Releasy::Project.new do
       name "My Application"
-      version MyApplication::VERSION
+      version "1.3.2"
 
       executable "bin/my_application.rbw"
-      files `git ls-files`.split("\n")
-      files.exclude '.gitignore'
-
-      exposed_files ["README.html", "LICENSE.txt"]
+      files "lib/**/*.rb", "config/**/*.yml", "media/**/*.*"
+      exposed_files "README.html", "LICENSE.txt"
       add_link "http://my_application.github.com", "My Application website"
       exclude_encoding
 
@@ -72,6 +69,7 @@ Example
 
       add_build :windows_folder do
         icon "media/icon.ico"
+        executable_type :windows # Assuming you don't want it to run in a console window.
         add_package :exe
       end
 
@@ -80,11 +78,13 @@ Example
         start_menu_group "Spooner Games"
         readme "README.html" # User asked if they want to view readme after install.
         license "LICENSE.txt" # User asked to read this and confirm before installing.
+        executable_type :windows # Assuming you don't want it to run in a console window.
         add_package :zip
       end
 
       add_build :windows_wrapped do
         wrapper "wrappers/ruby-1.9.3-p0-i386-mingw32.7z" # Assuming this is where you downloaded this file.
+        executable_type :windows # Assuming you don't want it to run in a console window.
         exclude_tcl_tk
         add_package :zip
       end
