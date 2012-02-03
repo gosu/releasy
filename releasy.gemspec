@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Bil Bas (Spooner)"]
   s.email       = ["bil.bagpuss@gmail.com"]
-  s.homepage    = "http://spooner.github.com/libraries/releasy/"
+  s.homepage    = "https://github.com/spooner/releasy/"
   s.summary     = %q{Releasy helps to make Ruby application releases simpler}
   s.description = <<END
 #{s.summary}, by creating and archiving source folders, Windows folders,
