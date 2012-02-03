@@ -9,6 +9,7 @@ when there is a need to build, package (archive) and/or deploy a new version of 
 * Licence: [MIT](http://www.opensource.org/licenses/mit-license.php)
 * [Github project](https://github.com/Spooner/releasy)
 * [Reporting issues](https://github.com/Spooner/releasy/issues)
+* IRC channel: #releasy ([irc.freenode.net](http://webchat.freenode.net/))
 * Releasy has been tested on Ruby 1.9.3 and 1.8.7 on Windows, Lubuntu and OS X. However, since this is an early version, please ensure that you double-check any releases created by Releasy before publishing them!
 
 
