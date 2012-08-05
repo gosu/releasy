@@ -42,7 +42,7 @@ Example
 ### Project's Rakefile
 
     require 'rubygems'
-    require 'bundler/setup' # Releasy doesn't require that your application uses bundler, but it does make things easier.
+    require 'bundler/setup' # Releasy requires require that your application uses bundler.
     require 'releasy'
 
     #<<<
