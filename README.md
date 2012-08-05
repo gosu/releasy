@@ -49,6 +49,7 @@ Example
     Releasy::Project.new do
       name "My Application"
       version "1.3.2"
+      verbose # Can be removed if you don't want to see all build messages.
 
       executable "bin/my_application.rb"
       files "lib/**/*.rb", "config/**/*.yml", "media/**/*.*"
