@@ -22,6 +22,7 @@ module Releasy
     class OsxApp < Builder
       include Mixins::HasGemspecs
       include Mixins::CanExcludeEncoding
+      include Mixins::Utilities
 
       TYPE = :osx_app
 
@@ -77,7 +78,7 @@ module Releasy
         new_app = File.join folder, app_name
 
         # Copy the app files.
-        execute_command %[7z x -so -bd "#{wrapper}" 2>#{null_file} | 7z x -si -mmt -bd -ttar -o"#{folder}"]
+        execute_command %[#{seven_zip_command} x -so -bd "#{wrapper}" 2>#{null_file} | 7z x -si -mmt -bd -ttar -o"#{folder}"]
         mv File.join(folder, "RubyGosu App.app"), new_app, fileutils_options
 
         ## Copy my source files.

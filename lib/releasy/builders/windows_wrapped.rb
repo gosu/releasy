@@ -24,6 +24,7 @@ module Releasy
     #   end
     class WindowsWrapped < WindowsBuilder
       include Mixins::HasGemspecs
+      include Mixins::Utilities
 
       TYPE = :windows_wrapped
       DEFAULT_FOLDER_SUFFIX = "WIN32"
@@ -114,7 +115,7 @@ module Releasy
       protected
       def copy_ruby_distribution
         archive_name = File.basename(wrapper).chomp(File.extname(wrapper))
-        execute_command %[7z x "#{wrapper}" -o"#{File.dirname folder}"]
+        execute_command %[#{seven_zip_command} x "#{wrapper}" -o"#{File.dirname folder}"]
         mv File.join(File.dirname(folder), archive_name), folder, fileutils_options
         rm_r File.join(folder, "share"), fileutils_options
         rm_r File.join(folder, "include"), fileutils_options if File.exists? File.join(folder, "include")

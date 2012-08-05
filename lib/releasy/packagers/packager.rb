@@ -34,22 +34,6 @@ module Packagers
     end
 
     protected
-    # Finds
-    def seven_zip_command
-      @seven_zip_command ||= begin
-        if command_available? "7za"
-          "7za" # Installed standalone command line version. Included with CLI and GUI releases.
-        elsif command_available? "7z"
-          "7z" # Installed CLI version only included with gui version.
-        elsif Releasy.win_platform?
-          %["#{File.expand_path("../../../../bin/7za.exe", __FILE__)}"]
-        else
-          raise CommandNotFoundError, "Failed to find 7-ZIP; see readme for details of how to install"
-        end
-      end
-    end
-
-    protected
     # Generate tasks to create the archive of this file.
     def generate_tasks(output_task, folder, deployers)
       pkg = package folder
