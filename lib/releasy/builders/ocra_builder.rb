@@ -31,7 +31,7 @@ module Builders
 
     protected
     def ocra_command
-      command = defined?(Bundler) ? 'bundle exec ' : ''
+      command = 'bundle exec '
       command += %[#{OCRA_COMMAND} "#{project.executable}" ]
       command += "--#{effective_executable_type} "
       command += "--no-enc " if encoding_excluded?

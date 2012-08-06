@@ -10,7 +10,7 @@ module Mixins
       @gemspecs = if defined? Bundler
                     Bundler.definition.specs_for([:default]).to_a
                   else
-                    Gem.loaded_specs.values
+                    raise "Must use Bundler in application for Releasy to package it! Sorry!"
                   end
       super
     end
