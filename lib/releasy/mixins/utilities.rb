@@ -43,7 +43,9 @@ module Releasy
       # Is a particular command available on this system?
       def command_available?(command)
         find = Releasy.win_platform? ? "where" : "which"
-        Kernel.`("#{find} #{command}").length > 0
+        # Call this Kernel version of `` so it can be mocked in testing.
+        result = Kernel.`("#{find} #{command}")
+        !result.strip.empty?
       end
 
       protected

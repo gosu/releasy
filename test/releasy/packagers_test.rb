@@ -25,7 +25,8 @@ null_file = Gem.win_platform? ? "NUL" : "/dev/null"
     asserts(:extension).equals extension
     context "" do
       hookup do
-        mock(Kernel, :`).with("#{Gem.win_platform? ? "where" : "which"} 7za").returns(true) unless type == :dmg
+        Releasy::Mixins::Utilities.seven_zip_command = nil
+        mock(Kernel, :`).with("#{Gem.win_platform? ? "where" : "which"} 7za").returns("/bin/7za") unless type == :dmg
       end
       asserts(:command, "f").equals command
     end

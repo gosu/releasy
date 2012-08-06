@@ -1,4 +1,9 @@
 require File.expand_path("helpers/helper", File.dirname(__FILE__))
+
+# Hack because libxml-ruby doesn't know how to set up a path properly! Gah!
+libxml_library_path = File.expand_path "../libs", `gem which libxml`
+ENV['PATH'] = "#{libxml_library_path};#{ENV['PATH']}"
+
 require 'net/github-upload' # Because this isn't otherwise loaded until it is needed.
 
 context Releasy::Deployers::Github do

@@ -90,7 +90,9 @@ module Releasy
 
         info %[Uploading to: https://github.com/downloads/#{user}/#{repository}/#{File.basename(file)}]
 
-        # Hold off requiring this unless needed, so it doesn't slow down creating tasks.
+        # libxml-ruby doesn't set path correctly, for no good reason.
+        libxml_library_path = File.expand_path "../libs", `gem which libxml`
+        ENV['PATH'] = "#{libxml_library_path};#{ENV['PATH']}"
         require 'net/github-upload'
 
         uploader = Net::GitHub::Upload.new(:login => user, :token => token)
