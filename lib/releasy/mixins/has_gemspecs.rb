@@ -7,11 +7,7 @@ module Mixins
 
     protected
     def setup
-      @gemspecs = if defined? Bundler
-                    Bundler.definition.specs_for([:default]).to_a
-                  else
-                    raise "Must use Bundler in application for Releasy to package it! Sorry!"
-                  end
+      @gemspecs = Bundler.definition.specs_for([:default]).to_a
       super
     end
 
