@@ -29,6 +29,8 @@ Features and Limitations
 * Building Windows executable on non-Windows systems will not work with compiled gems that aren't published as pre-compiled for Windows (_i386-mingw_ or _x86-mingw_).
 * Building OS X apps on non-OS X systems will not currently work with compiled gems at all (other than Gosu, Chipmunk & TexPlay).
 * One or more external applications need to be installed, separate to the Releasy gem (see below for details).
+* :windows_wrapped executable with Ruby 1.8.7, 1.9.2 and 1.9.3 only.
+* :osx_app executable with Ruby 1.9.2 only.
 
 Installation
 ------------
@@ -253,9 +255,9 @@ The [7z](http://www.7-zip.org) command must be installed on your system for Rele
 
 ### To build `:osx_app` application bundle release (any platform)
 
-[libgosu app wrapper](http://www.libgosu.org/downloads/). Latest version of the OS X-compatible wrapper is "gosu-mac-wrapper-0.7.41.tar.gz" which uses Ruby 1.9.2 and includes some binary gems: Gosu, Chipmunk and TexPlay.
+[libgosu app wrapper](http://www.libgosu.org/downloads/). Latest version of the OS X-compatible wrapper is "gosu-mac-wrapper-0.7.44.tar.gz" which uses Ruby 1.9.2 and includes some binary gems: Gosu, Chipmunk and TexPlay.
 
-Warning: "gosu-mac-0.7.41.tar.gz" is NOT the complete OS X app wrapper, but rather just the Gosu gem pre-compiled for OS X!
+Warning: "gosu-mac-0.7.44.tar.gz" is NOT the complete OS X app wrapper, but rather just the Gosu gem pre-compiled for OS X!
 
 Similar tools
 -------------
@@ -282,7 +284,7 @@ Credits
 * Thanks to jlnr for creating "RubyGosu App.app", an OS X application bundle used to wrap application code.
 * Thanks to larsh for the [Ocra gem](http://ocra.rubyforge.org/), which is used for generating Win32 executables.
 * Thanks to jlnr, SukiSan and shawn42 for help testing on OS X; without you I would have been screwed!
-* Thanks to shawn42 and everyone at #gosu and #rubylang for suggestions on how to improve the API.
+* Thanks to shawn42 and everyone at #gosu and #ruby (irc.freenode.org) for suggestions on how to improve the API.
 * Thanks to kyrylo for coming up with the name, Releasy!
 
 Third Party Assets included
