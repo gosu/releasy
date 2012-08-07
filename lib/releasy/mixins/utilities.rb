@@ -34,7 +34,9 @@ module Releasy
           elsif Releasy.win_platform?
             %["#{File.expand_path("../../../../bin/7za.exe", __FILE__)}"]
           else
-            raise CommandNotFoundError, "Failed to find 7-ZIP; see readme for details of how to install"
+            message = "7-ZIP executable (7za or 7z) not found on PATH. View README to see how to install it on your operating system"
+            error message
+            raise CommandNotFoundError, message
           end
         end
       end

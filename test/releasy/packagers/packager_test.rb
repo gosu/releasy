@@ -72,12 +72,14 @@ context Releasy::Packagers::Packager do
       end
 
       context "no 7z installation" do
+        message = "7-ZIP executable (7za or 7z) not found on PATH. View README to see how to install it on your operating system"
         asserts :seven_zip_command do
           stub(Releasy).win_platform?.returns false
           mock(Kernel, :`).with("which 7za").returns ""
           mock(Kernel, :`).with("which 7z").returns ""
+          mock(topic).error(message)
           topic.send :seven_zip_command
-        end.raises Releasy::CommandNotFoundError, /Failed to find 7-ZIP/
+        end.raises Releasy::CommandNotFoundError, /#{Regexp.escape message}/
       end
     end
   end

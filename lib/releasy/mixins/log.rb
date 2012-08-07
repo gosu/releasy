@@ -27,7 +27,7 @@ module Releasy::Mixins::Log
   end
 
   protected
-  # Heading message shown if :verbose
+  # Info message shown only if if :verbose
   def info(str)
     puts str if log_level == :verbose
   end
