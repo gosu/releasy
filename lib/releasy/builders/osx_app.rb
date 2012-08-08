@@ -158,12 +158,26 @@ END
       def create_main(app)
         # Something for the .app to run -> just a little redirection file.
         info "Creating Main.rb"
+
+        # Manually add all gemspec #require_paths to $LOAD_PATH
         File.open("#{app}/Contents/Resources/Main.rb", "w") do |file|
+          require_paths = gemspecs.map do |spec|
+            spec.require_paths.map {|path| "#{spec.name}-#{spec.version}/#{path}" }
+          end
+
           file.puts <<END_TEXT
-Dir[File.expand_path("../vendor/gems/*/lib", __FILE__)].each do |lib|
-  $LOAD_PATH.unshift lib
+# This is a workaround since the .app does not run rubygems properly.
+GEM_REQUIRE_PATHS = #{require_paths.flatten.inspect}
+
+GEM_REQUIRE_PATHS.each do |path|
+  $LOAD_PATH.unshift File.expand_path(File.join("../vendor/gems", path), __FILE__)
 end
 
+END_TEXT
+
+          # More generic stuff we need.
+          file.puts <<END_TEXT
+# Directory the .app is inside.
 OSX_EXECUTABLE_FOLDER = File.expand_path("../../..", __FILE__)
 
 # Really hacky fudge-fix for something oddly missing in the .app.

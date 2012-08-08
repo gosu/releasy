@@ -1,7 +1,11 @@
-Dir[File.expand_path("../vendor/gems/*/lib", __FILE__)].each do |lib|
-  $LOAD_PATH.unshift lib
+# This is a workaround since the .app does not run rubygems properly.
+GEM_REQUIRE_PATHS = ["bundler-1.1.5/lib", "cri-2.1.0/lib", "ocra-1.3.0/lib", "thor-0.14.6/lib"]
+
+GEM_REQUIRE_PATHS.each do |path|
+  $LOAD_PATH.unshift File.expand_path(File.join("../vendor/gems", path), __FILE__)
 end
 
+# Directory the .app is inside.
 OSX_EXECUTABLE_FOLDER = File.expand_path("../../..", __FILE__)
 
 # Really hacky fudge-fix for something oddly missing in the .app.
