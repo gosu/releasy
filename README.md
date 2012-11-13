@@ -33,26 +33,23 @@ Features and Limitations
 * :osx_app executable with Ruby 1.9.2 only.
 * Your main executable file couldn't be name "main.rb".
 * In your Gemfile, put releasy in the development group to avoid loading it in the distribute app :
-
-```ruby
-group :development do
-  gem "releasy"
-end
-```
+  ```ruby
+  group :development do
+    gem "releasy"
+  end
+  ```
 
 * In the Rakefile, don't include unneeded gems (like Gosu or Chingu) :
-
-```ruby
-require 'bundler'
-Bundler.require :development
-```
+  ```ruby
+  require 'bundler'
+  Bundler.require :development
+  ```
 
 * You shouldn't load bundler on production. Use this code to avoid it :
-
-```ruby
-require 'bundler/setup' unless defined?(OSX_EXECUTABLE) or ENV['OCRA_EXECUTABLE']
-# Require your gems after this line.
-```
+  ```ruby
+  require 'bundler/setup' unless defined?(OSX_EXECUTABLE) or ENV['OCRA_EXECUTABLE']
+  # Require your gems after this line.
+  ```
 
 
 Installation
