@@ -44,14 +44,13 @@ end
 
 ```ruby
 require 'bundler'
-Bundler.require :development # Only require Releasy, since we don't need to load Gosu/Chingu at this point.
+Bundler.require :development
 ```
 
 * You shouldn't load bundler on production. Use this code to avoid it :
 
 ```ruby
 require 'bundler/setup' unless defined?(OSX_EXECUTABLE) or ENV['OCRA_EXECUTABLE']
-
 # Require your gems after this line.
 ```
 
