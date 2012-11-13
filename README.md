@@ -31,6 +31,26 @@ Features and Limitations
 * One or more external applications need to be installed, separate to the Releasy gem (see below for details).
 * :windows_wrapped executable with Ruby 1.8.7, 1.9.2 and 1.9.3 only.
 * :osx_app executable with Ruby 1.9.2 only.
+* Your main executable file couldn't be name "main.rb".
+* In your Gemfile, put releasy in the development group to avoid loading it in the distribute app :
+  ```ruby
+  group :development do
+    gem "releasy"
+  end
+  ```
+
+* In the Rakefile, don't include unneeded gems (like Gosu or Chingu) :
+  ```ruby
+  require 'bundler'
+  Bundler.require :development
+  ```
+
+* You shouldn't load bundler on production. Use this code to avoid it :
+  ```ruby
+  require 'bundler/setup' unless defined?(OSX_EXECUTABLE) or ENV['OCRA_EXECUTABLE']
+  # Require your gems after this line.
+  ```
+
 
 Installation
 ------------
@@ -43,61 +63,67 @@ Example
 
 ### Project's Rakefile
 
-    require 'rubygems'
-    require 'bundler/setup' # Releasy requires require that your application uses bundler.
-    require 'releasy'
+```ruby
+require 'bundler'
+Bundler.require :development
+# Only require Releasy, since we don't need to load
+# include unneeded gems like Gosu/Chingu at this point.
 
-    #<<<
-    Releasy::Project.new do
-      name "My Application"
-      version "1.3.2"
-      verbose # Can be removed if you don't want to see all build messages.
+Releasy::Project.new do
+  name "My Application"
+  version "1.3.2"
+  verbose # Can be removed if you don't want to see all build messages.
 
-      executable "bin/my_application.rb"
-      files "lib/**/*.rb", "config/**/*.yml", "media/**/*.*"
-      exposed_files "README.html", "LICENSE.txt"
-      add_link "http://my_application.github.com", "My Application website"
-      exclude_encoding # Applications that don't use advanced encoding (e.g. Japanese characters) can save build size with this.
+  executable "bin/my_application.rb"
+  files [
+    "lib/**/*.rb",
+    "config/**/*.yml",
+    "media/**/*.*"
+    ]
+  exposed_files "README.html", "LICENSE.txt"
+  add_link "http://my_application.github.com", "My Application website"
+  exclude_encoding # Applications that don't use advanced encoding (e.g. Japanese characters) can save build size with this.
 
-      # Create a variety of releases, for all platforms.
-      add_build :osx_app do
-        url "com.github.my_application"
-        wrapper "wrappers/gosu-mac-wrapper-0.7.41.tar.gz" # Assuming this is where you downloaded this file.
-        icon "media/icon.icns"
-        add_package :tar_gz
-      end
+  # Create a variety of releases, for all platforms.
+  add_build :osx_app do
+    url "com.github.my_application"
+    wrapper "wrappers/gosu-mac-wrapper-0.7.41.tar.gz" # Assuming this is where you downloaded this file.
+    icon "media/icon.icns"
+    add_package :tar_gz
+  end
 
-      add_build :source do
-        add_package :"7z"
-      end
+  add_build :source do
+    add_package :"7z"
+  end
 
-      # If building on a Windows machine, :windows_folder and/or :windows_installer are recommended.
-      add_build :windows_folder do
-        icon "media/icon.ico"
-        executable_type :windows # Assuming you don't want it to run with a console window.
-        add_package :exe # Windows self-extracting archive.
-      end
+  # If building on a Windows machine, :windows_folder and/or :windows_installer are recommended.
+  add_build :windows_folder do
+    icon "media/icon.ico"
+    executable_type :windows # Assuming you don't want it to run with a console window.
+    add_package :exe # Windows self-extracting archive.
+  end
 
-      add_build :windows_installer do
-        icon "media/icon.ico"
-        start_menu_group "Spooner Games"
-        readme "README.html" # User asked if they want to view readme after install.
-        license "LICENSE.txt" # User asked to read this and confirm before installing.
-        executable_type :windows # Assuming you don't want it to run with a console window.
-        add_package :zip
-      end
+  add_build :windows_installer do
+    icon "media/icon.ico"
+    start_menu_group "Spooner Games"
+    readme "README.html" # User asked if they want to view readme after install.
+    license "LICENSE.txt" # User asked to read this and confirm before installing.
+    executable_type :windows # Assuming you don't want it to run with a console window.
+    add_package :zip
+  end
 
-      # If unable to build on a Windows machine, :windows_wrapped is the only choice.
-      add_build :windows_wrapped do
-        wrapper "wrappers/ruby-1.9.3-p0-i386-mingw32.7z" # Assuming this is where you downloaded this file.
-        executable_type :windows # Assuming you don't want it to run with a console window.
-        exclude_tcl_tk # Assuming application doesn't use Tcl/Tk, then it can save a lot of size by using this.
-        add_package :zip
-      end
+  # If unable to build on a Windows machine, :windows_wrapped is the only choice.
+  add_build :windows_wrapped do
+    wrapper "wrappers/ruby-1.9.3-p0-i386-mingw32.7z" # Assuming this is where you downloaded this file.
+    executable_type :windows # Assuming you don't want it to run with a console window.
+    exclude_tcl_tk # Assuming application doesn't use Tcl/Tk, then it can save a lot of size by using this.
+    add_package :zip
+  end
 
-      add_deploy :github # Upload to a github project.
-    end
-    #>>>
+  add_deploy :github # Upload to a github project.
+end
+#>>>
+```
 
 ### Tasks created
 
