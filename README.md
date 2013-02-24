@@ -95,7 +95,7 @@ Example
         add_package :zip
       end
 
-      add_deploy :github # Upload to a github project.
+      add_deploy :local # Only deploy locally.
     end
     #>>>
 
@@ -114,17 +114,17 @@ The output from "rake -T" on Windows would be:
     rake build:windows:folder                 # Build windows folder
     rake build:windows:installer              # Build windows installer
     rake deploy                               # Deploy My Application 1.3.2
-    rake deploy:osx:app:tar_gz:github         # github <= osx app .tar.gz
-    rake deploy:source:7z:github              # github <= source .7z
-    rake deploy:windows:folder:exe:github     # github <= windows folder .exe
-    rake deploy:windows:installer:zip:github  # github <= windows installer .zip
+    rake deploy:osx:app:tar_gz:local          # local <= osx app .tar.gz
+    rake deploy:source:7z:local               # local <= source .7z
+    rake deploy:windows:folder:exe:local      # local <= windows folder .exe
+    rake deploy:windows:installer:zip:local   # local <= windows installer .zip
     rake package                              # Package My Application 1.3.2
     rake package:osx:app:tar_gz               # Package osx app .tar.gz
     rake package:source:7z                    # Package source .7z
     rake package:windows:folder:exe           # Package windows folder .exe
     rake package:windows:installer:zip        # Package windows installer .zip
 
-A variety of unlisted tasks are also created, that allow for more control, such as `deploy:github` (Deploy all packages to Github only),
+A variety of unlisted tasks are also created, that allow for more control, such as `deploy:local` (Deploy all packages locally),
 `deploy:windows:folder` (deploy all windows folder packages all destinations) or `package:windows` (Package all windows builds).
 
 
@@ -194,9 +194,6 @@ Deploy types supported
 
 Optionally, packaged releases can be deployed using one or more of:
 
-* `:github`
-  - Upload to a Github project's downloads page.
-  - See {Releasy::Deployers::Github}
 * `:local`
   - Copy files locally, for example into a local web server or dropbox folder.
   - See {Releasy::Deployers::Local}

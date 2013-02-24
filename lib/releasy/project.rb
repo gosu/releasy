@@ -48,7 +48,8 @@ module Releasy
   #       add_package :zip
   #     end
   #
-  #     add_deploy :github # Upload to a github project.
+  #     add_deploy :local # Only deploy locally.
+  #
   #   end
   #
   # @attr underscored_name [String] Project name underscored (as used in file names), which will be derived from {#name}, but can be manually set.
@@ -218,7 +219,7 @@ module Releasy
 
     # Add a deployment method for archived packages.
     # @see #initialize
-    # @param type [:github, :local, :rsync]
+    # @param type [:local, :rsync]
     # @return [Project] self
     def add_deploy(type, &block)
       raise ArgumentError, "Unsupported deploy type #{type}" unless Deployers.has_type? type

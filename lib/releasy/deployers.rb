@@ -7,6 +7,6 @@ module Releasy
   end
 end
 
-%w[github local rsync].each do |deployer|
+%w[local rsync].each do |deployer|
   require "releasy/deployers/#{deployer}"
 end
