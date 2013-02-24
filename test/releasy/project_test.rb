@@ -106,7 +106,7 @@ context Releasy::Project do
         add_link "www.frog.com", "Frog"
         add_link "www2.fish.com", "Fish"
         
-        add_deploy :github
+        add_deploy :local
       end
     end
 
@@ -164,7 +164,7 @@ context Releasy::Project do
       should "call #generate_tasks on all packagers" do
         topic.send(:active_builders).each do |builder|
           topic.send(:active_packagers, builder).each do |packager|
-            mock(packager).generate_tasks(builder.type.to_s.sub('_', ':'), builder.send(:folder), satisfy {|a| a.size == 1 and a.first.is_a? Releasy::Deployers::Github })
+            mock(packager).generate_tasks(builder.type.to_s.sub('_', ':'), builder.send(:folder), satisfy {|a| a.size == 1 and a.first.is_a? Releasy::Deployers::Local })
           end
         end
         topic.send :generate_archive_tasks
@@ -180,9 +180,9 @@ context Releasy::Project do
 
         tasks = [
             [ :Task, "deploy", %w[deploy:a deploy:b] ],
-            [ :Task, "deploy:github", %w[deploy:a:github deploy:b:github] ],
-            [ :Task, "deploy:a", %w[deploy:a:github] ],
-            [ :Task, "deploy:b", %w[deploy:b:github] ],
+            [ :Task, "deploy:local", %w[deploy:a:local deploy:b:local] ],
+            [ :Task, "deploy:a", %w[deploy:a:local] ],
+            [ :Task, "deploy:b", %w[deploy:b:local] ],
         ]
 
         test_tasks tasks
@@ -195,9 +195,9 @@ context Releasy::Project do
         end
 
         tasks = [
-            [ :Task, "deploy:c:github", %w[deploy:c:a:github deploy:c:b:github] ],
-            [ :Task, "deploy:c:a", %w[deploy:c:a:github] ],
-            [ :Task, "deploy:c:b", %w[deploy:c:b:github] ],
+            [ :Task, "deploy:c:local", %w[deploy:c:a:local deploy:c:b:local] ],
+            [ :Task, "deploy:c:a", %w[deploy:c:a:local] ],
+            [ :Task, "deploy:c:b", %w[deploy:c:b:local] ],
         ]
 
         test_tasks tasks
@@ -225,32 +225,32 @@ context Releasy::Project do
 
         tasks = [
             [ :Task, "deploy", %w[deploy:source deploy:osx deploy:windows] ],
-            [ :Task, "deploy:github", %w[deploy:source:github deploy:osx:github deploy:windows:github] ],
-            [ :Task, "deploy:source", %w[deploy:source:github] ],
+            [ :Task, "deploy:local", %w[deploy:source:local deploy:osx:local deploy:windows:local] ],
+            [ :Task, "deploy:source", %w[deploy:source:local] ],
             
-            [ :Task, "deploy:source:github", %w[deploy:source:zip:github deploy:source:7z:github] ],
-            [ :Task, "deploy:source:zip", %w[deploy:source:zip:github] ],
-            [ :Task, "deploy:source:zip:github", %w[package:source:zip] ],
-            [ :Task, "deploy:source:7z", %w[deploy:source:7z:github] ],
-            [ :Task, "deploy:source:7z:github", %w[package:source:7z] ],
+            [ :Task, "deploy:source:local", %w[deploy:source:zip:local deploy:source:7z:local] ],
+            [ :Task, "deploy:source:zip", %w[deploy:source:zip:local] ],
+            [ :Task, "deploy:source:zip:local", %w[package:source:zip] ],
+            [ :Task, "deploy:source:7z", %w[deploy:source:7z:local] ],
+            [ :Task, "deploy:source:7z:local", %w[package:source:7z] ],
 
-            [ :Task, "deploy:osx", %w[deploy:osx:github] ],
-            [ :Task, "deploy:osx:app", %w[deploy:osx:app:github] ],
-            [ :Task, "deploy:osx:github", %w[deploy:osx:app:github] ],
-            [ :Task, "deploy:osx:app:github", %w[deploy:osx:app:zip:github deploy:osx:app:7z:github] ],
-            [ :Task, "deploy:osx:app:zip", %w[deploy:osx:app:zip:github] ],
-            [ :Task, "deploy:osx:app:zip:github", %w[package:osx:app:zip] ],
-            [ :Task, "deploy:osx:app:7z", %w[deploy:osx:app:7z:github] ],
-            [ :Task, "deploy:osx:app:7z:github", %w[package:osx:app:7z] ],
+            [ :Task, "deploy:osx", %w[deploy:osx:local] ],
+            [ :Task, "deploy:osx:app", %w[deploy:osx:app:local] ],
+            [ :Task, "deploy:osx:local", %w[deploy:osx:app:local] ],
+            [ :Task, "deploy:osx:app:local", %w[deploy:osx:app:zip:local deploy:osx:app:7z:local] ],
+            [ :Task, "deploy:osx:app:zip", %w[deploy:osx:app:zip:local] ],
+            [ :Task, "deploy:osx:app:zip:local", %w[package:osx:app:zip] ],
+            [ :Task, "deploy:osx:app:7z", %w[deploy:osx:app:7z:local] ],
+            [ :Task, "deploy:osx:app:7z:local", %w[package:osx:app:7z] ],
 
-            [ :Task, "deploy:windows", %w[deploy:windows:github] ],
-            [ :Task, "deploy:windows:installer", %w[deploy:windows:installer:github] ],
-            [ :Task, "deploy:windows:github", %w[deploy:windows:installer:github] ],
-            [ :Task, "deploy:windows:installer:github", %w[deploy:windows:installer:zip:github deploy:windows:installer:7z:github] ],
-            [ :Task, "deploy:windows:installer:zip", %w[deploy:windows:installer:zip:github] ],
-            [ :Task, "deploy:windows:installer:zip:github", %w[package:windows:installer:zip] ],
-            [ :Task, "deploy:windows:installer:7z", %w[deploy:windows:installer:7z:github] ],
-            [ :Task, "deploy:windows:installer:7z:github", %w[package:windows:installer:7z] ],
+            [ :Task, "deploy:windows", %w[deploy:windows:local] ],
+            [ :Task, "deploy:windows:installer", %w[deploy:windows:installer:local] ],
+            [ :Task, "deploy:windows:local", %w[deploy:windows:installer:local] ],
+            [ :Task, "deploy:windows:installer:local", %w[deploy:windows:installer:zip:local deploy:windows:installer:7z:local] ],
+            [ :Task, "deploy:windows:installer:zip", %w[deploy:windows:installer:zip:local] ],
+            [ :Task, "deploy:windows:installer:zip:local", %w[package:windows:installer:zip] ],
+            [ :Task, "deploy:windows:installer:7z", %w[deploy:windows:installer:7z:local] ],
+            [ :Task, "deploy:windows:installer:7z:local", %w[package:windows:installer:7z] ],
 
             [ :Task, "package", %w[package:source package:osx package:windows] ],
                 
