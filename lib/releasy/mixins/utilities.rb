@@ -47,7 +47,8 @@ module Releasy
         find = Releasy.win_platform? ? "where" : "which"
         # Call this Kernel version of `` so it can be mocked in testing.
         result = Kernel.`("#{find} #{command}")
-        !result.strip.empty?
+        return false unless $? == 0
+        result
       end
 
       protected
