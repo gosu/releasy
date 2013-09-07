@@ -1,11 +1,12 @@
 Releasy Change Log
 ==================
 
-Next release
-------------
+v0.3.0
+------
 
   * _Project#file_ and _Project#exposed_files_ no longer require the argument to be an array (can take multiple arguments instead).
   * Handles 7-ZIP not being found better (always gives error message).
+  * Removed support for the :github deployer, since they've stopped hosting files.
 
 v0.2.2
 ------
