@@ -43,7 +43,7 @@ module Releasy
         # If destination file already exists or is as new as the one we are going to copy over it, don't bother.
         if (not File.exists?(destination)) or (File.ctime(destination) < File.ctime(file))
           mkdir_p path, fileutils_options unless File.exists? path
-          cp file, path, fileutils_options.merge(:force => File.exists?(destination))
+          cp file, path, fileutils_options
         else
           warn "Skipping '#{File.basename(file)}' because it already exists in '#{path}'"
         end
