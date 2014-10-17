@@ -8,8 +8,8 @@ context Releasy::Mixins::Log do
   context "included" do
     setup { Object.new.extend topic }
 
-    asserts_topic.respond_to :heading
-    asserts_topic.respond_to :info
-    asserts_topic.respond_to :warn
+    asserts('#heading') { topic.respond_to?(:heading, true) }.equals true
+    asserts('#info') { topic.respond_to?(:info, true) }.equals true
+    asserts('#warn') { topic.respond_to?(:warn, true) }.equals true
   end
 end

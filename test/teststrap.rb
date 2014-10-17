@@ -43,7 +43,7 @@ def same_contents?(file1, file2)
 end
 $original_path = Dir.pwd
 
-def output_path; "../test_output"; end
+def output_path; File.expand_path("./test_output"); end
 
 Releasy::Mixins::Log.log_level = :silent
 
