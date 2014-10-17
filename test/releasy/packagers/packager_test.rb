@@ -19,11 +19,12 @@ context Releasy::Packagers::Packager do
   asserts(:extension=, "frog").raises ArgumentError, /extension must be valid/
   asserts(:package, "fish").equals "fish.bleh"
 
-  asserts_topic.respond_to :checksum
-  asserts_topic.respond_to :generate_tasks
-  asserts_topic.respond_to :archive
+  asserts('#checksum') { topic.respond_to?(:checksum, true) }.equals true
+  asserts('#generate_tasks') { topic.respond_to?(:generate_tasks, true) }.equals true
+  asserts('#archive') { topic.respond_to?(:archive, true) }.equals true
 
-  context "#seven_zip_command" do    context "on Windows" do
+  context "#seven_zip_command" do    
+    context "on Windows" do
       context "7za command available" do
         asserts :seven_zip_command do
           stub(Releasy).win_platform?.returns true

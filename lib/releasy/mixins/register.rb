@@ -15,7 +15,7 @@ module Releasy
     #   end
     #
     #   class Frogs::RedFrog
-    #     TYPE = :red const_defined?(:TYPE) # Type must be defined before registering.
+    #     TYPE = :red unless const_defined?(:TYPE) # Type must be defined before registering.
     #     Frogs.register self
     #   end
     #

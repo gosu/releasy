@@ -30,7 +30,7 @@ context Releasy::Mixins::Utilities do
       should "return false if not available" do
         stub(Releasy).win_platform?.returns true
         mock(Kernel, :`).with("where command").returns ""
-        mock(topic).kernel_result.returns 256
+        mock(topic).kernel_result.returns 1
         topic.send(:command_available?, "command")
       end.equals false
     end
