@@ -138,7 +138,7 @@ module Releasy
           info "Checking gem #{spec.name} #{spec.version} to see if there is a Windows binary version"
           # Find out what versions are available and if the required version is available as a windows binary, download and install that.
           versions = %x[gem list "#{spec.name}" --remote --all --prerelease]
-          if versions =~ /#{spec.name} \(([^\)]*)\)/m
+          if versions =~ /^#{spec.name} \(([^\)]*)\)/m
             version_string = $1
             platforms = version_string.split(/,\s*/).find {|s| s =~ /^#{spec.version}/ }.split(/\s+/)
             windows_platform = platforms.find {|p| p =~ /mingw|mswin/ }
