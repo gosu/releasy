@@ -6,4 +6,3 @@ source "https://rubygems.org"
 # Just include some gems that we know must be installed on the system that has Releasy.
 gem "cri"
 gem "ocra"
-gem "thor"
