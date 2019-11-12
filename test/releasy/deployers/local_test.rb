@@ -46,7 +46,7 @@ context Releasy::Deployers::Local do
           stub(File).exists?("fish/file.zip").returns false
 
           mock(topic).mkdir_p("fish", :verbose => false)
-          mock(topic).cp("file.zip", "fish", :verbose => false, :force => false)
+          mock(topic).cp("file.zip", "fish", :verbose => false)
           topic.send :deploy, "file.zip"
 
           true
@@ -56,19 +56,19 @@ context Releasy::Deployers::Local do
           stub(File).exists?("fish").returns true
           stub(File).exists?("fish/file.zip").returns false
 
-          mock(topic).cp("file.zip", "fish", :verbose => false, :force => false)
+          mock(topic).cp("file.zip", "fish", :verbose => false)
           topic.send :deploy, "file.zip"
 
           true
         end
 
-        should "copy file forcefully if destination file is older" do
+        should "copy file if destination file is older" do
           stub(File).exists?("fish").returns true
           stub(File).exists?("fish/file.zip").returns true
           stub(File).ctime("fish/file.zip").returns 0
           stub(File).ctime("file.zip").returns 1
 
-          mock(topic).cp("file.zip", "fish", :verbose => false, :force => true)
+          mock(topic).cp("file.zip", "fish", :verbose => false)
           topic.send :deploy, "file.zip"
 
           true

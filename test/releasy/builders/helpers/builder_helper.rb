@@ -4,9 +4,9 @@ def acts_like_a_builder
   context Releasy::Builders::Builder do
     asserts_topic.kind_of Releasy::Builders::Builder
 
-    asserts_topic.respond_to :setup
-    asserts_topic.respond_to :task_group
-    asserts_topic.respond_to :folder
+    asserts('#setup') { topic.respond_to?(:setup, true) }.equals true
+    asserts('#task_group') { topic.respond_to?(:task_group, true) }.equals true
+    asserts('#folder') { topic.respond_to?(:folder, true) }.equals true
 
     asserts(:type).equals { topic.class::TYPE }
     asserts(:suffix).equals { topic.class::DEFAULT_FOLDER_SUFFIX }

@@ -47,13 +47,14 @@ module Releasy
         find = Releasy.win_platform? ? "where" : "which"
         # Call this Kernel version of `` so it can be mocked in testing.
         result = Kernel.`("#{find} #{command}")
-        return false unless $? == 0
-        result
+        kernel_result == 0 && result != ""
       end
 
       protected
       def null_file; Releasy.win_platform? ? "NUL" : "/dev/null"; end
 
+      private
+      def kernel_result; $?; end
     end
   end
 end

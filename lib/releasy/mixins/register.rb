@@ -10,12 +10,12 @@ module Releasy
     #   end
     #
     #   class Frogs::BlueFrog
-    #     TYPE = :blue # Type must be defined before registering.
+    #     TYPE = :blue unless const_defined?(:TYPE) # Type must be defined before registering.
     #     Frogs.register self
     #   end
     #
     #   class Frogs::RedFrog
-    #     TYPE = :red # Type must be defined before registering.
+    #     TYPE = :red unless const_defined?(:TYPE) # Type must be defined before registering.
     #     Frogs.register self
     #   end
     #

@@ -23,12 +23,14 @@ context Releasy::Mixins::Utilities do
       should "return true if available" do
         stub(Releasy).win_platform?.returns true
         mock(Kernel, :`).with("where command").returns "/frog/command"
+        mock(topic).kernel_result.returns 0
         topic.send(:command_available?, "command")
       end.equals true
 
       should "return false if not available" do
         stub(Releasy).win_platform?.returns true
         mock(Kernel, :`).with("where command").returns ""
+        mock(topic).kernel_result.returns 1
         topic.send(:command_available?, "command")
       end.equals false
     end
@@ -37,12 +39,14 @@ context Releasy::Mixins::Utilities do
       should "return true if available" do
         stub(Releasy).win_platform?.returns false
         mock(Kernel, :`).with("which command").returns "/frog/command"
+        mock(topic).kernel_result.returns 0
         topic.send(:command_available?, "command")
       end.equals true
 
       should "return false if not available" do
         stub(Releasy).win_platform?.returns false
         mock(Kernel, :`).with("which command").returns ""
+        mock(topic).kernel_result.returns 256
         topic.send(:command_available?, "command")
       end.equals false
     end

@@ -275,7 +275,7 @@ context Releasy::Project do
             [ :Task, "build:windows", %w[build:windows:installer] ],
             [ :Task, "build:windows:installer", ["#{folder_base}_WIN32_INSTALLER"] ],
 
-            [ :FileTask, 'pkg', [] ],
+            # [ :FileTask, 'pkg', [] ],
 
             [ :FileTask, "#{folder_base}_SOURCE", source_files ],
             [ :FileTask, "#{folder_base}_SOURCE.7z", ["#{folder_base}_SOURCE"] ],
