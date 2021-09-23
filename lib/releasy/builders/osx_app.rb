@@ -66,7 +66,7 @@ module Releasy
         task "build:osx:app" => folder
 
         file folder => project.files + [wrapper] do
-          mkdir_p folder, fileutils_options
+          mkdir_p folder, **fileutils_options
           build
         end
       end
@@ -79,7 +79,7 @@ module Releasy
 
         # Copy the app files.
         execute_command %[#{seven_zip_command} x -so -bd "#{wrapper}" 2>#{null_file} | 7z x -si -mmt -bd -ttar -o"#{folder}"]
-        mv File.join(folder, "RubyGosu App.app"), new_app, fileutils_options
+        mv File.join(folder, "RubyGosu App.app"), new_app, **fileutils_options
 
         ## Copy my source files.
         copy_files_relative project.files, File.join(new_app, 'Contents/Resources/application')
@@ -87,7 +87,7 @@ module Releasy
         remove_encoding if encoding_excluded?
 
         # Copy accompanying files.
-        project.exposed_files.each {|file| cp file, folder, fileutils_options }
+        project.exposed_files.each {|file| cp file, folder, **fileutils_options }
 
         copy_gems vendored_gem_names(BINARY_GEMS), File.join(new_app, 'Contents/Resources/vendor')
         create_main new_app
@@ -128,29 +128,29 @@ END
       def remove_encoding
         encoding_files = Dir[File.join folder, "#{app_name}/Contents/Resources/lib/enc/**/*.bundle"]
         required_encoding_files = REQUIRED_ENCODING_FILES.map {|f| File.join folder, "#{app_name}/Contents/Resources/lib/enc", f }
-        rm_r encoding_files - required_encoding_files, fileutils_options
+        rm_r encoding_files - required_encoding_files, **fileutils_options
       end
 
       protected
       def rename_executable(app)
         new_executable = "#{app}/Contents/MacOS/#{project.name}"
-        mv "#{app}/Contents/MacOS/RubyGosu App" , new_executable, fileutils_options
-        chmod 0755, new_executable, fileutils_options
+        mv "#{app}/Contents/MacOS/RubyGosu App" , new_executable, **fileutils_options
+        chmod 0755, new_executable, **fileutils_options
       end
 
       protected
       # Remove unnecessary gems from the distribution.
       def remove_gems(app)
         SOURCE_GEMS_TO_REMOVE.each do |gem|
-          rm_r "#{app}/Contents/Resources/lib/#{gem}", fileutils_options
+          rm_r "#{app}/Contents/Resources/lib/#{gem}", **fileutils_options
         end
       end
 
       protected
       def update_icon(app)
         if icon
-          rm "#{app}/Contents/Resources/Gosu.icns", fileutils_options
-          cp icon, "#{app}/Contents/Resources", fileutils_options
+          rm "#{app}/Contents/Resources/Gosu.icns", **fileutils_options
+          cp icon, "#{app}/Contents/Resources", **fileutils_options
         end
       end
 

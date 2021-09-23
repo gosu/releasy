@@ -22,13 +22,13 @@ module Releasy
       # Regular windows installer, but some users consider them evil.
       def generate_tasks
         file folder => project.files do
-          mkdir_p folder, fileutils_options
+          mkdir_p folder, **fileutils_options
           create_link_files folder
-          project.exposed_files.each {|file| cp file, folder, fileutils_options }
+          project.exposed_files.each {|file| cp file, folder, **fileutils_options }
 
           create_installer installer_name, :links => true
 
-          rm temp_installer_script, fileutils_options
+          rm temp_installer_script, **fileutils_options
         end
 
         desc "Build windows installer"

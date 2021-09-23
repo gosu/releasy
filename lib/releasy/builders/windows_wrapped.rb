@@ -61,7 +61,7 @@ module Releasy
         raise ConfigError, "#wrapper not valid wrapper: #{wrapper}" unless File.basename(wrapper) =~ VALID_RUBY_DIST
 
         file folder => project.files + [wrapper] do
-          mkdir_p project.output_path, fileutils_options
+          mkdir_p project.output_path, **fileutils_options
           build
         end
 
@@ -79,7 +79,7 @@ module Releasy
         copy_files_relative project.files, File.join(folder, 'src')
 
         create_link_files folder
-        project.exposed_files.each {|file| cp file, folder, fileutils_options }
+        project.exposed_files.each {|file| cp file, folder, **fileutils_options }
 
         create_executable
 
@@ -92,13 +92,13 @@ module Releasy
       protected
       def delete_excluded_files
         # Remove TCL/TK dlls, lib folder and source.
-        rm_r Dir[*(TCL_TK_FILES.map {|f| File.join(folder, f) })].uniq.sort, fileutils_options if @exclude_tcl_tk
+        rm_r Dir[*(TCL_TK_FILES.map {|f| File.join(folder, f) })].uniq.sort, **fileutils_options if @exclude_tcl_tk
 
         # Remove Encoding files on Ruby 1.9
         if encoding_excluded? and wrapper =~ /1\.9\.\d/
           encoding_files = Dir[File.join folder, "lib/ruby/1.9.1/i386-mingw32/enc/**/*.so"]
           required_encoding_files = REQUIRED_ENCODING_FILES.map {|f| File.join folder, "lib/ruby/1.9.1/i386-mingw32/enc", f }
-          rm_r encoding_files - required_encoding_files, fileutils_options
+          rm_r encoding_files - required_encoding_files, **fileutils_options
         end
       end
 
@@ -116,11 +116,11 @@ module Releasy
       def copy_ruby_distribution
         archive_name = File.basename(wrapper).chomp(File.extname(wrapper))
         execute_command %[#{seven_zip_command} x "#{wrapper}" -o"#{File.dirname folder}"]
-        mv File.join(File.dirname(folder), archive_name), folder, fileutils_options
-        rm_r File.join(folder, "share"), fileutils_options
-        rm_r File.join(folder, "include"), fileutils_options if File.exists? File.join(folder, "include")
+        mv File.join(File.dirname(folder), archive_name), folder, **fileutils_options
+        rm_r File.join(folder, "share"), **fileutils_options
+        rm_r File.join(folder, "include"), **fileutils_options if File.exists? File.join(folder, "include")
         unused_exe = effective_executable_type == :windows ? "ruby.exe" : "rubyw.exe"
-        rm File.join(folder, "bin", unused_exe), fileutils_options
+        rm File.join(folder, "bin", unused_exe), **fileutils_options
       end
 
       protected
