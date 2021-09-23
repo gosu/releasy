@@ -25,9 +25,9 @@ module Releasy
       # Self-extracting standalone executable.
       def generate_tasks
         file folder => project.files do
-          mkdir_p folder, fileutils_options
+          mkdir_p folder, **fileutils_options
 
-          project.exposed_files.each {|file| cp file, folder, fileutils_options }
+          project.exposed_files.each {|file| cp file, folder, **fileutils_options }
 
           create_link_files folder
 

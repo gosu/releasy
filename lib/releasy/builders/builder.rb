@@ -53,8 +53,8 @@ module Builders
     def copy_files_relative(files, folder)
       files.each do |file|
         destination = File.join(folder, File.dirname(file))
-        mkdir_p destination, fileutils_options unless File.exists? destination
-        cp file, destination, fileutils_options
+        mkdir_p destination, **fileutils_options unless File.exists? destination
+        cp file, destination, **fileutils_options
       end
     end
   end

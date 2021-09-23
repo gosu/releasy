@@ -23,7 +23,7 @@ module Releasy
         task "build:source" => folder
 
         file folder => project.files do
-          mkdir_p folder, fileutils_options
+          mkdir_p folder, **fileutils_options
           copy_files_relative project.files, folder
         end
       end
